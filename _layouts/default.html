@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>{% if page.title %}{{ page.title }} | {% endif %}Joel Verhagen</title>
+  <link rel="stylesheet" href="{% url css/normalize.css %}" />
+  <link rel="stylesheet" href="{% url css/style.css %}" />
+  <link rel="stylesheet" href="{% url css/pygments.css %}" />
+  <link rel="shortcut icon" href="{% url favicon.ico %}" type="image/x-icon" />
+</head>
+<body>
+  <div id="header-wrapper">
+    <header>
+      <h1><a href="{% url %}">Joel Verhagen</a></h1>
+      <p>a programming blog, occasionally useful</p>
+    </header>
+  </div>
+  <div id="page">
+    <div id="main">
+      <div id="side-column">
+        <aside id="short-bio" class="light-background round-top border-top">
+          <a href="{% url %}"><img width="175" height="175" src="http://www.gravatar.com/avatar/c136b026be4668d46ce5eb4dee155df1?s=175" alt="Joel Verhagen" /></a>
+          <p>I am an undergraduate in Computer Science at the <a href="http://www.uc.edu">University of Cincinnati</a>.</p>
+          <p>I am currently taking classes, but if you are interested in my work history or skill set, take a look at my <a href="{% url attachments/resume.pdf %}">current resumé</a>.</p>
+        </aside>
+        <aside id="social-links" class="dark-background round-bottom border-all">
+          <div class="social-link"><a href="mailto:joel.verhagen@gmail.com"><img width="32" height="32" title="Email" src="{% url img/email.png %}" alt="Email" /></a></div>
+          <div class="social-link"><a href="http://www.twitter.com/joelverhagen"><img width="32" height="32" title="Twitter" src="{% url img/twitter.png %}" alt="Twitter" /></a></div>
+          <div class="social-link"><a href="https://www.github.com/joelverhagen"><img width="32" height="32" title="GitHub" src="{% url img/github.png %}" alt="GitHub" /></a></div>
+          <div class="social-link"><a href="http://stackoverflow.com/users/52749/joel-verhagen"><img width="32" height="32" title="Stack Overflow" src="{% url img/stack-overflow.png %}" alt="Stack Overflow" /></a></div>
+          <div class="social-link"><a href="http://www.last.fm/user/joelverhagen"><img width="32" height="32" title="Last.fm" src="{% url img/lastfm.png %}" alt="Last.fm" /></a></div>
+          <div class="social-link"><a href="http://www.soundcloud.com/joelverhagen"><img width="32" height="32" title="SoundCloud" src="{% url img/soundcloud.png %}" alt="SoundCloud" /></a></div>
+        </aside>
+      </div> 
+
+      <div id="main-column">
+        {{ content }}
+        <footer class="dark-background round-bottom border-all">
+          <p>Design and content by <a href="{% url %}">Joel Verhagen</a>.</p>
+          <p>Copyright &copy; {{ site.time | date: "%Y" }}.</p>
+        </footer>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript">
+  var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+  document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+  </script>
+  <script type="text/javascript">
+  var pageTracker = _gat._getTracker("UA-19716426-1");
+  pageTracker._trackPageview();
+  </script>
+</body>
+</html>

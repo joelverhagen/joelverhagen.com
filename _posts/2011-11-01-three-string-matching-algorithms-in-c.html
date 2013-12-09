@@ -1,0 +1,180 @@
+---
+category: Programming
+layout: post
+tags:
+- algorithms
+- C++
+- Programming
+- Snippets
+- string matching
+title: Three String Matching Algorithms in C++
+---
+<p>During this post, I will show you my C++ implementation of three string algorithms:</p>
+<ol>
+  <li>a silly naive solution</li>
+  <li>the Rabin-Karp algorithm</li>
+  <li>the Knuth-Morris-Pratt algorithm</li>
+</ol>
+
+<p>I've recently been fooling around with a ton of different programming projects (OpenCV, F#, C#, and of course my usual screen scraping antics...) but one topic that caught my interest is string matching algorithms. One of my recent classes in school was Algorithms I (more verbosely, the Design and Analysis of Algorithms I). Unfortunately, most of the class was spent on a brushing-over of universal hashing and more than one experimentation project concerning the choosing of pivots when implementing Quicksort. Big woop.</p>
+
+<p>For the class, we were required to purchase the renowned <a title="Introduction to Algorithms on Amazon" href="http://www.amazon.com/Introduction-Algorithms-Thomas-H-Cormen/dp/0262033844">Introduction to Algorithms</a>... which we never opened throughout the entire class. In fact, my professor just taught off of Wikipedia for basically every lecture. Bummer. So I decided to look through it on my own time. Well there's an entire chapter dedicated to string matching! Cool! So I decided to throw together an implementation or two in C++.</p>
+
+<p>Throughout this post, I used the following two terms frequently:</p>
+<ul>
+  <li><b>needle</b>: this is the string that you are searching <i>for</i>. So if you are searching for "Emma" in the string "Hermione Granger is Emma Watson", then "Emma" is the <i>needle</i>.</li>
+  <li><b>haystack</b>: this is the string that you are searching <i>in</i>. In the above example, "Hermione Granger is Emma Watson" would be the <i>haystack</i>.
+</ul>
+
+<p>To ease back into C++, I wrote a naive implementation which works perfectly well, but isn't very efficient (as there is absolutely no pre-processing step, which is where other algorithms get their speedup). It returns a vector of all of the indices where <code class="inline">needle</code> exists in <code class="inline">haystack</code>. Very intuitive. No fancy tricks.</p>
+
+{% highlight cpp %}
+#include <vector>
+#include <string>
+using namespace std;
+
+vector<size_t> naiveSearch(const string & needle, const string & haystack)
+{
+    vector<size_t> matches;
+
+    // thanks Jeff!
+    if(needle.size() > haystack.size())
+        return matches;
+
+    size_t needleSize = needle.size();
+    size_t maximumIndex = haystack.size() - needleSize;
+    
+    size_t needleIndex;
+    for(size_t haystackIndex = 0; haystackIndex <= maximumIndex; haystackIndex++)
+    {
+        for(needleIndex = 0; needleIndex < needleSize && needle[needleIndex] == haystack[haystackIndex + needleIndex]; needleIndex++);
+        
+        if(needleIndex == needleSize)
+            matches.push_back(haystackIndex);
+    }
+
+    return matches;
+}
+{% endhighlight %}
+
+<p>The next one I implemented was the <a href="http://en.wikipedia.org/wiki/Rabin%E2%80%93Karp_string_search_algorithm">Rabin-Karp string searching algorithm</a>. Basically the algorithm works by using a specific kind of hashing. For the pre-processing step, a hash of the needle is generated. Then a hash of the first <code class="inline">m</code> characters of the haystack is generated, where <code class="inline">m</code> is the length of the needle. If those two hashes match, then we know (or are relatively certain) that the haystack starts with an instance of the needle. We then shift forward one character in the haystack, calculate the new hash for the new position, then compare the hashes. The reason this is faster than the naive search is because the hashing algorithm used in Rabin-Karp is designed to be very cheap to change one character in the hashed value. So moving the bounds of the candidate string in the haystack forward one character is cheaper than rechecking the whole string, character-by-character.</p>
+
+<p>The prime used for the hashing algorithm is the largest prime less than number values expressible in your hash data type (in my case, a 64-bit integer - 2<sup>64</sup>) divided by your alphabet size (in my case, a <code class="inline">char</code> - 2<sup>8</sup>). Wolfram Alpha is magic and tells me <a href="http://www.wolframalpha.com/input/?i=largest+prime+number+less+than+%28+%28+2%5E64+%29+%2F+%28+2%5E8%29+%29">the prime number I can use</a>.</p>
+
+<p>The <code class="inline">offSetMatch</code> function just does a character-by-character check for a needle and haystack at a given offset in the haystack. Note that this function does no bounds checking!</p>
+
+{% highlight cpp %}
+#include <vector>
+#include <string>
+using namespace std;
+
+typedef unsigned long long uint64;
+
+bool offsetMatch(const string & needle, const string & haystack, size_t offset)
+{
+    size_t needleCount = needle.size();
+    size_t index;
+    
+    for(index = 0; index < needleCount && needle[index] == haystack[offset + index]; index++);
+
+    return index == needleCount;
+}
+
+vector<size_t> rabinKarpMatcher(const string & needle, const string & haystack)
+{
+    static const uint64 radixLength = 256ULL;
+    static const uint64 prime = 72057594037927931ULL;
+
+    vector<size_t> matches;
+
+    size_t needleLength = needle.size();
+    size_t haystackLength = haystack.size();
+    size_t lastIndex = haystackLength - needleLength;
+
+    uint64 differenceHash = pow(radixLength, (uint64)(needleLength - 1)) % prime;
+
+    size_t needleHash = 0;
+    size_t firstHaystackHash = 0;
+
+    size_t index;
+
+    // preprocessing
+    for(index = 0; index < needleLength; index++)
+    {
+        needleHash = (radixLength * needleHash + needle[index]) % prime;
+        firstHaystackHash = (radixLength * firstHaystackHash + haystack[index]) % prime;
+    }
+
+    vector<uint64> haystackHashes;
+    haystackHashes.reserve(lastIndex + 1);
+    haystackHashes.push_back(firstHaystackHash);
+
+    // matching
+    for(index = 0; index <= lastIndex; index++)
+    {
+        if(needleHash == haystackHashes[index])
+            if(offsetMatch(needle, haystack, index))
+                matches.push_back(index);
+
+        if(index < lastIndex)
+        {
+            uint64 newHaystackHash = (radixLength * (haystackHashes[index] - haystack[index] * differenceHash) + haystack[index + needleLength]) % prime;
+            haystackHashes.push_back(newHaystackHash);
+        }
+    }
+
+    return matches;
+}
+{% endhighlight %}
+
+<p>The last searching algorithm is the Knuth-Morris-Pratt Algorithm. Like Rabin-Karp, it also does a pre-processing step on the needle before starting the search routine. It uses an array called the <i>partial match table</i>. I don't want to butcher the explanation, so I would recommend reading <a href="http://www.personal.kent.edu/~rmuhamma/Algorithms/MyAlgorithms/StringMatch/kuthMP.htm">this article</a> if you want to understand what's going on. Also, here's <a href="http://oak.cs.ucla.edu/cs144/examples/KMPSearch.html">a neat little script</a> that breaks down the steps a KMP execution. Great for seeing what's going on!</p>
+
+<p>Here's my implementation.</p>
+
+{% highlight cpp %}
+#include <vector>
+#include <string>
+using namespace std;
+
+vector<size_t> knuthMorrisPrattTable(const string & needle)
+{
+    vector<size_t> table(needle.size() + 1, -1);
+    for(size_t index = 1; index <= needle.size(); index++)
+    {
+        size_t position = table[index - 1];
+        
+        while(position != -1 && needle[position] != needle[index - 1])
+            position = table[position];
+
+        table[index] = position + 1;
+    }
+
+    return table;
+}
+
+vector<size_t> knuthMorrisPrattSearch(const string & needle, const string & haystack, const vector<size_t> & table)
+{
+    vector<size_t> matches;
+    size_t haystackIndex = 0;
+    size_t needleIndex = 0;
+
+    size_t haystackSize = haystack.size();
+    size_t needleSize = needle.size();
+
+    while(haystackIndex < haystackSize)
+    {
+        while(needleIndex != -1 && (needleIndex == needleSize || needle[needleIndex] != haystack[haystackIndex]))
+            needleIndex = table[needleIndex];
+
+        needleIndex++;
+        haystackIndex++;
+
+        if(needleIndex == needleSize)
+            matches.push_back(haystackIndex - needleSize);
+    }
+ 
+    return matches;
+}
+{% endhighlight %}
+
+<p>Enjoy!</p>

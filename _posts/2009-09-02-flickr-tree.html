@@ -1,0 +1,34 @@
+---
+category: Projects
+layout: post
+tags:
+- Flickr
+- JavaScript
+- PHP
+- physics
+- Projects
+title: Flickr Tree
+---
+<h2>What Is It?</h2>
+<p><b>Note:</b> the published date on this post is when I started this project, not the timestamp on the publication of this post.</p>
+
+<p>The basic idea behind Flickr Tree goes as follows:</p>
+<ol>
+  <li>Start with a seed image from Flickr.</li>
+  <li>Get the tags for this image and find another image on Flickr with the same tag.</li>
+  <li>Connect these two images with a line and aesthetically place them on the page.</li>
+  <li>Continue linking different images to each other based on common tags until your browser crashes.</li>
+</ol>
+<p>The real fun part of this program is the "aesthetically" placing the images on the page. My hope and dream was for the different nodes of the resulting tree to be spread out evenly across the page without any lines crossing.</p>
+<h2>Physics!?</h2>
+<p>Well, ladies and gentlemen, here's a kicker: the oh-so rued Accelerated Physics I took in high school have finally come in handy. There's actually an entire <a href="http://en.wikipedia.org/wiki/Force-based_algorithms">Wikipedia article</a> dedicated to this topic. Clearly, I wasn't the first to think of this.</p>
+
+<p>The physics behind it basically this: I set each image as a point charge and use <a href="http://en.wikipedia.org/wiki/Coulomb's_law">Coulomb's Law</a> to find the forces between any two images. As we all know, force equals mass times acceleration so I gave all the images the same mass (1 kg) so that the output of Coulomb's Law would be exactly the acceleration due to the force between the two points. I did that for every pair of images to find the total acceleration for each image would.</p>
+
+<p>Looping this process over and over would eventually put the images in equilibrium position. Once it's in equilibrium position, we add another image and start all over.</p>
+<h2>Try It Out</h2>
+<p>Anyways, enough with the yadda-yadda and jibber-jabber. Here's a <a href="{% attachment demo %}">working example</a>.</p>
+<h2>Technologies</h2>
+<p>Flickr Tree is written in <b>JavaScript </b>and it uses <b>jQuery</b> to do all of the little annoying tasks things jQuery is meant for. To query for the images based on tag, I wrote a little <b>PHP </b>script that uses the <b>Flickr API</b>. I use <b>wz_jsgraphics.js</b> (I think the project is abandoned now) to draw the lines between the images and to create the tag lables.</p>
+
+<p>If you want to take a look at the source code, <a href="https://github.com/joelverhagen/Flickr-Tree">it's available</a> on my GitHub profile</p>

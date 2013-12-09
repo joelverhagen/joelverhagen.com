@@ -1,0 +1,30 @@
+---
+category: Snippets
+layout: post
+tags:
+- C++
+- Snippets
+title: Get the Size of a File in C++
+---
+<p>I've sometimes had the need to find the size or length of a file in C++. It's pretty easy, but I figured someone out there could make use of my function. I'm just nice like that.<p>
+
+{% highlight cpp %}#include <fstream>
+
+int getFileSize(const std::string &fileName)
+{
+    ifstream file(fileName.c_str(), ifstream::in | ifstream::binary);
+
+    if(!file.is_open())
+    {
+        return -1;
+    }
+
+    file.seekg(0, ios::end);
+    int fileSize = file.tellg();
+    file.close();
+
+    return fileSize;
+}
+{% endhighlight %}
+
+The function returns <code class="inline">-1</code> if the file could not be opened.

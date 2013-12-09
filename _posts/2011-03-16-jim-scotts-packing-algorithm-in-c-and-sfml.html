@@ -1,0 +1,24 @@
+---
+category: Projects
+layout: post
+tags:
+- 2D Packing
+- C++
+- Projects
+- SFML
+title: Jim Scott's Packing Algorithm in C++ and SFML
+---
+<h2>Description</h2>
+<p>I recently stumbled across a fun little programming problem called the 2D bin packing problem (a subset of the larger <a href="http://en.wikipedia.org/wiki/Packing_problem">Packing Problem</a>). Basically the idea is that you have a rectangular 2D "bin" in which you can store smaller rectangles. The programmer's job is to fit those smaller rectangles into the larger rectangles in the most efficient way possible.</p>
+
+<p>Quite a bit of work has been done on the subject (as evident by the Wikipedia page about the packing problem). One approach I really like is <a href="http://www.blackpawn.com/texts/lightmaps/default.html">Jim Scott's algorithm</a>. It uses a binary tree structure to keep track of open spots to put incoming rectangles. He doesn't provide any working code for the algorithm (his description is in pseudocode).</p>
+
+<p>Another guy, Iván Montes, <a href="http://pollinimini.net/demos/RectanglePacker.html">wrote an implementation</a> of Jim Scott's algorithm in JavaScript. Very cool! Since I have been playing with <a href="http://www.sfml-dev.org/">SFML</a> recently, I thought it would be cool to write an implementation of the algorithm in C++.</p>
+<h2>Download</h2>
+<p>Say... you wanna try it out? First, you'll need to download and install the <b>Microsoft Visual C++ 2010 Redistributable Package </b>(<a href="http://www.microsoft.com/downloads/en/details.aspx?FamilyID=a7b7a05e-6de6-4d3a-a423-37bf0912db84">download link</a>). After you have that installed, all you need to do is download and extract the program itself.</p>
+
+<p>Click the link below to download the .zip file containing the program.</p>
+<h3><a href="{% attachment 2d-bin-packing-1.0-binaries.zip %}">2D Bin Packing 1.0</a></h3>
+<h2>Source</h2>
+<p>I have set up a <a href="https://github.com/joelverhagen/2D-Bin-Packing">GitHub repository</a> for the code, if you're interested. If you don't want to bother with the source code, take a look at a screenshot below:</p>
+<img title="2D Bin Packing" src="{% attachment 2d-bin-packing-1.0-preview.png %}" alt="2D bin packing preview image" width="516" height="538" />

@@ -1,0 +1,78 @@
+---
+category: Tutorials
+layout: post
+tags:
+- C++
+- CMake
+- MinGW
+- Qt
+- QtCreator
+- TagLib
+- Tutorials
+title: How to compile TagLib on Windows
+---
+<p>So, for my music tagger program, I need to build TagLib. For a C++ noob like me, this was a bit of a challenge. I first tried using CMake to build MinGW make files as suggested on <a href="http://developer.kde.org/~wheeler/taglib.html#windows">TagLib's website</a> and then building with plain old mingw32-make, but the binaries I ended up generating caused my Qt app to crash instantly on startup. I'm not sure why this was going on, but I know that these same TagLib binaries worked in a Code::Blocks project just fine. Oh well, I found another way to get things to work. Just so you know, I am compiling TagLib on Windows 7 Ultimate (64-bit).</p>
+
+<p>Let's build TagLib inside QtCreator 2.0.1 on Windows! Note, you'll still need to use CMake to generate the Taglib config headers (I'll talk more about this later).</p>
+
+<p>If you're a lazy boring person, then you can try download the <a href="{% attachment taglib-release.zip %}">binaries I built</a>. To use them in one of your projects, you'll still need to get the TagLib headers.</p>
+
+<p><b>Make sure you have QtCreator with MinGW installed. I am assuming you already have this done.</b></p>
+<h2>Download TagLib</h2>
+<ol>
+  <li>Go to the TagLib website and download the source code. The version I got was 1.6.3.</li>
+  <li>Extract the archive you downloaded to a permanent location. This is the location that you want your programs to be able to read from after you've finished compiling the library.
+  <ul>
+    <li>Throughout this tutorial, the location of source code is <b>D:\Libraries</b>.</li>
+  </ul>
+</li>
+  <li>After you have extracted everything, the base directory of TagLib should look like <a href="{% attachment taglib_base_directory.png %}">this</a>.</li>
+</ol>
+<h2>Install CMake</h2>
+<p>CMake is a cross-platform <b>make</b> program. We will use it in conjunction with QtCreator to build TagLib.</p>
+<ol>
+  <li>Download the Windows installer for CMake from the <a href="http://developer.kde.org/~wheeler/taglib.html#windows" target="_self">website</a>. I used the <b>Windows (Win32 Installer)</b> (version 2.8.3). Install CMake using the installer.</li>
+  <li>Open up the CMake GUI.</li>
+  <li>Set the <b>Where is the source code</b> field to the base directory of TagLib. This should be the folder with the subdirectories <b>admin</b>, <b>bindings</b>, <b>cmake</b>, <b>doc</b>, <b>examples</b>, <b>taglib</b>, and <b>tests </b>along with a bunch of other files.</li>
+  <li>Set the <b>Where to build the binaries</b> to the same location as the previous step.</li>
+  <li>Press the <b>Configure </b>button. A window should come up asking which generator you would like to use. Choose <b>MinGW Makefiles </b>(<a href="{% attachment which_generator.png %}">screenshot</a>) and hit <b>Finish</b>.
+<ul>
+  <li>If it looks like CMake cannot find the MinGW compiler, add the <b>mingw/bin</b> directory installed with Qt to your PATH (the directory I added to my path was <b>C:\Qt\2010.05\mingw\bin</b>)</li>
+</ul>
+</li>
+  <li>If it configured properly, there should be some entries (in red) in the main screen. Choose whichever options you like for the build. I enabled ASF and MP4 and had it build the examples (<a href="{% attachment cmake_taglib_options.png %}">screenshot</a>).
+<ul>
+  <li>To disable debug statements put in the TagLib code, change the build type to <b>Release</b>. To do this, check the <b>Advanced</b> check box and type in <b>Release</b> for <b>CMAKE_BUILD_TYPE</b>.</li>
+</ul>
+</li>
+  <li>After you have changed some of the options, press <b>Configure</b> again.
+<ul>
+  <li><b>Note:</b> you will probably get warnings about CppUnit not being found. I wouldn't worry about that.</li>
+</ul>
+</li>
+  <li>Now the <b>Generate</b> button should be enabled. Click on it and it will make the necessary files for you to build TagLib in QtCreator.</li>
+</ol>
+<h2>Setup the Project</h2>
+<p>Now that we have all the source files set up, we can build TagLib into the binaries you can use in your projects.</p>
+
+<p>If you have worked with Qt before, then you probably know what a <b>.pro</b> file is. It basically a project file for Qt programs and it tells the compiler (and IDE) what files to include in the project. When you download TagLib from the website and unpack it, you make notice under the <b>taglib</b> directory there is already a <b>.pro</b> file. What the heck?! Well, from my experience it, doesn't work straight out of the box. Frankly, I'm too lazy to figure out why. Instead, I have crafted one that you can use and (with some minor adjustments) <em>should </em>work perfectly.</p>
+<ol>
+  <li>Navigate to your base directory of the TagLib source and then go to the <b>taglib</b> subdirectory.</li>
+  <li>You'll see the <b>taglib</b><b>.pro</b> file that I was just jabbering about.</li>
+  <li>Now download this <b>.pro</b> file I have been kind enough to make for you. <a href="{% attachment taglib.pro %}">Here it is</a>. Open up the <b>.pro</b> file in the text editor of your choice and do a Find-Replace to set all the paths to write.
+<ul>
+  <li>Say you extracted the TagLib source at <b>C:/shared/</b>. Then you would replace all instances of <b>D:/Libraries/</b> with <b>C:/shared/</b>.</li>
+  <li>Thanks to this <a href="http://stackoverflow.com/questions/3878883/compiling-static-taglib-1-6-3-libraries-for-windows">Stack Overflow post</a> for the original version of the <b>.pro</b> file.</li>
+</ul>
+</li>
+  <li>Replace your revised <b>taglib.pro</b> file with the old one in the <b>taglib</b> subdirectory.</li>
+</ol>
+<h2>Build TagLib</h2>
+Finally we have all the moving parts in place. Let's build this thing!
+<ol>
+  <li>Open up the <b>.pro</b> file QtCreator. It will probably come up with a<b> Project setup </b>window. Just press <b>Finish</b>.</li>
+  <li>If everything is in place, you'll see all the header and source files under <b>taglib?</b> in the side bar (<a href="{% attachment qtcreator_first_open.png %}">screenshot</a>).</li>
+  <li>What I did next was build the project under the Release target (<a href="{% attachment qtcreator_target.png %}">screenshot</a>). No need to debug a perfect library!</li>
+  <li>Then hit the little hammer icon, to build the project. When it is done, it should have placed the binaries in <b>D:/Libraries/taglib-1.6.3/taglib-release </b>(of course, the<b> D:/Libraries part</b> is just the location of the base TagLib directory, but I didn't need to tell you that).</li>
+</ol>
+<p>And there you have it! The header files for the library are under the <b>taglib </b>subdirectory. Feel free to comment if you are having issues following this instructions.</p>

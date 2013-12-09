@@ -1,0 +1,11 @@
+pygments: true
+permalink: /blog/:year/:month/:title
+baseurl: /
+url: http://joelverhagen.com
+destination: _prod
+attachmentdir: attachments
+comments: true
+exclude: 
+- categories.yml
+relative_permalinks: false
+markdown: redcarpet

@@ -1,0 +1,46 @@
+---
+category: Snippets
+layout: post
+tags:
+- C++
+- converters
+- Snippets
+title: Convert an Int to a String and Vice Versa in C++
+---
+<p>Often times when you are making a command line program in C++ you need to take user input via <code class="inline">cin</code>. I always find myself needing to convert an <code class="inline">int</code> to a <code class="inline">string</code> or a <code class="inline">string</code> to an <code class="inline">int</code>. Traditionally in <b>C</b>, people use the <b>atoi</b> library. Well, if for whatever reason you want to avoid that, you can use streams to do the conversion.</p>
+
+<p>This will convert a <code class="inline">string</code> to an <code class="inline">int</code>.</p>
+{% highlight cpp %}
+int stringToInt(string input)
+{
+    stringstream s(input);
+    int i;
+    s >> i;
+    return i;
+}
+{% endhighlight %}
+<p>Here are examples. Notice what happens when not-integer characters are passed as the input:</p>
+{% highlight cpp %}
+stringToInt("1337")    // 1337
+stringToInt("0.5")     // 0
+stringToInt("-1.7")    // -1
+stringToInt("-0.3")    // 0
+stringToInt("bad")     // 0
+stringToInt("a1004a")  // 0
+stringToInt("a1004")   // 0
+stringToInt("1004a")   // 1004
+stringToInt("-100")    // -100
+stringToInt("-100.3")  // -100
+stringToInt("-100.7")  // -100
+stringToInt("    -97") // -97
+{% endhighlight %}
+
+<p>And now for the inverse function. Here's how to convert from <code class="inline">int</code> to <code class="inline">string</code>.</p>
+{% highlight cpp %}
+string intToString(int input)
+{
+    stringstream s;
+    s << input;
+    return s.str();
+}
+{% endhighlight %} 

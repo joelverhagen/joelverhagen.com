@@ -1,0 +1,62 @@
+---
+category: Programming
+layout: post
+tags:
+- Programming
+- Python
+- statistics
+title: Simulating the Monty Hall Problem in Python
+---
+<p>I recently found out <a href="http://www.reddit.com/r/wikipedia/comments/fu84k/the_monty_hall_problem_is_so_controversial_its/">via Reddit</a> that the <a href="http://en.wikipedia.org/wiki/Monty_Hall_problem">Monty Hall problem</a> page on Wikipedia has caused quite a lot of heated dispute, mainly because people don't agree on that way in which the problem is solved.</p>
+
+<p>If you haven't heard of the Monty Hally problem, here's a quote found on the Wikipedia page that describes the problem.
+<blockquote>Suppose you're on a game show, and you're given the choice of three doors: Behind one door is a car; behind the others, goats. You pick a door, say No. 1, and the host, who knows what's behind the doors, opens another door, say No. 3, which has a goat. He then says to you, "Do you want to pick door No. 2?" Is it to your advantage to switch your choice?</blockquote>
+<p>Well, I thought it would be interesting to simulate the problem in Python to show that it is in fact to your benefit to switch doors from your original choice.</p>
+
+{% highlight python %}
+import random
+
+def test():
+    doors = ['goat', 'goat', 'car'] # the three doors
+    random.shuffle(doors) # not necessary, since the doors choice is randomized, but I want to simulate the game show as closely as possible
+    
+    playerPick = doors.pop(random.randint(0, len(doors) - 1)) # pick a random door
+    hostPick = doors.pop(doors.index('goat')) # host picks one of the doors with a goat behind it
+    
+    prizes = {}
+    
+    noSwitchPrize = playerPick # The player does not switch doors.
+    switchPrize = doors[0] # The player switches doors.
+    
+    return noSwitchPrize, switchPrize
+
+def runTests(repititions):
+    noSwitchCarCount = 0 # The number of times the car is won if the player does not switch doors.
+    switchCarCount = 0 # The number of times the car is won if the player switches doors.
+    
+    for i in range(repititions):
+        noSwitchPrize, switchPrize = test()
+        noSwitchCarCount += 1 if noSwitchPrize == 'car' else 0 # count the game as a success if not switching the door results in winning a car
+        switchCarCount += 1 if switchPrize == 'car' else 0 # count the game as a success if switching the door results in winnning a car
+    
+    return noSwitchCarCount, switchCarCount
+
+repititions = int(raw_input("Repititions: ")) # input number of times we want to simulate the problem
+noSwitchCarCount, switchCarCount = runTests(repititions)
+
+print
+print "Cars won if the player does not switch doors: "+str(noSwitchCarCount)+" ("+("%.2f" % (100 * (noSwitchCarCount / float(repititions))))+"% chance)"
+print "Cars won if the player switches doors: "+str(switchCarCount)+" ("+("%.2f" % (100 * (switchCarCount / float(repititions))))+"% chance)"
+print 
+print "Based off of these tests, it is a better idea to "+("not " if noSwitchCarCount > switchCarCount else "")+"switch doors."
+{% endhighlight %}
+<p>Here is my output run running the test 1,000,000 times.</p>
+{% highlight text %}
+Repititions: 1000000
+
+Cars won if the player does not switch doors: 332805 (33.28% chance)
+Cars won if the player switches doors: 667195 (66.72% chance)
+
+Based off of these tests, it is a better idea to switch doors.
+{% endhighlight %}
+<p>This is clearly not a textbook way of solving the problem, but it is evidence enough for me to believe the accepted answer.</p>

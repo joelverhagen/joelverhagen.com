@@ -1,0 +1,449 @@
+---
+category: Tutorials
+layout: post
+tags:
+- CodeIgniter
+- Doctrine
+- PHP
+- Tutorials
+title: Setting up CodeIgniter 2 with Doctrine 2 the right way
+---
+<p>So you've discovered the awesomeness of CodeIgniter and you need an ORM. You've read about people around <a href="http://stackoverflow.com/questions/2141007/codeigniter-models-and-orm-how-to-deal-with-this/2175072#2175072">StackOverflow</a> and the <a href="http://codeigniter.com/forums/viewthread/179700/">CodeIgniter forums</a> recommending Doctrine as an object mapper. You've tried and tried but Doctrine and CodeIgniter are just not playing nicely together. Well <a href="http://www.phpandstuff.com/">http://www.phpandstuff.com/</a> has a stupendous tutorial... <b>for CodeIgniter &lt; 2.0 and Doctrine &lt; 2.0</b>. We need something more recent, eh?</p>
+
+<p>Well, I walked the same rocky road and decided to make my own tutorial. Yah, yah, there's already a bunch out there. But they either suck or don't apply to CodeIgniter 2 or Doctrine 2. Mine doesn't suck. I hope.</p>
+
+<p><b>So for future reference, here are the versions I am working with during this tutorial, but similarly versions should work just fine</b>:</p>
+<ul>
+  <li><a href="http://www.codeigniter.com/download_files/reactor/CodeIgniter_2.1.0.zip">CodeIgniter 2.1.0</a> (<a href="{% attachment CodeIgniter_2.1.0.zip %}" target="_blank">mirror</a>)</li>
+  <li><a href="http://www.doctrine-project.org/downloads/DoctrineORM-2.2.1-full.tar.gz">Doctrine 2.2.1</a> (<a href="{% attachment DoctrineORM-2.2.1-full.tar.gz %}" target="_blank">mirror</a>)</li>
+  <li>Also, I am running Apache 2.2.20, PHP 5.3.6 (<b>with APC</b>), MySQL 5.1.58, all on Ubuntu Server 11.10.</li>
+  <li>I am assuming you already have a MySQL database (with valid a user) set up.</li>
+</ul>
+
+<h3>Versions</h3>
+<p>The following versions have been tested to make sure they fully work with this tutorial:</p>
+<ul>
+  <li>CodeIgniter <b>2.1.0</b> and Doctrine <b>2.2.1</b></li>
+  <li>CodeIgniter <b>2.0.2</b> (<a href="{% attachment CodeIgniter_2.0.2.zip %}" target="_blank">mirror</a>) and Doctrine <b>2.0.5</b> (<a href="{% attachment DoctrineORM-2.0.5-full.tar.gz %}" target="_blank">mirror</a>)</li>
+</ul>
+
+<p>If you want to work with a different version of CodeIgniter or Doctrine, this tutorial should still be totally fine as long as the version of CodeIgniter<b>and</b> Doctrine are version 2.x.x! You may have to change the paths of downloads a bit (i.e. changing a <code class="inline">CodeIgniter_2.1.0.zip</code> in a URL to <code class="inline">CodeIgniter_2.0.2.zip</code>, but everything else will be exactly the same. If you can't handle that, I'd recommend firing up a WordPress instance and going from there...</p>
+
+<h3>Tutorial Context</h3>
+
+<p>Also, here are some names I will be using throughout the tutorial. Replace them with whatever paths or names that are relevant to your project.</p>
+<ul>
+  <li><b>Project Name:</b> Emma Watson Shrine</li>
+  <li><b>Project Directory:</b> <code class="inline">/var/www/emma_watson_shrine/</code></li>
+</ul>
+
+<p>I am going to try to make this as easy on you as possible, so <b>I will give all of the steps necessary to get this stack up and running</b>. In other words, you shouldn't even <i>have</i> to read the Doctrine and CodeIgniter documentation, although it is HIGHLY recommended.</p>
+
+<p><b>"And away we go..."</b></p>
+<h2>Download and Configure CodeIgniter</h2>
+<ol class="extra-space">
+  <li><b>Download</b> the CodeIgniter archive, <b>extract</b> it, and <b>move</b> it to the location that you'd like your project to reside.
+{% highlight bash %}### go to the web directory
+cd /var/www
+
+### download CodeIgniter
+wget http://www.codeigniter.com/download_files/reactor/CodeIgniter_2.1.0.zip
+
+### unzip the archive
+unzip CodeIgniter_2.1.0.zip
+
+### remove the archive
+rm CodeIgniter_2.1.0.zip
+
+### rename the extracted archive to the desired project directory
+mv CodeIgniter_2.1.0 emma_watson_shrine
+{% endhighlight %}</li>
+  <li>Make sure your project's directory has <b>proper permissions</b>. This kind of depends on your server's setup, but I set my project's directory permissions to 755. If you're not sure about this, skip to the next step. It's most likely that the permissions are okay if you used an FTP program to upload the CodeIgniter files.{% highlight bash %}chmod -R 755 emma_watson_shrine{% endhighlight %}</li>
+  <li>CodeIgniter still needs some configuration, but <b>it's running!</b> When you view your project directory in your browser, it should look something like this: <a href="{% attachment codeigniter_running.png %}">screenshot</a>. {% highlight text %}http://www.example.com/emma_watson_shrine/{% endhighlight %}</li>
+  <li>Now let's take some time to configure CodeIgniter. Don't worry, it's really quick!
+<ol class="extra-space">
+  <li><b>Open CodeIgniter's config file</b> in the text editor of your choice.{% highlight bash %}vim /var/www/emma_watson_shrine/application/config/config.php{% endhighlight %}</li>
+  <li>Set the <b>base URL.</b>{% highlight php %}<?php
+$config['base_url'] = 'http://www.example.com/emma_watson_shrine/';{% endhighlight %}</li>
+  <li><b>Open CodeIgniter's database config file</b>.
+{% highlight bash %}vim /var/www/emma_watson_shrine/application/config/database.php{% endhighlight %}</li>
+  <li>Set up the <b>database information</b>. This is the database that Doctrine will use.{% highlight php %}<?php 
+$db['default']['hostname'] = 'localhost';
+$db['default']['username'] = 'emmawatson';
+$db['default']['password'] = 'ronweasley';
+$db['default']['database'] = 'emmawatson';{% endhighlight %}</li>
+</ol>
+</li>
+</ol>
+And that's really all there is to it! CodeIgniter, for the win!
+<h2>Download Doctrine</h2>
+<ol class="extra-space">
+  <li><b>Download</b> the Doctrine archive, <b>extract</b> it, and <b>move</b> it to your CodeIgniter application's library directory. Keep in mind that the archive you download has two sub-directories: <code class="inline">bin</code> and <code class="inline">Doctrine</code>. The <code class="inline">Doctrine</code> directory is what you actually need.{% highlight bash %}### go to the libraries directory
+cd /var/www/emma_watson_shrine/application/libraries
+
+### download Doctrine
+wget http://www.doctrine-project.org/downloads/DoctrineORM-2.2.1-full.tar.gz
+
+### extract the archive
+tar xfz DoctrineORM-2.2.1-full.tar.gz
+
+### pull out the directory we need
+mv DoctrineORM-2.2.1/Doctrine Doctrine
+
+### remove the other stuff we don't need
+rm -rf DoctrineORM-2.2.1 DoctrineORM-2.2.1-full.tar.gz{% endhighlight %}</li>
+</ol>
+<h2>Add Doctrine as a CodeIgniter library</h2>
+<h3>This is when things start getting a bit more confusing. So read carefully!</h3>
+<ol class="extra-space">
+  <li>Go to your CodeIgniter applications's library directory. We need to make a PHP class that will help our CodeIgniter controllers talk use Doctrine's all-powerful Entity Manager. Create a new file at the following path and open it up in a text editor:
+{% highlight bash %}vim /var/www/emma_watson_shrine/application/libraries/Doctrine.php{% endhighlight %}</li>
+  <li><b>Paste this code in</b>. Read the in-code comments for explanation, if you want to learn a thing or two. Here's <a href="{% attachment Doctrine.php %}">a link to Doctrine.php</a> if you just want to download it to the right location.{% highlight php %}<?php
+
+class Doctrine
+{
+    // the Doctrine entity manager
+    public $em = null;
+
+    public function __construct()
+    {
+        // include our CodeIgniter application's database configuration
+        require_once APPPATH.'config/database.php';
+        
+        // include Doctrine's fancy ClassLoader class
+        require_once APPPATH.'libraries/Doctrine/Common/ClassLoader.php';
+
+        // load the Doctrine classes
+        $doctrineClassLoader = new \Doctrine\Common\ClassLoader('Doctrine', APPPATH.'libraries');
+        $doctrineClassLoader->register();
+        
+        // load Symfony2 helpers
+        // Don't be alarmed, this is necessary for YAML mapping files
+        $symfonyClassLoader = new \Doctrine\Common\ClassLoader('Symfony', APPPATH.'libraries/Doctrine');
+        $symfonyClassLoader->register();
+
+        // load the entities
+        $entityClassLoader = new \Doctrine\Common\ClassLoader('Entities', APPPATH.'models');
+        $entityClassLoader->register();
+
+        // load the proxy entities
+        $proxyClassLoader = new \Doctrine\Common\ClassLoader('Proxies', APPPATH.'models');
+        $proxyClassLoader->register();
+
+        // set up the configuration 
+        $config = new \Doctrine\ORM\Configuration;
+    
+        if(ENVIRONMENT == 'development')
+            // set up simple array caching for development mode
+            $cache = new \Doctrine\Common\Cache\ArrayCache;
+        else
+            // set up caching with APC for production mode
+            $cache = new \Doctrine\Common\Cache\ApcCache;
+        $config->setMetadataCacheImpl($cache);
+        $config->setQueryCacheImpl($cache);
+
+        // set up proxy configuration
+        $config->setProxyDir(APPPATH.'models/Proxies');
+        $config->setProxyNamespace('Proxies');
+        
+        // auto-generate proxy classes if we are in development mode
+        $config->setAutoGenerateProxyClasses(ENVIRONMENT == 'development');
+
+        // set up annotation driver
+        $yamlDriver = new \Doctrine\ORM\Mapping\Driver\YamlDriver(APPPATH.'models/Mappings');
+        $config->setMetadataDriverImpl($yamlDriver);
+
+        // Database connection information
+        $connectionOptions = array(
+            'driver' => 'pdo_mysql',
+            'user' => $db['default']['username'],
+            'password' => $db['default']['password'],
+            'host' => $db['default']['hostname'],
+            'dbname' => $db['default']['database']
+        );
+        
+        // create the EntityManager
+        $em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config);
+        
+        // store it as a member, for use in our CodeIgniter controllers.
+        $this->em = $em;
+    }
+}{% endhighlight %}</li>
+  <li><b>Open CodeIgniter's autoload config file</b>. {% highlight bash %}vim /var/www/emma_watson_shrine/application/config/autoload.php{% endhighlight %}
+Add <code class="inline">doctrine</code> to the autoloaded libraries.{% highlight php %}<?php
+$autoload['libraries'] = array('doctrine');{% endhighlight %}</li>
+  <li>You should be able to view your project directory in your browser at this point without any errors coming up. If you have, double back and make sure you've followed all the steps. Furthermore, the page should look exactly as it did before you added Doctrine as a library.{% highlight text %}http://www.example.com/emma_watson_shrine/{% endhighlight %}</li>
+</ol>
+<h2>Add Models to Doctrine</h2>
+From here on, what you need to do <em>really</em> depends on what you would like your website to do.
+
+Since I am making a shrine dedicated to Emma Watson, I think I'll need two models (represented by two tables): a <code class="inline">User</code> object and an <code class="inline">Article</code> object. The <code class="inline">User</code> object will hold information about an individual user. The <code class="inline">Article</code> object will have an author (linking to a <code class="inline">User</code> object) and other information for displaying an article.
+
+Something we need to get straight first is that <b>the models generated by Doctrine are going to be different than <a href="http://codeigniter.com/user_guide/general/models.html">CodeIgniter models</a> (i.e. they will not extend the CI_Model class)</b>.
+<ol class="extra-space">
+  <li><b>Create a Mappings directory in your application’s models directory</b>.
+{% highlight bash %}cd /var/www/emma_watson_shrine/application/models
+mkdir Mappings
+cd Mappings{% endhighlight %}</li>
+  <li>Create some YAML mapping files and put them in the Mappings directory. How to do this is outside the scope of this tutorial, but I will provide mine as examples. Here is a <a href="http://www.doctrine-project.org/docs/orm/2.0/en/reference/yaml-mapping.html">link to the Doctrine documentation</a> on how to format these file. Make sure the mapping files have the <b>".dcm.yml" file extension</b> and the<b> "Entities." prefix</b>. The extension tells Doctrine that this file is a YAML mapping file, and the prefix tells Doctrine to put the models in the <code class="inline">Entity</code> namespace.
+<ul class="extra-space">
+  <li>When declaring the name of your object, make sure to prefix the name with <code class="inline">Entities\</code> to put it in the Entities namespace.</li>
+  <li>Here is the <a href="{% attachment Entities.User.dcm.yml %}">YAML file</a> for my <code class="inline">User</code> object. The file name should be <code class="inline">Entities.User.dcm.yml</code>.
+{% highlight yaml %}Entities\User:
+  type: entity
+  table: users
+  uniqueConstraints:
+    email_index:
+      columns:
+        - email
+  fields:
+    id:
+      type: integer
+      id: true
+      generator:
+        strategy: AUTO
+    password:
+      type: string
+      length: 32
+      nullable: false
+    firstName:
+      type: string
+      length: 255
+      nullable: false
+      column: first_name
+    lastName:
+      type: string
+      length: 255
+      nullable: false
+      column: last_name
+    email:
+      type: string
+      length: 255
+      nullable: false
+    website:
+      type: string
+      length: 255
+      nullable: true
+    created:
+      type: datetime
+      nullable: false{% endhighlight %}</li>
+  <li>And here is the <a href="{% attachment Entities.Article.dcm.yml %}">YAML file</a> for my <code class="inline">Article</code> object. The file name should be <code class="inline">Entities.Article.dcm.yml</code>.
+{% highlight yaml %}Entities\Article:
+  type: entity
+  table: articles
+  fields:
+    id:
+      type: integer
+      id: true
+      generator:
+        strategy: AUTO
+    title:
+      type: string
+      length: 255
+      nullable: false
+    content:
+      type: text
+      nullable: false
+    created:
+      type: datetime
+      nullable: false
+  manyToOne:
+    user:
+      targetEntity: User
+      joinColumns:
+        user_id:
+          referencedColumnName: id{% endhighlight %}</li>
+</ul>
+</li>
+  <li><b>Go back to the models directory and create two more directories</b>: "<b>Entities</b>" and "<b>Proxies</b>". Proxies is the directory that will hold the proxy classes that Doctrine uses. If you're really smart, you should be able to figure out what the Entities directory is for. Since this is the Internet, I think it's safe to assume that I should explain it to you. It's the directory that holds the Entities!
+{% highlight bash %}cd /var/www/emma_watson_shrine/application/models
+mkdir Entities Proxies{% endhighlight %}</li>
+</ol>
+<h2>Configure Doctrine Command Line Tool</h2>
+To use Doctrine, you need set up the command line tool, which helps you with a lot of tasks, like automatically creating the schema in your database, generating proxy classes, etc.
+<ol class="extra-space">
+  <li>Go to your application's <code class="inline">application</code> directory and create a file called <code class="inline">doctrine-cli.php</code>. This is a PHP file that you will need to run through the command line PHP program. Alternatively, download <a href="{% attachment doctrine-cli.php %}">this file</a> to your application directory and skip the next step. Make sure you change the <code class="inline">APPPATH</code> definition in the code to fit your needs!
+{% highlight bash %}cd /var/www/emma_watson_shrine/application
+vim doctrine-cli.php{% endhighlight %}</li>
+  <li>Put the following contents in your <code class="inline">doctrine-cli.php</code> file. As I said above, make sure you change the <code class="inline">APPPATH</code> in the code definition to fit your needs!
+{% highlight php %}<?php
+
+// trailing slash is important!
+define('APPPATH', dirname(__FILE__).DIRECTORY_SEPARATOR);
+define('BASEPATH', APPPATH);
+define('ENVIRONMENT', 'production');
+
+require APPPATH.'libraries/Doctrine.php';
+
+$doctrine = new Doctrine();
+ 
+$helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
+    'db' => new \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper($doctrine->em->getConnection()),
+    'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($doctrine->em)
+));
+
+$cli = new \Symfony\Component\Console\Application('Doctrine Command Line Interface (CodeIgniter integration by Joel Verhagen)', Doctrine\ORM\Version::VERSION);
+$cli->setCatchExceptions(true);
+$cli->setHelperSet($helperSet);
+$cli->addCommands(array(
+    // DBAL Commands
+    new \Doctrine\DBAL\Tools\Console\Command\RunSqlCommand(),
+    new \Doctrine\DBAL\Tools\Console\Command\ImportCommand(),
+ 
+    // ORM Commands
+    new \Doctrine\ORM\Tools\Console\Command\ClearCache\MetadataCommand(),
+    new \Doctrine\ORM\Tools\Console\Command\ClearCache\ResultCommand(),
+    new \Doctrine\ORM\Tools\Console\Command\ClearCache\QueryCommand(),
+    new \Doctrine\ORM\Tools\Console\Command\SchemaTool\CreateCommand(),
+    new \Doctrine\ORM\Tools\Console\Command\SchemaTool\UpdateCommand(),
+    new \Doctrine\ORM\Tools\Console\Command\SchemaTool\DropCommand(),
+    new \Doctrine\ORM\Tools\Console\Command\EnsureProductionSettingsCommand(),
+    new \Doctrine\ORM\Tools\Console\Command\ConvertDoctrine1SchemaCommand(),
+    new \Doctrine\ORM\Tools\Console\Command\GenerateRepositoriesCommand(),
+    new \Doctrine\ORM\Tools\Console\Command\GenerateEntitiesCommand(),
+    new \Doctrine\ORM\Tools\Console\Command\GenerateProxiesCommand(),
+    new \Doctrine\ORM\Tools\Console\Command\ConvertMappingCommand(),
+    new \Doctrine\ORM\Tools\Console\Command\RunDqlCommand(),
+    new \Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand(),
+ 
+));
+$cli->run();{% endhighlight %}</li>
+  <li>Now run this script through the PHP command-line and should see a list of commands available to you.
+{% highlight bash %}php doctrine-cli.php{% endhighlight %}
+The output should look something like this:
+{% highlight text %}Doctrine Command Line Interface (CodeIgniter integration by Joel Verhagen) version 2.0.5
+
+Usage:
+  [options] command [arguments]
+
+Options:
+  --help           -h Display this help message.
+  --quiet          -q Do not output any message.
+  --verbose        -v Increase verbosity of messages.
+  --version        -V Display this program version.
+  --ansi           -a Force ANSI output.
+  --no-interaction -n Do not ask any interactive question.
+
+Available commands:
+  help                         Displays help for a command (?)
+  list                         Lists commands
+dbal
+  :import                      Import SQL file(s) directly to Database.
+  :run-sql                     Executes arbitrary SQL directly from the command line.
+orm
+  :convert-d1-schema           Converts Doctrine 1.X schema into a Doctrine 2.X schema.
+  :convert-mapping             Convert mapping information between supported formats.
+  :ensure-production-settings  Verify that Doctrine is properly configured for a production environment.
+  :generate-entities           Generate entity classes and method stubs from your mapping information.
+  :generate-proxies            Generates proxy classes for entity classes.
+  :generate-repositories       Generate repository classes from your mapping information.
+  :run-dql                     Executes arbitrary DQL directly from the command line.
+  :validate-schema             Validate that the mapping files.
+orm:clear-cache
+  :metadata                    Clear all metadata cache of the various cache drivers.
+  :query                       Clear all query cache of the various cache drivers.
+  :result                      Clear result cache of the various cache drivers.
+orm:schema-tool
+  :create                      Processes the schema and either create it directly on EntityManager Storage Connection or generate the SQL output.
+  :drop                        Drop the complete database schema of EntityManager Storage Connection or generate the corresponding SQL output.
+  :update                      Processes the schema and either update the database schema of EntityManager Storage Connection or generate the SQL output.
+{% endhighlight %}</li>
+</ol>
+<h2>Setup Entities, Proxies, and Database Schema</h2>
+We're getting close here. Really the last thing you need to do before you can jump into developing your Facebook killer.
+<ol class="extra-space">
+  <li>For all of the steps in this section, you'll need to simply call the Doctrine command line tool that you got working in the previous section. <b>The order of these steps does matter!
+</b>{% highlight bash %}cd /var/www/emma_watson_shrine/application{% endhighlight %}</li>
+  <li>Let's go ahead and generate the <b>entity classes</b>. Note that we are creating them in the models directory. Doctrine detects that they are in the <code class="inline">Entities</code> namespace and automatically puts them in the Entities subdirectory. Keep in mind that these entity classes come with getters/setters for all of the fields you defined in your YAML file but can be modified to add custom methods and such.
+{% highlight bash %}php doctrine-cli.php orm:generate-entities models{% endhighlight %}</li>
+  <li>Now the <b>proxy classes</b>.
+{% highlight bash %}php doctrine-cli.php orm:generate-proxies{% endhighlight %}</li>
+  <li>If you've tried this before and your database is not empty, you'll need to do this step. Otherwise, skip it.
+{% highlight bash %}php doctrine-cli.php orm:schema-tool:drop --force{% endhighlight %}</li>
+  <li>And finally, let's <b>create the database tables</b> for Doctrine to store our objects in.
+{% highlight bash %}php doctrine-cli.php orm:schema-tool:create{% endhighlight %}</li>
+</ol>
+<h2>Using Doctrine in a CodeIgniter Controller</h2>
+Believe it or not, you've just made it through all the hard stuff. With all that stupid configuration stuff out of the way, you can get to coding. Yay! Since we added Doctrine as an autoloaded library, <b>we don't even need to fool with loading Doctrine every time you create a new controller</b>. Also, the library file (<code class="inline">libraries/Doctrine.php</code>) has a auto-load call that makes it so <b>all of the entities you put in the <code class="inline">models/Entities</code> directory are automatically available to your controllers!</b>
+
+If you know what you're doing, go ahead and leave this page. Get coding!
+
+Otherwise, I'm going to give you a few code samples so you can start using Doctrine.
+<ol class="extra-space">
+  <li><h4>How do I create a new entity and save it into the database?</h4>
+Easy.{% highlight php %}<?php
+public function createObjects()
+{
+    // create a new user object
+    $user = new Entities\User;
+    $user->setFirstName('Joel');
+    $user->setLastName('Verhagen');
+    $user->setPassword(md5('Emma Watson'));
+    $user->setEmail('joel@joelverhagen.com');
+    $user->setWebsite('http://www.joelverhagen.com');
+    $user->setCreated(new DateTime());
+    
+    // standard way in CodeIgniter to access a library in a controller: $this->library_name->member->memberFunction()
+    // save the object to database, so that it can obtain its ID
+    $this->doctrine->em->persist($user);
+    
+    // create a new article object
+    $article = new Entities\Article;
+    $article->setTitle('Emma Watson is extremely talented, no?');
+    $article->setContent('By talented, I mean good at lookin\' good.');
+    $article->setCreated(new DateTime());
+    // the user object you pass must be persisted first!
+    $article->setUser($user);
+    
+    // save the article object to the database
+    $this->doctrine->em->persist($article);
+    $this->doctrine->em->flush();
+    
+    echo "<b>Success!</b>";
+}{% endhighlight %}</li>
+        <li><h4>How do I get an entity from the database?</h4>
+Child's play. {% highlight php %}<?php
+public function getObjects()
+{
+    // get an object by ID
+    $user = $this->doctrine->em->find('Entities\User', 1);
+    echo $user->getFirstName().' '.$user->getLastName().' is a real chill guy.<br />';
+    
+    // get a related object
+    $article = $this->doctrine->em->find('Entities\Article', 1);
+    $user = $article->getUser();
+    echo $user->getFirstName().' '.$user->getLastName().' thinks CodeIgniter + Doctrine is real slick. <br />';
+    
+    // what happens when we try to get an object that doesn't exist?
+    $article = $this->doctrine->em->find('Entities\Article', 9001);
+    if(is_null($article))
+    {
+        // the "find" call returns NULL!
+        echo 'Dude, that article number 9001 doesn\'t even exist yet.<br />';
+    }
+    
+    // get an object by another field
+    $user = $this->doctrine->em->getRepository('Entities\User')->findOneBy(array('email' => 'joel@joelverhagen.com'));
+    echo $user->getFirstName().' '.$user->getLastName().' is glad he isn\'t dealing with Symfony.<br />';
+}{% endhighlight %}</li>
+        <li><h4>Can I add custom methods to my entities?</h4>
+Yes! {% highlight php %}<?php
+
+namespace Entities;
+
+/**
+ * Entities\User
+ */
+class User
+{
+    ...
+
+    // my custom function :)
+    public function getFullName()
+    {
+        return $this->firstName.' '.$this->lastName;
+    }
+
+    ...
+}{% endhighlight %}</li>
+</ol>

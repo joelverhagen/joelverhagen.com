@@ -1,0 +1,66 @@
+---
+category: Tutorials
+layout: post
+tags:
+- C++
+- iostream
+- Tutorials
+title: Taking String Input in C++ Command Line
+---
+<p>If you're learning C++, you've probably heard all about the basic input/output tools call <code class="inline">cin</code> and <code class="inline">cout</code>. Well, say you want to get string input from a user of your new command line program. I was having a pretty depressing day a while back and I wanted to make a program that gets to know me then complements me. Well, it's going to have to ask my name right? Well this is just too easy, right?</p>
+
+{% highlight cpp %}
+#include <iostream>
+#include <string>
+using namespace std;
+
+int main()
+{
+    cout << "Computer: What's your full name?" << endl;
+
+    cout << "You: ";
+    string name;
+    cin >> name;
+
+    cout << "Computer: Hi, " << name << "! You're a real swell person!";
+
+    return 0;
+}
+{% endhighlight %}
+<p>And here was the output I got:</p>
+{% highlight text %}
+F:\Programming\ForBadDays\bin\Release>ForBadDays.exe
+Computer: What's your full name?
+You: Joel Verhagen
+Computer: Hi, Joel! You're a real swell person!
+F:\Programming\ForBadDays\bin\Release>{% endhighlight %}
+
+<p>What the heck! Computer already forgot my last name! How do you think that makes me feel..</p>
+
+<p>Well, what's really going on there is <code class="inline">cin</code> only reads in to the first space in the input. So if you type in "Emma Charlotte Duerre Watson", it would only store "Emma" in the <code class="inline">name</code> variable. This is how you get the whole line:</p>
+{% highlight cpp %}
+#include <iostream>
+#include <string>
+using namespace std;
+
+int main()
+{
+    cout << "Computer: What's your full name?" << endl;
+
+    cout << "You: ";
+    string name;
+    getline(cin, name);
+
+    cout << "Computer: Hi, " << name << "! You're a real swell person!";
+
+    return 0;
+}
+{% endhighlight %}
+<p>Notice how I used the <code class="inline">getline</code> function. Now the whole input up to the first <b>return </b>or <b>newline </b>character is stored in the <code class="inline">name</code> variable. And here is the example output:<p>
+{% highlight text %}
+F:\Programming\ForBadDays\bin\Release>ForBadDays.exe
+Computer: What's your full name?
+You: Joel Verhagen
+Computer: Hi, Joel Verhagen! You're a real swell person!
+F:\Programming\ForBadDays\bin\Release>
+{% endhighlight %}

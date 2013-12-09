@@ -1,0 +1,84 @@
+---
+category: Projects
+layout: post
+tags:
+- C++
+- endianness
+- game programming
+- Projects
+- resource files
+title: Resource File Manager in C++
+---
+<p>I have recently been spending a lot of time learning about game programming. One function I would like my game to have is to store all the resource or data files it uses into one big data file. There are a couple of reasons for this:</p>
+<ul>
+  <li>Raw resources are hidden from the user, which provides a little bit of privacy.</li>
+  <li>The is a reduced chance that the user will inadvertently delete a file necessary for the game to run.</li>
+  <li>It's fun to do!</li>
+</ul>
+
+<p>There are a couple people out there that have already taken a hack at it and provided perfectly usable implementation (one on <a href="http://www.sfml-dev.org/wiki/en/tutorials/formatdat">SFML's wiki</a> and one on <a href="http://archive.gamedev.net/reference/programming/features/pak/">GameDev.net</a>). However, I wrote my own because neither handles the problem of big-endian vs. little-endian memory and I wanted the experience of some hardcore C++ file I/O action.</p>
+
+<p>To solve the big-endian vs. little-endian problem, I decided on how integers will be stored in my file (I chose little-endian because that's much more common) and I found a way to convert a C++ <code class="inline">int</code> to little-endian bytes. Someone on StackOverflow <a href="http://stackoverflow.com/questions/2100331/c-macro-definition-to-determine-big-endian-or-little-endian-machine#2103095">created a compact header file</a> to determine the endianness of the host machine.</p>
+
+<p>From there, it was pretty easy to get things going. My finished product is called <b>Resource File Manager</b>. Generic enough for you? The current version is <b>version 1.0</b>. You can currently pack files into a larger file using <code class="inline">ResourceFileWriter</code> and read them back out again using <code class="inline">ResourceFileReader</code>.</p>
+
+<p><b>You can download the whole package from <a href="{% attachment resource-file-manager-1.0.zip %}">this link</a>.</b></p>
+
+<p>Also, here's a <a href="https://github.com/joelverhagen/Resource-File-Manager/">GitHub repository</a> for the project.</p>
+
+<p>I have successfully tested the classes in <b>MingW</b> and <b>Visual Studio 2010</b>.</p>
+
+<p>Here's a short example of how the Resource File Manager is used.</p>
+{% highlight cpp %}
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <vector>
+using namespace std;
+
+#include "ResourceFile.h"
+
+int main()
+{
+    {
+        // write test
+        cout << "Write Test:" << endl;
+
+        ResourceFileWriter writeTest("writeTest.dat");
+        writeTest.addEntry("ball.png", "files/ball.png");
+        writeTest.addEntry("audio.mp3", "files/audio.mp3");
+        writeTest.addEntry("Text Document.txt", "files/Text Document.txt");
+        writeTest.write();
+
+        vector<string> entryNamesList = writeTest.getEntryNames();
+
+        cout << "The following files were added to writeTest.dat." << endl;
+        for(vector<string>::iterator i = entryNamesList.begin(); i != entryNamesList.end(); i++)
+        {
+            string entryName = (*i);
+            cout << entryName << endl;
+        }
+    }
+
+    cout << endl << endl;
+
+    {
+        // read test
+        cout << "Read Test:" << endl;
+
+        ResourceFileReader readTest("writeTest.dat");
+        readTest.read();
+
+        vector<string> entryNamesList = readTest.getEntryNames();
+
+        cout << "The following files are in writeTest.dat." << endl;
+        for(vector<string>::iterator i = entryNamesList.begin(); i != entryNamesList.end(); i++)
+        {
+            string entryName = (*i);
+            cout << entryName << " (" << readTest.getEntryFileSize(entryName) << " bytes)" << endl;
+        }
+    }
+
+    return 0;
+}
+{% endhighlight %}

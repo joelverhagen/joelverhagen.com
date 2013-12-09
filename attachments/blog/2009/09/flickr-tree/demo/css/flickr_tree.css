@@ -1,0 +1,74 @@
+body {
+	background-image: url('../images/background.gif');
+}
+body, #output_body {
+	padding: 0px;
+	margin: 0px;
+	width: 100%;
+	height: 100%;
+	font-family: Helvetica, Arial, Helmet, Freesans, sans-serif;
+}
+a {
+	color: #669933;
+}
+a:hover {
+	text-decoration: none;
+}
+img {
+	border-style: none;
+	background-color: #FFFFFF;
+    background-image: url('../images/loading.gif');
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+.branch {
+	border: 1px solid #000000;
+	position: absolute;
+	width: 75px;
+	height: 75px;
+	margin: 0px;
+	z-index: -1;
+}
+#current_status {
+	z-index: 1;
+	position: fixed;
+	bottom: 0px;
+	left: 0px;
+	background-color: #FFFFFF;
+	width: 200px;
+	height: 24px;
+	border: 1px solid #CCCCCC;
+}
+#current_text {
+	color: #CCCCCC;
+	margin: 3px;
+}
+#loading_indicator {
+	margin: 3px;
+	width: 16px;
+	height: 16px;
+	float: left;
+}
+#tag_container {
+	border: 1px solid #CCCCCC;
+	width: 161px;
+	height: 56px;
+	padding: 6px;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	margin-left: -80px;
+	margin-top: -28px;
+	background-color: #FFFFFF;
+}
+#tag_field {
+	width: 120px;
+	height: 32px;
+	margin-top: 2px;
+	float: left;
+	font-size: 26px;
+}
+#tag_submit {
+	margin-top: 4px;
+	float: left;
+}

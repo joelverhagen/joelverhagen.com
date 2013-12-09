@@ -1,0 +1,132 @@
+---
+category: Music
+layout: post
+tags:
+- ID3
+- iTunes
+- Music
+title: How iTunes Uses ID3 Tags
+---
+<p>A little terminology before you read:</p>
+<ul>
+  <li><b>ID3 </b>- the most commonly used way to add meta information to MP3 files (i.e. song title, artist name, album artwork, etc.)</li>
+  <li><b>frame </b>- a specific "box" of information in ID3</li>
+</ul>
+<p>Also note that the version of iTunes I am currently running is <b>10.1.0.56</b> on <b>Windows</b>. This information might change slightly as iTunes matures, a.k.a. it's size and speed becomes more and more akin to a humpback whale.</p>
+
+<p>I've always wondered how iTunes writes song information to the file... so I took a MP3 file with no tag information (I created it in <a href="http://audacity.sourceforge.net/">Audacity</a>. It was a recording of me sneezing) and opened it up in iTunes and added every possible field. Then I ran the MP3 file through a little program which is part of the <a href="http://developer.kde.org/~wheeler/taglib.html">TagLib</a> source code (it's the test program called <b>framelist</b>). I've learned a few interesting things.</p>
+
+<p><b>First</b>, iTunes writes tags to MP3 files using ID3v2.2 tags. After a bit of research, it looks like ID3v2.2 tags are considered deprecated. See <a href="http://www.id3.org/Developer_Information">this link on id3.org</a> for more information.</p>
+
+<p><b>Second</b>, iTunes completely blows the ID3v2.2 standard out of the water. By that I mean it doesn't follow the rules AT ALL. For example, it uses the <b>TPE1</b> to hold the <b>Artist</b> information. ID3v2.2 doesn't even have that frame! This frame was introduced in ID3v2.3!</p>
+
+<p><b>Third</b>, they use some made up tags that aren't outlined in any official ID3 document, such as the <b>TCP</b> frame (used to say whether the file is in a <b>compilation</b> album).</p>
+
+<p>Here are all the discoveries I have made concerning which ID3v2 tags go with which form field in iTunes' tag editor.</p>
+
+<table class="data-table">
+<thead>
+  <tr>
+    <th>iTunes Tag Section</th><th>iTunes Tag Field</th><th>ID3v2 Tag Field</th><th>Notes</th><th>ID3 Compliance</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td>Info / Sorting</td><td>Name</td><td>TIT2</td><td></td><td>ID3v2.3 ID3v2.4</td>
+  </tr>
+  <tr>
+    <td>Info / Sorting</td><td>Artist</td><td>TPE1</td><td></td><td>ID3v2.3 ID3v2.4</td>
+  </tr>
+  <tr>
+    <td>Info / Sorting</td><td>Album Artist</td><td>TPE2</td><td></td><td>ID3v2.3 ID3v2.4</td>
+  </tr>
+  <tr>
+    <td>Info / Sorting</td><td>Album</td><td>TALB</td><td></td><td>ID3v2.3 ID3v2.4</td>
+  </tr>
+  <tr>
+    <td>Info / Sorting</td><td>Grouping</td><td>TIT1</td><td></td><td>ID3v2.3 ID3v2.4</td>
+  </tr>
+  <tr>
+    <td>Info / Sorting</td><td>Composer</td><td>TCOM</td><td></td><td>ID3v2.3 ID3v2.4</td>
+  </tr>
+  <tr>
+    <td>Info</td><td>Comments</td><td>COMM</td><td></td><td>ID3v2.3 ID3v2.4</td>
+  </tr>
+  <tr>
+    <td>Info</td><td>Genre</td><td>TCON</td><td></td><td>ID3v2.3 ID3v2.4</td>
+  </tr>
+  <tr>
+    <td>Info</td><td>Year</td><td>TDRC</td><td><b>1</b></td><td>ID3v2.3 ID3v2.4</td>
+  </tr>
+  <tr>
+    <td>Info</td><td>Track Number</td><td>TRCK</td><td><b>2</b></td><td>ID3v2.3 ID3v2.4</td>
+  </tr>
+  <tr>
+    <td>Info</td><td>Disc Number</td><td>TPOS</td><td><b>3</b></td><td>ID3v2.3 ID3v2.4</td>
+  </tr>
+  <tr>
+    <td>Info</td><td>BPM</td><td>TBPM</td><td></td><td>ID3v2.3 ID3v2.4</td>
+  </tr>
+  <tr>
+    <td>Info</td><td>Part of a compilation</td><td>TCP or TCMP</td><td><b>4</b></td><td>none</td>
+  </tr>
+  <tr>
+    <td>Video</td><td>Description</td><td>TIT3</td><td></td><td>ID3v2.3 ID3v2.4</td>
+  </tr>
+  <tr>
+    <td>Sorting</td><td>Sort Name</td><td>TST or TSOT</td><td></td><td>none</td>
+  </tr>
+  <tr>
+    <td>Sorting</td><td>Sort Artist</td><td>TSA or TSOA</td><td></td><td>none</td>
+  </tr>
+  <tr>
+    <td>Sorting</td><td>Sort Album Artist</td><td>TSP or TSOP</td><td></td><td>none</td>
+  </tr>
+  <tr>
+    <td>Sorting</td><td>Sort Album</td><td>TS2 or TSO2</td><td></td><td>none</td>
+  </tr>
+  <tr>
+    <td>Sorting</td><td>Sort Composer</td><td>TSC or TSOC</td><td></td><td>none</td>
+  </tr>
+  <tr>
+    <td>Options</td><td>Part of a gapless album</td><td>COMM</td><td><b>5</b></td><td>ID3v2.3 ID3v2.4</td>
+  </tr>
+  <tr>
+    <td>Lyrics</td><td></td><td>USLT</td><td></td><td>ID3v2.3 ID3v2.4</td>
+  </tr>
+  <tr>
+    <td>Artwork</td><td></td><td>APIC</td><td><b>6</b></td><td>ID3v2.3 ID3v2.4</td>
+  </tr>
+  <tr>
+    <td>(hidden)</td><td></td><td>COMM</td><td><b>7</b></td><td>ID3v2.3 ID3v2.4</td>
+  </tr>
+  <tr>
+    <td>(hidden)</td><td></td><td>COMM</td><td><b>8</b></td><td>ID3v2.3 ID3v2.4</td>
+  </tr>
+  <tr>
+    <td>(hidden)</td><td></td><td>COMM</td><td><b>9</b></td><td>ID3v2.3 ID3v2.4</td>
+  </tr>
+  <tr>
+    <td>(hidden)</td><td></td><td>TENC</td><td><b>10</b></td><td>ID3v2.3 ID3v2.4</td>
+  </tr>
+  <tr>
+    <td>(hidden)</td><td></td><td>UFID</td><td><b>11</b></td><td>ID3v2.3 ID3v2.4</td>
+  </tr>
+</tbody>
+</table>
+<ol>
+  <li>In the official ID3 documents, this field is described as a timestamp, but in MP3 you find floating around, you'll rarely find anything more specific than the year of publication.</li>
+  <li>This can include just the track number, or the track number with the total number of track on the album. If both are present they are separated by "/".</li>
+  <li>See the previous note.</li>
+  <li>It seems this tag is completely made up by iTunes.</li>
+  <li><b>Comment description</b>: "iTunSMPB". This value is either a 0 or 1, determining whether or not the track is part of a gapless album.</li>
+  <li>Multiple APIC entries are made as you more artwork is added. They are all set to type 0 (other).</li>
+  <li><b>Comment description</b>: "iTunNORM". I believe this is automatically generated by iTunes to normalize track volume.</li>
+  <li><b>Comment description</b>: "iTunSMPB". I don't know what this field means.</li>
+  <li><b>Comment description</b>: "iTunes_CDDB_IDs". I am also not sure what this field is for. See <a href="http://musicbrainz.org/doc/DiscIdsAndTagging#AAC.2FiTunes">this link</a> for some details.</li>
+  <li>When you rip a CD directly to MP3 in iTunes, the <b>TENC</b> field is filled with the version of iTunes that encoded the MP3, i.e. "iTunes 10.1.0.56"</li>
+  <li>Also when you rip a CD directly to MP3 in iTunes, the <b>UFID</b> has the URL "http://www.cddb.com/id3/taginfo1.html" set as the <b>owner</b> and a alphanumeric hash as the <b>identifier </b>(most likely the Gracenote ID).</li>
+</ol>
+<p>The following fields that you can apply to a track in iTunes are not stored in the file and are not maintained if you move the MP3 file in question to another iTunes library: <b>Show</b>, <b>Season Number</b>, <b>Episode ID</b>, <b>Episode Number</b>, <b>Sort Show</b>, <b>Volume Adjustment</b>, <b>Equilizer Preset</b>, <b>Media Kind</b>, <b>Rating</b>, <b>Start Time</b>,<b> Stop Time</b>, <b>Remember playback position</b>, and <b>Skip when shuffling</b>.<p>
+
+<p>If you have any questions or have any of your own discoveries, feel free to comment back!</p>

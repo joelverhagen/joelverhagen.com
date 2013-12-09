@@ -1,0 +1,50 @@
+---
+category: Snippets
+layout: post
+tags:
+- hashing
+- MD5
+- Python
+- Snippets
+title: MD5 Hash of File in Python
+---
+<p>From time to time, I am hacking around and I need to find the checksum of a file. Reasons for this could be that you need to check if a file has changes, or if two files if two files with the same filename have the same contents. Or you just need to get your fix of 32 byte hexadecimal strings. So I wrote this little Python script that calculates the MD5 hash (also known as checksum) of a file.</p>
+
+<p><b>Update April 10, 2013:</b> thank you Mike J and Shchvova / ЩВова for pointing out the fact that I was not properly closing the file handle. I've updated to code to use a <code class="inline">with, as</code> block.</p>
+
+{% highlight python %}
+import hashlib
+
+def md5Checksum(filePath):
+    with open(filePath, 'rb') as fh:
+        m = hashlib.md5()
+        while True:
+            data = fh.read(8192)
+            if not data:
+                break
+            m.update(data)
+        return m.hexdigest()
+
+{% endhighlight %}
+<p>As you can see, the function takes a single parameter: the path to the file for which you want to get the MD5 hash. It uses Python's standard <code class="inline">hashlib</code>. Keep in mind that this function might take a while to run for large files! Also, you don't need to worry about the whole file's contents being loaded into the memory. The file is read in 8192 byte chunks, so at any given time the function is using little more than 8 kilobytes of memory.</p>
+
+<p>Here's an example of the function in action.</p>
+{% highlight python %}
+import hashlib
+
+def md5Checksum(filePath):
+    with open(filePath, 'rb') as fh:
+        m = hashlib.md5()
+        while True:
+            data = fh.read(8192)
+            if not data:
+                break
+            m.update(data)
+        return m.hexdigest()
+
+print('The MD5 checksum of text.txt is', md5Checksum('test.txt'))
+{% endhighlight %}
+<p>And this is the output:</p>
+{% highlight text %}
+The MD5 checksum of text.txt is 098f6bcd4621d373cade4e832627b4f6
+{% endhighlight %}

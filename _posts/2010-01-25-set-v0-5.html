@@ -1,0 +1,60 @@
+---
+category: Projects
+layout: post
+tags:
+- game programming
+- Projects
+- py2exe
+- pygame
+- Python
+- Set
+title: Set v0.5
+---
+<h2>Introduction</h2>
+<p>Currently I am working on a version of the popular card game Set for the computer. <a href="http://en.wikipedia.org/wiki/Set_(game)">Here is a Wikipedia article</a> about the rules and such. Basically I am moving what most people play with physical cards, onto the computer screen.</p>
+
+<p>Current Version: <b>v0.5</b></p>
+
+<p>Last Updated: <b>January 25, 2010</b></p>
+<h2>Features</h2>
+<h3>Basic Interface</h3>
+<ul>
+  <li><b>Card Layout:</b> All cards are display properly in the game window.</li>
+  <li><b>Card selection:</b> Cards can be easily clicked on to be selected and deselected.</li>
+  <li><b>Set validation:</b> Successfully and simply validating working sets. Thanks Peter!</li>
+  <li><b>Set finding:</b> The current cards on the table can be searched for valid sets.</li>
+  <li><b>Keyboard shortcuts:</b> All in-game interface has a keyboard shortcut associated with it. <a href="{% attachment keyboard_shortcuts.png %}">Here is the mapping</a>.</li>
+</ul>
+<h3>Previews</h3>
+<ul>
+  <li><a href="{% attachment preview_1.png %}">When you first start-up the program...</a> a main menu is displayed. There are three options. First is single player mode, the next is multiplayer mode (which has yet to be implemented), and lastly is an exit button.</li>
+  <li><a href="{% attachment preview_2.png %}">When you choose single player mode...</a> all twelve starting cards are displayed. If, perchance, the initial twelve starting cards contain no valid set, more cards are drawn until a valid set is available.</li>
+  <li><a href="{% attachment preview_3.png %}">When you click on a card...</a> the card is considered "selected" and is indicated as such by a red border.</li>
+  <li><a href="{% attachment preview_4.png %}">When you click the "Set!" button...</a> the three selected cards are verified to be a valid set and are removed. If the set was valid, the score is incremented by one.</li>
+</ul>
+<h2>Download</h2>
+<p>Click <a href="{% attachment Set_v0.5.zip %}">here</a> to download the zipped directory containing Set binaries.<b> They only work on Windows systems. If you're not sure if this is what you should download to try it out, download this one.</b></p>
+
+<p>If you're on another platform or would like to take a look under the hood, you can download the source <a href="{% attachment Set_Source_v0.5.zip %}">here</a>. I am currently working with Python 2.6.4, and Pygame 1.9.1 on Windows 7 64-bit. As long as you have recent versions of Python and Pygame installed, it should run okay.</p>
+<h2>Installation</h2>
+<ol>
+  <li>Download the package.</li>
+  <li>Extract the .zip archive. Make sure to extract the entire archive or the program won't work right.</li>
+  <li>Navigate to where the contents of the .zip archive were extracted and open up Set.exe.</li>
+</ol>
+<p>Enjoy! If you have any problem getting it to run, feel free to contact me. Also, if you have any suggestions, I would love any input.</p>
+<h2>Changes</h2>
+<h3>New to v0.5</h3>
+<ul>
+  <li>Hot keys added to all in-game buttons.</li>
+  <li>Menuing system added.</li>
+  <li>Score counter added.</li>
+  <li>Removed unnecessary buttons.</li>
+  <li>Single player mode is pretty much complete.</li>
+</ul>
+<h3>New to v0.4</h3>
+<ul>
+  <li>Click actions now fire when you release the mouse button.</li>
+  <li>Keyboard shortcuts for card selection are working.</li>
+  <li>Screen size has been adjusted to better fit content.</li>
+</ul>

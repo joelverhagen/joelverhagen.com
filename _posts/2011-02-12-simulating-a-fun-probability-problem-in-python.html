@@ -1,0 +1,74 @@
+---
+category: Programming
+layout: post
+tags:
+- discrete math
+- Programming
+- Python
+- school
+- statistics
+title: Simulating a Fun Probability Problem in Python
+---
+<p>At school right now, I am taking a course in discrete mathematics. The topic we are on right now is probability. For one of our homeworks, we got the following problem:</p>
+<blockquote>We are to choose between two games A, and B.
+
+In game A you roll a fair die once and you receive the number of dollars on the top face.
+
+In game B you roll two fair dice and you receive the maximum of the two values shown on the top face.
+
+It cost $3 dollars to play game A, and $4 to play game B.  Which game should we choose?</blockquote>
+
+<p>Now, if I was a better student, I would jump right into the textbook or notes and try to figure out this problem in elegant, mathematical way. Instead of taking that boring route, I wrote a little Python script to simulate this problem. Haters, don't worry. I do know enough about statistics to be confident that if I run these games a whole bunch of times (let's go with 100,000 times) that I will be able to confidently see which of the two games is more profitable.</p>
+
+<p>First I needed a random number generator. Python's standard library includes this and countless other useful libraries that I could drone on about for hours.</p>
+{% highlight python %}
+import random
+{% endhighlight %}
+
+<p>Now I need to write a function I can call over and over and over to simulate playing the two games repeatedly. I want to play the two games the same number of times, so let's toss them into a single function called <code class="inline">test()</code>, which will return the <b>net profit</b> of both games for that specific round.</p>
+
+{% highlight python %}
+def test():
+    # game A
+    # we get the value of the dice but we have to subtract the cost of the game
+    profitA = random.randint(1, 6) - 3
+    
+    #game B
+    # we get the maximum of the two dice but, again, we have to subtract the cost of the game
+    profitB = max(random.randint(1, 6), random.randint(1, 6)) - 4
+    
+    return profitA, profitB
+{% endhighlight %}
+<p>That looks good. Now we need a function that will loop the test over and over and accumulate the total net profit. This function should take the number of times I want to repeat the test as a parameter.</p>
+{% highlight python %}
+def runTests(repititions):
+    sumA = 0
+    sumB = 0
+    for i in range(repititions):
+        profitA, profitB = test()
+        sumA += profitA
+        sumB += profitB
+    
+    return sumA, sumB
+{% endhighlight %}
+<p>Perfect! Now all we need to do is take the user input asking how many repetitions, run the tests, and report the outcome.</p>
+{% highlight python %}
+repititions = int(raw_input("Repititions: "))
+sumA, sumB = runTests(repititions)
+
+print
+print "Game A net profit: $"+str(sumA)+".00 ($"+str(sumA / float(repititions))+" per game)"
+print "Game B net profit: $"+str(sumB)+".00 ($"+str(sumB / float(repititions))+" per game)"
+print 
+print "Based off of these tests, game "+("A" if sumA > sumB else "B")+" is more profitable."
+{% endhighlight %}
+<p>Awesome! All done. Here is the output of the program.</p>
+{% highlight text %}
+Repititions: 500000
+
+Game A net profit: $249316.00 ($0.498632 per game)
+Game B net profit: $238126.00 ($0.476252 per game)
+
+Based off of these tests, game A is more profitable.
+{% endhighlight %}
+<p>As you can see, it's really easy to get a hack-job answer to a non-obvious probability problem. All you need is a working knowledge of programming, and you're good to go! Python is especially nice for this task because it doesn't require compilation and is, syntactically, very easy to read and write.</p>

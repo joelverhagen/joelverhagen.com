@@ -1,0 +1,73 @@
+---
+category: Snippets
+layout: post
+tags:
+- cURL
+- PHP
+- Snippets
+title: PHP cURL Function for Dummies and Lazy Persons
+---
+<p>If you've ever used PHP with a web API (such as Facebook's shiny new Graph API), you've probably run in PHP's cURL bindings. This is the basic function I use to download the contents of a URL. It is pretty usable (handle GET and POST queries) and you can easily pass query parameters and headers you want to include in the request.</p>
+
+<p>For those naughty screen scrapers out there, this PHP function could help you out a little bit.</p>
+
+<p><b>Edit 2010-12-19:</b> My function was not handling uploads, so I made a quick change. It's working fine now.</p>
+
+{% highlight php %}
+<?php
+function curlContents($url, $method = 'GET', $data = false, $headers = false, $returnInfo = false) {    
+    $ch = curl_init();
+    
+    if($method == 'POST') {
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        if($data !== false) {
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        }
+    } else {
+        if($data !== false) {
+            if(is_array($data)) {
+                $dataTokens = array();
+                foreach($data as $key => $value) {
+                    array_push($dataTokens, urlencode($key).'='.urlencode($value));
+                }
+                $data = implode('&', $dataTokens);
+            }
+            curl_setopt($ch, CURLOPT_URL, $url.'?'.$data);
+        } else {
+            curl_setopt($ch, CURLOPT_URL, $url);
+        }
+    }
+    curl_setopt($ch, CURLOPT_HEADER, false);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    if($headers !== false) {
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    }
+
+    $contents = curl_exec($ch);
+    
+    if($returnInfo) {
+        $info = curl_getinfo($ch);
+    }
+
+    curl_close($ch);
+
+    if($returnInfo) {
+        return array('contents' => $contents, 'info' => $info);
+    } else {
+        return $contents;
+    }
+}
+{% endhighlight %}
+
+<p>Here is a little documentation on the arguments</p>
+
+<ul>
+    <li><b>url</b>, the URL you would like to fetch.</li>
+  <li><b>method </b>(optional), defaults to <code class="inline">"GET"</code>. You can also pass <code class="inline">"POST"</code> for a POST request.</li>
+  <li><b>data </b>(optional), can be encoded query parameters (i.e. <code class="inline">"foo1=bar1&amp;foo2=bar2"</code>) or an associative array of the data you want to pass as parameters (i.e. <code class="inline">array("foo1" => "bar1", "foo2" => "bar2")</code>).</li>
+  <li><b>headers </b>(optional), an array of header values (i.e. <code class="inline">array("Content-type: image/png")</code>)</li>
+  <li><b>returnInfo </b>(optional), defaults to <code class="inline">false</code> whether or not to return information about the request. If you specify <code class="inline">true</code>, then its return is formatted like this: <code class="inline">array('contents' => $contents, 'info' => $info)</code>.</li>
+</ul>

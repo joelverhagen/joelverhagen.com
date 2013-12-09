@@ -1,0 +1,5 @@
+---
+layout: none
+permalink: attachments/blog/2009/09/flickr-tree/demo/.htaccess
+---
+AddHandler php5-cgi .php

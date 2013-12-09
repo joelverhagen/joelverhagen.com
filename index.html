@@ -1,0 +1,12 @@
+---
+layout: page
+---
+<h2>All Posts</h2>
+<ul class="post-links">
+    {% for post in site.posts %}
+    <li class="post-index-entry">
+        <span class="post-index-date">{{ post.date | normalize_date }}</span>
+        <span><a href="{{ site.baseurl | append: post.url | normalize_path }}">{{ post.title }}</a></span>
+    </li>
+    {% endfor %}
+</ul>

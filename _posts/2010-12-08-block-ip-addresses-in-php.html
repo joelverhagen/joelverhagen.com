@@ -1,0 +1,57 @@
+---
+category: Snippets
+layout: post
+tags:
+- PHP
+- Snippets
+title: Block IP Addresses in PHP
+---
+<p><em>Note: This post was written when I was still using my own WordPress commenting and blogging system.</em></p>
+
+<p>Ever get those annoying people who access your website and continuously spam your comments section? Who knows, it's possible that I've been getting some pretty stupid spam comments... so I want to block them from ever commenting again.
+Well I wipped together a nice little PHP IP blocking script. It accepts wildcards too! The spammer that's been trolling me has commented with three of four different IP addresses, so I'm just going to use a wildcard to keep him out for good. We all know how easy it is to get around IP blockers, but this is at least a good start!</p>
+{% highlight php %}
+<?pjp
+function blockUsers($ipAddresses) {
+    $userOctets = explode('.', $_SERVER['REMOTE_ADDR']); // get the client's IP address and split it by the period character
+    $userOctetsCount = count($userOctets);  // Number of octets we found, should always be four
+
+    $block = false; // boolean that says whether or not we should block this user
+
+    foreach($ipAddresses as $ipAddress) { // iterate through the list of IP addresses
+        $octets = explode('.', $ipAddress);
+        if(count($octets) != $userOctetsCount) {
+            continue;
+        }
+        
+        for($i = 0; $i < $userOctetsCount; $i++) {
+            if($userOctets[$i] == $octets[$i] || $octets[$i] == '*') {
+                continue;
+            } else {
+                break;
+            }
+        }
+        
+        if($i == $userOctetsCount) { // if we looked at every single octet and there is a match, we should block the user
+            $block = true;
+            break;
+        }
+    }
+    
+    return $block;
+}
+{% endhighlight %}
+<p>Well that wasn't so hard was it? Well how are you gonna use this function? Well, what I did was put it at the top of my <code class="inline">wp-comments-post.php</code> file, so that whenever the malicious users try to post a comment, it will prevent them from completing the submission. Here's a more basic example:</p>
+{% highlight php %}
+<?php
+$blockAddresses = array(
+    '222.73.218.*',
+    '1.2.*.4',  // the last octet is not ignored! For example, 1.2.23.42
+                // will not be blocked because 42 does not equal 4
+);
+
+if(blockUsers($blockAddresses)) {
+    echo "You're a silly spammer aren't you?!"; // taunt the spammer
+    die; // kill the output of the page
+}
+{% endhighlight %}

@@ -1,0 +1,30 @@
+---
+category: Snippets
+layout: post
+tags:
+- proxy
+- Python
+- Snippets
+title: How to enable an HTTP Proxy in Python
+---
+<p>If you are using Python 2's piece-o-crap <b>urllib/urllib2</b> library mess, here's how to get all the requests to run through an HTTP proxy:</p>
+
+<p>If there is a username an password required:</p>
+
+{% highlight python %}
+httpProxy = {'username': 'USERNAME', 'password': 'PASSWORD', 'host': 'HOST', 'port': 'PORT'}
+proxyHandler = urllib2.ProxyHandler({'http': 'http://'+httpProxy['username']+':'+httpProxy['password']+'@'+httpProxy['host']+':'+httpProxy['port']})
+proxyOpener = urllib2.build_opener(proxyHandler)
+urllib2.install_opener(proxyOpener)
+{% endhighlight %}
+
+<p>If there are no credentials required, try this one out:</p>
+
+{% highlight python %}
+httpProxy = {'host': 'HOST', 'port': 'PORT'}
+proxyHandler = urllib2.ProxyHandler({'http': 'http://'+httpProxy['host']+':'+httpProxy['port']})
+proxyOpener = urllib2.build_opener(proxyHandler)
+urllib2.install_opener(proxyOpener)
+{% endhighlight %}
+
+<p>Now any urllib2 calls made after this will be sent through the proxy.</p>

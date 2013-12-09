@@ -1,0 +1,109 @@
+---
+category: Tutorials
+layout: post
+tags:
+- ciphers
+- Playfair
+- Tutorials
+title: 'Playfair: Playing Fair Since 1854'
+---
+<p>So I was talking to a buddy of mine a while back and he stumbled across a fun little cipher called the <b>Playfair cipher</b>. If you've never heard of it, I'll give you a description of the cipher. If you want a more detailed description of the cipher, check out the <a href="http://en.wikipedia.org/wiki/Playfair_cipher">Wikipedia article</a> and a <a href="http://rumkin.com/tools/cipher/playfair.php">sexy JavaScript implementation of Playfair</a> I found.</p>
+
+<p>The basic encryption algorithm has a couple of parts.</p>
+<hr />
+<p>First, we need to create our password matrix:</p>
+<ol class="extra-space">
+  <li>Pick a password. Remove all not alphabetical characters and remove duplicate letters so that at most only one occurrence of each letter of the alphabet appears. For example "<b>Question Authority</b>" becomes "<b>QUESTIONAHRY</b>" (case doesn't matter).</li>
+  <li><p>Create a 5 by 5 matrix and enter each letter of the password in the spaces. There are multiple ways of placing the password, but the most common way to do it is enter the letters starting at the top, left-most position and move right across the first row, then second row, etc. Here is my matrix using my previous example:</p>
+  <table class="playfair-table">
+  <tr><td>Q</td><td>U</td><td>E</td><td>S</td><td>T</td></tr>
+  <tr><td>I</td><td>O</td><td>N</td><td>A</td><td>H</td></tr>
+  <tr><td>R</td><td>Y</td><td>-</td><td>-</td><td>-</td></tr>
+  <tr><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+  <tr><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+  </table></li>
+  <li><p>Using your wonderful analytical mind, you can quickly realize that there a 25 total spots in this matrix. Well what are we going to do with the rest of the spots? Fill them with the rest of the alphabet, of course! But wait... there's 26 letters of the alphabet? Who's gonna get the shaft? Well that's a question of preference. Some people using Playfair replace all instances of <b>J</b> with <b>I</b>, while others completely discard instances of the letter <b>Q</b>. Well, I'll give you both examples. For the upcoming instructions, I will be using the <b>replace J with I</b> scheme.</p>
+
+  <p><b>Replace J with I</b></p>
+  <table class="playfair-table">
+  <tr><td>Q</td><td>U</td><td>E</td><td>S</td><td>T</td></tr>
+  <tr><td>I</td><td>O</td><td>N</td><td>A</td><td>H</td></tr>
+  <tr><td>R</td><td>Y</td><td>B</td><td>C</td><td>D</td></tr>
+  <tr><td>F</td><td>G</td><td>K</td><td>L</td><td>M</td></tr>
+  <tr><td>P</td><td>V</td><td>W</td><td>X</td><td>Z</td></tr>
+  </table>
+  <p><b>Omit Q</b></p>
+  <table class="playfair-table">
+  <tr><td>U</td><td>E</td><td>S</td><td>T</td><td>I</td></tr>
+  <tr><td>O</td><td>N</td><td>A</td><td>H</td><td>R</td></tr>
+  <tr><td>Y</td><td>B</td><td>C</td><td>D</td><td>F</td></tr>
+  <tr><td>G</td><td>J</td><td>K</td><td>L</td><td>M</td></tr>
+  <tr><td>P</td><td>V</td><td>W</td><td>X</td><td>Z</td></tr>
+  </table></li>
+</ol>
+<hr />
+<p>Now that we have the password matrix, we can encript text.</p>
+<ol class="extra-space">
+  <li>Great, so we have this pretty square matrix. This will be what we use to encrypt text given to us. So find a string we want to encrypt... how about "<b>Joel enjoys programming on Friday nights! Yah!</b>". To get ready, we need to split the text we are encrypting into two-letter groups (called <b>digraphs</b>). As before, pull out all non-alphabetical characters (multiple instances of the same letter is okay though!). Here is what my example would look like: "<b>IO EL EN IO YS PR OG RA MX MI NG ON FR ID AY NI GH TS YA HX</b>". There are three edge-cases you need to consider.
+<ol class="extra-space">
+  <li>If you run into a digraph that has two of the same letters, split the double letters up with an uncommon character. <b>X</b> is most commonly used.<b> </b>So for my example, I ran into the digraph <b>MM</b> (from "progra<b>mm</b>ing"). So I inserted an <b>X</b> into my text phrase, as you can see.</li>
+  <li>The other edge case you need to consider is if there are an odd number of letter in the text phrase. When this happens, just tack an <b>X</b> on the end of the phrase. In my running example, I was stuck with the letter <b>H </b>(from "Ya<b>h"</b>) without a partner. So, I gave <b>Mr. H</b> a <b>Ms. X</b>, as any moral programmer would.</li>
+  <li>Since I used the <b>replace J with I</b> rule to create my 5 by 5 matrix, I need to apply this same rule to my input text. As you can see, all the <b>J's </b>in my input text (from "<b>J</b>oel" and from "en<b>j</b>oys") got zapped into <b>I's</b>. Yes, my name is now <b>Ioel</b>. Wonderful. Keep in my that if I was using the <b>omit Q</b> rule, any <b>Q's</b> in my input text would be discarded.</li>
+</ol>
+</li>
+  <li>So now we have a list of digraphs which roughly resemble our phrase which we plan on encrypting. So now comes the fun part! Let's encrypt these babies! Every digraph will be encrypted into another corresponding digraph. There are three cases we need to look at. To illustrate them, I will use my running example.
+<ol class="extra-space">
+  <li><p>I'll take the first digraph in my list (in my case it is <b>I</b><b>O</b>) and find <b>I </b>and <b>O</b> on my grid. The two letters appear on the <b>same row</b> of the matrix.</p>
+<table class="playfair-table">
+<tr><td>Q</td><td>U</td><td>E</td><td>S</td><td>T</td></tr>
+<tr><td><b>I</b></td><td><b>O</b></td><td>N</td><td>A</td><td>H</td></tr>
+<tr><td>R</td><td>Y</td><td>B</td><td>C</td><td>D</td></tr>
+<tr><td>F</td><td>G</td><td>K</td><td>L</td><td>M</td></tr>
+<tr><td>P</td><td>V</td><td>W</td><td>X</td><td>Z</td></tr>
+</table>
+<p>To get the corresponding encrypted digraph when the two letters are on the same row, <b>shift one space to the right</b> from each letter. So <b>I</b> would become<b> O </b>and <b>O </b>would become <b>N</b>. If the rightward shift takes you off the edge of the matrix, loop around to the other side. For example, the digraph <b>IH</b> would become <b>OI</b>. <b>KM</b> would become <b>LF</b>.</p></li>
+  <li><p>The next case you need to look at is if the two letters of a digraph are in the <b>same column</b>. Let's take the third digraph in my example, which is <b>EN</b>.</p>
+<table class="playfair-table">
+
+<tr><td>Q</td><td>U</td><td><b>E</b></td><td>S</td><td>T</td></tr>
+<tr><td>I</td><td>O</td><td><b>N</b></td><td>A</td><td>H</td></tr>
+<tr><td>R</td><td>Y</td><td>B</td><td>C</td><td>D</td></tr>
+<tr><td>F</td><td>G</td><td>K</td><td>L</td><td>M</td></tr>
+<tr><td>P</td><td>V</td><td>W</td><td>X</td><td>Z</td></tr>
+
+</table>
+<p>Very similar to the <b>same row</b> case, in this case you <b>shift one space down</b>. Again, if the shift takes you off the edge of the matrix, just loop back around to the top. <b>EN</b> would become <b>NB</b>. <b>CL</b> would become<b> LX</b>. <b>HZ</b> would become <b>DT</b>.</p></li>
+  <li><p>The last case you need to look at is if the two letters are not in the same row or column. In this case, we say they form the opposite corners of a rectangle. To get the digraph, you just take the other two corners of the rectangle. Confused? Lemme give you an example. Let's take the digraph <b>RA</b>.</p>
+<table class="playfair-table">
+
+<tr><td>Q</td><td>U</td><td>E</td><td>S</td><td>T</td></tr>
+<tr><td>I</td><td>O</td><td>N</td><td><b>A</b></td><td>H</td></tr>
+<tr><td><b>R</b></td><td>Y</td><td>B</td><td>C</td><td>D</td></tr>
+<tr><td>F</td><td>G</td><td>K</td><td>L</td><td>M</td></tr>
+<tr><td>P</td><td>V</td><td>W</td><td>X</td><td>Z</td></tr>
+
+</table>
+<p>If you get imaginative for a moment, picture the <b>R</b> and <b>A</b> spaces in the matrix above forming a rectangle, where <b>A</b> is the top-right corner and <b>R</b> is the bottom-left. See it? Good! To get the encrypted digraph for this example, just take the letter in the corners to the right or left of <b>R</b> and <b>A</b>. So in this case, <b>A</b> becomes <b>I</b> and <b>R</b> becomes <b>C</b>. Notice that <b>R does not become I</b>. You take the corner that is to the right or left of the letter you are currently encrypting. Here are some more examples to make sure you get it. The digraph <b>QK</b> becomes <b>EF</b>. <b>HL</b> becomes <b>AM</b>.</p></li>
+</ol>
+</li>
+  <li>Once you've done that to all of your digraphs, you can slam all of the encrypted digraphs together. That's your encrypted phrase. For my example, "<b>Joel enjoys programming on Friday nights! Yah!</b>" becomes "<b>ONSKNBONCUQFYVCILZFHOKNAPFHROCAOMOQTCOAZ</b>". But wait, that's complete gibberish! That's the point, stupid head! Unless you have the password matrix, it is pretty hard to decrypt the text.</li>
+</ol>
+<hr />
+Well how do you decrypt, anyways? Well, decryption is very similar to the encryption process. Just follow the following notes, and you'll be in business.
+<ul class="extra-space">
+  <li>Given you have the password, create the 5 by 5 password matrix just as you did above. You need to make sure to use the same omission rule (i.e. <b>omit Q </b>or <b>replace J with I</b>) as you used to encrypt the text.</li>
+  <li>Separate the encrypted phrase into digraphs and use the <b>inverse of the cases</b> <b>I outlined above</b> to decrypt each encrypted digraph.
+<ul class="extra-space">
+  <li>For digraphs which occur in one row, <b>shift one space to the left </b>(looping around if necessary).</li>
+  <li>For digraphs which occur in one column, <b>shift one space up</b> (looping if necessary).</li>
+  <li>For digraphs which form a rectangle, use the same exact process as in the encryption process (use the opposite corner in the same row).</li>
+</ul>
+</li>
+</ul>
+<hr />
+<p>So there you have it! The Playfair cipher. Here's some homework.</p>
+
+<p>Password:</p>
+{% highlight text %}Caput Draconis{% endhighlight %}
+<p>Encrypted Text:</p>
+{% highlight text %}FLKUARCGNIDGCQFLDEPZCPXLIUSOPAAIFBEV{% endhighlight %}

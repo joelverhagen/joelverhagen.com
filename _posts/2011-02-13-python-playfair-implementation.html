@@ -1,0 +1,53 @@
+---
+category: Projects
+layout: post
+tags:
+- ciphers
+- Playfair
+- Projects
+- Python
+title: Python Playfair Implementation
+---
+<p>I've been playing around with the Playfair cipher recently, so I thought it would be a fun little project to write a Python class that can encrypt and decrypt according to the Playfair cipher, so that's exactly what I did.</p>
+
+<p>If you haven't heard of the Playfair cipher, check out <a href="{% url blog/2011/02/playfair-playing-fair-since-1854/ %}">my other post</a> about how it works.</p>
+
+<p>As I said before, the class is written Python. I wrote it in Python 2.6 on a Windows 7 machine.</p>
+
+<p>Here's a<b> <a href="{% attachment python-playfair-1.0.zip %}">link to a .zip archive</a></b> containing the source code and the following example.</p>
+
+<p>I also have a <a href="https://github.com/joelverhagen/Python-Playfair">GitHub repository</a> set up for the project.</p>
+
+<p>The current version of this class is <b>version 1.0</b>. Features include:</p>
+<ul>
+  <li>You can set the password you would like to encrypt and decrypt with.</li>
+  <li>You can set the omission rule used to generate the 5 by 5 matrix. Current omission rules are:
+<ul>
+  <li>Replace J with I</li>
+  <li>Omit Q</li>
+  <li>Replace I with J</li>
+</ul>
+</li>
+  <li>Set what character you would like to use to pad double letter digraphs and odd length inputs.</li>
+</ul>
+<p>Here is an example script to demonstrate how easy it is to use...</p>
+
+{% highlight python %}
+# import the Playfair library
+import playfair
+
+# create a Playfair object for encrypting and decrypting
+ph = playfair.Playfair()
+
+# set the password for upcoming encryptions or decryptions
+ph.setPassword('Caput Draconis')
+
+# encrypt a plain text phrase and print it out
+print ph.encrypt('Emma Watson is the most talented actress.')
+{% endhighlight %}
+
+<p>.. and the output.</p>
+
+{% highlight text %}
+FLKUARCGNIDGCQFLDEPZCPXLIUSOPAAIFBEV
+{% endhighlight %}

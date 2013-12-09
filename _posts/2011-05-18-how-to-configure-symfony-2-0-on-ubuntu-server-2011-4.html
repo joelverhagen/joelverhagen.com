@@ -1,0 +1,59 @@
+---
+category: Tutorials
+layout: post
+tags:
+- PHP
+- Symfony
+- Tutorials
+- Ubuntu Server
+title: How to configure Symfony 2.0 on Ubuntu Server 2011.4
+---
+<p>PHP is annoying, but PHP 5.3 does its very best to try to best <em>less</em> annoying. Figuring I'd get back into PHP coding (as a hobby, I am currently doing PHP for work), I decided I would try out <a href="http://symfony.com/">Symfony 2.0</a>. If you don't know what Symfony is, you probably took a wrong turn somewhere. No, your Garmin does not know everything.</p>
+
+<p>Since I'm a wonderful person and there doesn't seem to be a dead-simple-my-mom-could-do-this guide out yet, here goes! A guide on how to get Symfony 2.0 up and running on Ubuntu Server 2011.4.</p>
+
+<p><b>Note:</b> this tutorial assumes you have PHP and Apache running on your machine. When installing Ubuntu Server from the disk, I chose the <b>LAMP</b> stack to be installed by default.</p>
+<h3>Download and Extract</h3>
+<ol class="extra-space">
+  <li>Download the framework from the Symfony website. <a href="http://symfony.com/download">Here's a link</a>, because the only reason you're reading this is because you're lazy. I am working with the <b>Symfony Standard 2.0 BETA1 (.tgz)</b> package.</li>
+  <li>Either download the package directly to your <em>/var/www</em> directory or move it there yourself. Cool people use wget.{% highlight bash %}cd /var/www
+wget -O symfony.tgz http://symfony.com/download?v=Symfony_Standard_Vendors_2.0.0BETA1.tgz
+tar xfz symfony.tgz{% endhighlight %}
+</li>
+  <li>You'll now have a directory labelled <code class="inline">Symfony</code> in your <code class="inline">/var/www</code> directory.</li>
+</ol>
+<h3>Prepare</h3>
+<ol class="extra-space">
+  <li>Now navigate to <a href=" http://localhost/Symfony/web/config.php">http://localhost/Symfony/web/config.php</a>. <b>Note:</b> Symfony requires that the config script is only run through <b>localhost</b>. Since I was remoting into my server through SSH, this posed a bit of a problem. I ended up redirecting port 80 on my server to port 1337 on my local machine with Putty. Jealous much? Here's <a href="http://realprogrammers.com/how_to/set_up_an_ssh_tunnel_with_putty.html">how to do it</a>.</li>
+  <li> I got all kind of requirements and warnings when I got to <code class="inline">config.php</code>. Below is a list of all the hoops I had to jump through to get Symfony to shut up and install. I did them all, although some were "only recommended."
+
+<ol>
+  <li>Install and enable the <b>SQLite</b> or <b>PDO_SQLite</b> extension. Just run these two commands. It doesn't matter what directory you're in.{% highlight bash %}apt-get install php5-sqlite
+sudo apache2ctl restart{% endhighlight %}</li>
+  <li>Change the permissions of the <code class="inline">app/cache/</code> directory so that the web server can write into it.{% highlight bash %}sudo chmod -R 777 /var/www/Symfony/app/cache{% endhighlight %}</li>
+  <li>Change the permissions of the <code class="inline">app/logs/</code> directory so that the web server can write into it.{% highlight bash %}sudo chmod -R 777 /var/www/Symfony/app/logs{% endhighlight %}</li>
+  <li>Set the <code class="inline">date.timezone</code> setting in <code class="inline">php.ini</code>. (like <code class="inline">Europe/Paris</code>).
+  {% highlight bash %}sudo vim /etc/php5/apache2/php.ini{% endhighlight %}
+  <p>Find the line with <code class="inline">;date.timezone =</code> under the <code class="inline">[Date]</code> section, and set it to your timezone based on <a href="http://us2.php.net/manual/en/timezones.php">PHP's list of timezones</a>. I chose <code class="inline">America/New_York</code> because sometimes I wish I lived there. Also, make sure to remove the semicolon at the beginning of the line!</p>
+  {% highlight bash %}sudo service apache2 restart{% endhighlight %}
+  </li>
+  <li>Install and enable a <b>PHP accelerator</b> like APC (highly recommended).{% highlight bash %}sudo apt-get install php-apc
+sudo apache2ctl restart{% endhighlight %}</li>
+  <li>Install and enable the <code class="inline">intl</code> extension.{% highlight bash %}sudo apt-get install php5-intl
+sudo apache2ctl restart{% endhighlight %}</li>
+  <li>Set <code class="inline">short_open_tag</code> to <code class="inline">off</code> in <code class="inline">php.ini</code>.{% highlight bash %}sudo vim /etc/php5/apache2/php.ini{% endhighlight %}
+  <p>Find the line with <code class="inline">short_open_tag = On</code> and change it to <code class="inline">short_open_tag = Off</code></p></li>
+</ol>
+</li>
+  <li><b>If there are any other requirements that I don't have listed, let me know, and I'll add them for future lazy bums.</b></li>
+</ol>
+<h3>Configure</h3>
+<ol class="extra-space">
+  <li>At the end of the configuration script, it will try to write to <code class="inline">/var/www/Symfony/app/config/parameters.ini</code>, so we have to make sure it's writable.{% highlight bash %}sudo chmod 777 /var/www/Symfony/app/config/parameters.ini{% endhighlight %}</li>
+  <li>Now that you've got everything set up properly, we can actually configure Symfony! If you haven't already, go to <a href=" http://localhost/Symfony/web/config.php">http://localhost/Symfony/web/config.php</a> (<a href="{% attachment symfony_configure_1.png %}">screenshot</a>)</li>
+  <li>You'll first be asked to provide database information. I did MySQL because it's what I'm comfortable with. (<a href="{% attachment symfony_configure_2.png %}">screenshot</a>)</li>
+  <li>Then you'll be asked to set up a hash thingy for <a href="http://en.wikipedia.org/wiki/Cross-site_request_forgery">CRSF</a> protection. Yah, <em>whatever. </em>(<a href="{% attachment symfony_configure_3.png %}">screenshot</a>)</li>
+  <li>It will then try to write all this configuration stuff to your parameters.ini file. It should go through if you were paying attention during step 1. (<a href="{% attachment symfony_configure_5.png %}">screenshot</a>)</li>
+  <li>Otherwise, you can just copy the configuration information over manually. But seriously, if you wanted to do that, you wouldn't be reading this guide. (<a href="{% attachment symfony_configure_4.png %}">screenshot</a>)</li>
+</ol>
+<h4>And that's it! Symfony 2.0 is ready to go!</h4>

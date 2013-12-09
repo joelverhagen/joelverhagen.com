@@ -1,0 +1,5 @@
+---
+layout: none
+permalink: attachments/.htaccess
+---
+AddHandler text/plain .php
