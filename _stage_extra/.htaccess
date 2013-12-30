@@ -1,0 +1,6 @@
+Options -Indexes
+
+AuthUserFile /home/joelverhagen/.stage-htpasswd
+AuthName "s.joelverhagen.com"
+AuthType Basic
+Require user joelverhagen
