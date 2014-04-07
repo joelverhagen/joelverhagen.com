@@ -141,6 +141,12 @@ h1, h2, h3, h4, h5, header p
   font-family: Georgia, "New Century Schoolbook", "Nimbus Roman No9 L", serif;
 }
 
+h1
+{
+  margin-top: 0;
+  line-height: 38px;
+}
+
 #main-column
 {
   float: left;
