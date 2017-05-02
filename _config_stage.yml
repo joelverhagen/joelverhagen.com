@@ -1,5 +1,5 @@
-highlighter: pigments
-permalink: /blog/:year/:month/:title
+highlighter: pygments
+permalink: /blog/:year/:month/:title/
 baseurl: /
 url: http://s.joelverhagen.com
 destination: _stage

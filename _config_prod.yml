@@ -1,5 +1,5 @@
 highlighter: pygments
-permalink: /blog/:year/:month/:title
+permalink: /blog/:year/:month/:title/
 baseurl: /
 url: http://joelverhagen.com
 destination: _prod
