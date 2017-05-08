@@ -21,8 +21,8 @@ This problem got me to thinking... why not use the browser itself for HTML parsi
 
 My first attempt was using Qt's WebKit bindings, but this solution had two problems:
 
-1. [Only HTML elements are easily accessible](https://qt.gitorious.org/qt/qtwebkit/source/4ef1b438ba70b629655fe8e0eec0554968503f34:Source/WebKit/qt/Api/qwebelement.cpp#L157-165) (no text nodes).
-2. [Qt is moving away from WebKit for Qt 5.3](http://blog.qt.digia.com/blog/2013/09/12/introducing-the-qt-webengine/) (aside: the replacement will be Chromium, called [QtWebEngine](http://qt-project.org/wiki/QtWebEngine)).
+1. [Only HTML elements are easily accessible](https://github.com/qt/qtwebkit/blob/4ef1b438ba70b629655fe8e0eec0554968503f34/Source/WebKit/qt/Api/qwebelement.cpp#L157-L165) (no text nodes).
+2. [Qt is moving away from WebKit for Qt 5.3](http://blog.qt.io/blog/2013/09/12/introducing-the-qt-webengine/) (aside: the replacement will be Chromium, called [QtWebEngine](http://qt-project.org/wiki/QtWebEngine)).
 
 Since Qt and [Google](http://blog.chromium.org/2013/04/blink-rendering-engine-for-chromium.html) are both moving away from WebKit, I figured I would give Chromium (the open source part of Chrome) a try. Much to my joy, I found project called [Chromium Embedded Framework (CEF)](http://code.google.com/p/chromiumembedded/) which focuses on embedding Chromium in other software. The greatest part about this project is that you don't have to download the gigabytes and gigabytes required for a full Chromium source tree... because would make that mistake, right? \*cough\*
 

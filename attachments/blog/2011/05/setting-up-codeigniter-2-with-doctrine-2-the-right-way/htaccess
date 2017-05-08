@@ -1,0 +1,4 @@
+---
+permalink: attachments/blog/2011/05/setting-up-codeigniter-2-with-doctrine-2-the-right-way/.htaccess
+---
+AddType text/plain .php

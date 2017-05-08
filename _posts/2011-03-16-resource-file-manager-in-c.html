@@ -16,7 +16,7 @@ title: Resource File Manager in C++
   <li>It's fun to do!</li>
 </ul>
 
-<p>There are a couple people out there that have already taken a hack at it and provided perfectly usable implementation (one on <a href="http://www.sfml-dev.org/wiki/en/tutorials/formatdat">SFML's wiki</a> and one on <a href="http://archive.gamedev.net/reference/programming/features/pak/">GameDev.net</a>). However, I wrote my own because neither handles the problem of big-endian vs. little-endian memory and I wanted the experience of some hardcore C++ file I/O action.</p>
+<p>There are a couple people out there that have already taken a hack at it and provided perfectly usable implementation (one on <a href="http://archive.gamedev.net/archive/reference/programming/features/pak/">GameDev.net</a>). However, I wrote my own because neither handles the problem of big-endian vs. little-endian memory and I wanted the experience of some hardcore C++ file I/O action.</p>
 
 <p>To solve the big-endian vs. little-endian problem, I decided on how integers will be stored in my file (I chose little-endian because that's much more common) and I found a way to convert a C++ <code class="inline">int</code> to little-endian bytes. Someone on StackOverflow <a href="http://stackoverflow.com/questions/2100331/c-macro-definition-to-determine-big-endian-or-little-endian-machine#2103095">created a compact header file</a> to determine the endianness of the host machine.</p>
 

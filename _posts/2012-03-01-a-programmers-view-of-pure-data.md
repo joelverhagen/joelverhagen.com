@@ -45,4 +45,4 @@ And this is the output. It takes a random color and draws a circle, triangle, or
 
 <img src="{% attachment output-preview.png %}" alt="Shapes and Colors example output" /> 
 
-**I have made the [source file]({% attachment shapes-and-colors.pd %}) is available for your parusal.** All you need is PD-extended to run it, which you can download off [PD's website](http://puredata.info/community/projects/software).
+**I have made the [source file]({% attachment shapes-and-colors.pd %}) is available for your parusal.** All you need is PD-extended to run it, which you can download off [PD's website](https://puredata.info/downloads).

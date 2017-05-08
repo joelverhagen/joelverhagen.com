@@ -1,0 +1,4 @@
+---
+permalink: attachments/blog/2012/03/a-programmers-view-of-pure-data/.htaccess
+---
+AddType text/plain .pd
