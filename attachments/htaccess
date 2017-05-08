@@ -1,4 +1,0 @@
----
-permalink: attachments/.htaccess
----
-AddHandler text/plain .php

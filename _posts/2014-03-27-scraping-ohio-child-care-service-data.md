@@ -27,15 +27,3 @@ The screen scraper itself is written in C# and uses [CsQuery](https://github.com
 The project is called "OdjfsScraper". All of the code is available on GitHub under the MIT license.
 
 **[SmartRoutes/OdjfsScraper](https://github.com/SmartRoutes/OdjfsScraper)**
-
-### Data
-
-Instead of running your own instance of the scraper, I would recommend simply grabbing the current snapshot of the database. This will ensure that the ODJFS website doesn't get hit too hard.
-
-The data is available as a SQL Server database backup (.bak). Simply download the most recent snapshot from the link below and restore the backup to your own SQL Server instance. Now you can run your own fun SQL queries against ODJFS's child care service database.
-
-**[Current OdjfsScraper Snapshot](http://storage.joelverhagen.com/OdjfsScraper/OdjfsScraper_Current.bak)**
-
-For historical snapshots, take a look at the directory containing the current snapshot.
-
-**[Historical OdjfsScraper Snapshots](http://storage.joelverhagen.com/OdjfsScraper/)**

@@ -1,0 +1,4 @@
+---
+permalink: sandbox/tests/.htaccess
+---
+php_flag engine on

@@ -46,7 +46,7 @@ CefGlue works by loading the native CEF code (and other dependencies) at runtime
 
 At the time of writing this article, the latest revision of CefGlue is <code class="inline">de605d27eab0</code>. The source can be easily downloaded from Bitbucket:
 
-[Xilium.CefGlue @ de605d27eab0](https://bitbucket.org/xilium/xilium.cefglue/get/de605d27eab09e7d2c0dffb9eba89dbe32b6ebef.zip) ([mirror]({% attachment xilium-xilium.cefglue-de605d27eab0.zip %}))
+[Xilium.CefGlue @ de605d27eab0](https://bitbucket.org/xilium/xilium.cefglue/get/de605d27eab09e7d2c0dffb9eba89dbe32b6ebef.zip)
 
 ### Get Chromium Embedded Framework (CEF)
 

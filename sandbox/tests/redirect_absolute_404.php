@@ -1,5 +1,5 @@
 <?php
 
-header('Location: http://www.joelverhagen.com/sandbox/tests/does_not_exist.php');
+header('Location: https://' . $_SERVER['SERVER_NAME'] . '/sandbox/tests/does_not_exist.php');
 
 ?>

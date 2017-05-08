@@ -14,8 +14,8 @@ title: Setting up CodeIgniter 2 with Doctrine 2 the right way
 
 <p><b>So for future reference, here are the versions I am working with during this tutorial, but similarly versions should work just fine</b>:</p>
 <ul>
-  <li><a href="http://www.codeigniter.com/download_files/reactor/CodeIgniter_2.1.0.zip">CodeIgniter 2.1.0</a> (<a href="{% attachment CodeIgniter_2.1.0.zip %}" target="_blank">mirror</a>)</li>
-  <li><a href="http://www.doctrine-project.org/downloads/DoctrineORM-2.2.1-full.tar.gz">Doctrine 2.2.1</a> (<a href="{% attachment DoctrineORM-2.2.1-full.tar.gz %}" target="_blank">mirror</a>)</li>
+  <li><a href="http://www.codeigniter.com/download_files/reactor/CodeIgniter_2.1.0.zip">CodeIgniter 2.1.0</a></li>
+  <li><a href="http://www.doctrine-project.org/downloads/DoctrineORM-2.2.1-full.tar.gz">Doctrine 2.2.1</a></li>
   <li>Also, I am running Apache 2.2.20, PHP 5.3.6 (<b>with APC</b>), MySQL 5.1.58, all on Ubuntu Server 11.10.</li>
   <li>I am assuming you already have a MySQL database (with valid a user) set up.</li>
 </ul>
@@ -24,7 +24,7 @@ title: Setting up CodeIgniter 2 with Doctrine 2 the right way
 <p>The following versions have been tested to make sure they fully work with this tutorial:</p>
 <ul>
   <li>CodeIgniter <b>2.1.0</b> and Doctrine <b>2.2.1</b></li>
-  <li>CodeIgniter <b>2.0.2</b> (<a href="{% attachment CodeIgniter_2.0.2.zip %}" target="_blank">mirror</a>) and Doctrine <b>2.0.5</b> (<a href="{% attachment DoctrineORM-2.0.5-full.tar.gz %}" target="_blank">mirror</a>)</li>
+  <li>CodeIgniter <b>2.0.2</b> and Doctrine <b>2.0.5</b></li>
 </ul>
 
 <p>If you want to work with a different version of CodeIgniter or Doctrine, this tutorial should still be totally fine as long as the version of CodeIgniter<b>and</b> Doctrine are version 2.x.x! You may have to change the paths of downloads a bit (i.e. changing a <code class="inline">CodeIgniter_2.1.0.zip</code> in a URL to <code class="inline">CodeIgniter_2.0.2.zip</code>, but everything else will be exactly the same. If you can't handle that, I'd recommend firing up a WordPress instance and going from there...</p>
@@ -379,8 +379,8 @@ public function createObjects()
     $user->setFirstName('Joel');
     $user->setLastName('Verhagen');
     $user->setPassword(md5('Emma Watson'));
-    $user->setEmail('joel@joelverhagen.com');
-    $user->setWebsite('http://www.joelverhagen.com');
+    $user->setEmail('joel@example.com');
+    $user->setWebsite('https://www.joelverhagen.com');
     $user->setCreated(new DateTime());
     
     // standard way in CodeIgniter to access a library in a controller: $this->library_name->member->memberFunction()
