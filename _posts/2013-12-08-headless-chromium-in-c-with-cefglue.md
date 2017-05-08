@@ -52,7 +52,7 @@ At the time of writing this article, the latest revision of CefGlue is <code cla
 
 The version of CEF associated with this revision of CefGlue is 3.1650.1522 (despite what the [CefGlue webpage](http://xilium.bitbucket.org/cefglue/) says). It seems that the 32-bit version is the supported version. I have not tried the 64-bit. A build of the proper CEF version can be downloaded from Adobe's great [CEF 3 Builds](http://cefbuilds.com/) website:
 
-[CEF 3.1650.1522, Windows 32-bit](https://cefbuilds.s3.amazonaws.com/1650/win/31.0.1650.39/cef_binary_3.1650.1522_windows32.7z) ([mirror, .7z]({% attachment cef_binary_3.1650.1522_windows32.7z %})) ([mirror, .zip]({% attachment cef_binary_3.1650.1522_windows32.zip %}))
+[CEF 3.1650.1522, Windows 32-bit](https://cefbuilds.s3.amazonaws.com/1650/win/31.0.1650.39/cef_binary_3.1650.1522_windows32.7z)
 
 If you want use the latest version of CefGlue, take a look at [**version.g.cs**](https://bitbucket.org/xilium/xilium.cefglue/src/tip/CefGlue/Interop/version.g.cs) in the Xilium.CefGlue repository to find the associated CEF version:
 
