@@ -1,0 +1,75 @@
+==================================================================
+https://keybase.io/joelverhagen
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of https://joelverhagen.com
+  * I am joelverhagen (https://keybase.io/joelverhagen) on keybase.
+  * I have a public key with fingerprint 118C 6DDC 8F74 9972 8C1F  8C12 614B F64D 61B1 0094
+
+To do so, I am signing this object:
+
+{
+    "body": {
+        "key": {
+            "eldest_kid": "0101d448efc2e028840462c5b80ff7d7af121bc665f05b16cc66042018005938cc440a",
+            "fingerprint": "118c6ddc8f7499728c1f8c12614bf64d61b10094",
+            "host": "keybase.io",
+            "key_id": "614bf64d61b10094",
+            "kid": "0101d448efc2e028840462c5b80ff7d7af121bc665f05b16cc66042018005938cc440a",
+            "uid": "6fbfaf6056b6578d4ebf2d91840c8719",
+            "username": "joelverhagen"
+        },
+        "service": {
+            "hostname": "joelverhagen.com",
+            "protocol": "https:"
+        },
+        "type": "web_service_binding",
+        "version": 1
+    },
+    "ctime": 1499269318,
+    "expire_in": 157680000,
+    "prev": "c07fe8232b6aa16a7b200a48e43608e7ddfebef99f768f89227842065dfc87cc",
+    "seqno": 6,
+    "tag": "signature"
+}
+
+which yields the signature:
+
+-----BEGIN PGP MESSAGE-----
+Version: Keybase OpenPGP v2.0.72
+Comment: https://keybase.io/crypto
+
+yMNBAnicrVJrUFRlGF7kMkIGOjEMOhBwlKBmo++cPbddTDBxNDYcyGkVkFnP5Ttw
+As/Zdg8IeAFnot1GiEEbIMlCVBCdyXTBsLAGZ3MkBwcKBYEQGM3xUkIXkoip71j9
+82c/vvku7/M87/M+8/me9jeE+HHW2QzujOF9vys9HxcbsvMWX9qF8apYhll2YYXw
+8QaLROjS7IWyiFkwgANcJEkWSgIBAcGyJCBpQqB4FkgSIzKchBM4L9A0JQGKx2kB
+HQFJAJwFgDKbWEEgScBhRkySlXzodDhlRUOyOM4KtCgKrMSQZjNDsAIuoUXQOMlL
+NCnSOI8DYCYRsUB16QxkjudcMElW0Ru62B/bewL+f/Zd/E8fiZc4iQYUzdMUw4ok
+5CVCNONIVmAZ3KwDXdCpcDsgQr+pwqIS6Czg8qGC7TFiqFIiC1APV5/mCagkQd2B
+NBxOVVMFtQhVCzTN4bLobK3MocN3Qt7+r5CdlxUR5YkYSMAlqwpmwRFS0GRdGUeR
+ErTZhLNGDJY6ZCe0yzqCYmg0HQB6H1iCJAXASJAlTARPcxxOcwxPAMCh0EgTDVjI
+iKIEeSiZzRJiSqyZIBgWZURTooSmFgRMH+0tRcUsNLLJ5SNJl5yvcFqxE2J7LvZs
+CzD4hRiCAhfp/8wQErz0v99nHQ1beNZetdn3QvWjvJjfPAmRK6bGl250zfgdiFwe
+3nvmXFHGu5crZoVbxkz2RMxBMPfzQHrlCufW+v37P3uYqa313+QhFqXKv/dFHCtJ
+tpoSm4Zibb2q55qvzu0I//GXA7ZW7+TwXFWc64/OjISWhv7SIHdlU3z7U1sC3MNh
+/hsmGqVvlt25W0Ftjtn3fNS2rvaIeOHghYy20PFztu9aI6b71ZTmitl1Scdy9ue5
+y2oWD3rl2hML3obYidVtZ0cibq+LvpKdHJs5cGgsNP2Hwqhi58R2Y8Nzwu5DD1+x
+ffjGpa3K13VZ6enjH12tzqm23ztC1d2+35hU+9Wp9O7KtwMexZ8vI1ObtY1L0roS
+XmxvmyyvX9+BnZy6Vf7l2izbqxvuzcTVeh94Vh3fO/hOTModY+aa69DXcU3z7uWO
+91ScDj1f2L5Qk2K1NF/syoU3s/flen9KNBRMHU6TDfOBr6XVru5O/mD0z5YLM9Mj
+rZevJnQPH6mGA7/awo5mfPEgIbA9OLf1W4VNLK8L6uyOqBwqpT2rppv6huHNG3Fn
+bX81R39++FRw+Ez/e9uX9YxZrbw35iT3UsWNDs1Y7D+0aWdIXsuaTinyZV9db2b9
+9fL5sPzdS6KeGViZdb/v9OAc+MRtGx35PqoKbqmh+hZS7xrGlCTf64PJy3uPeoLm
+AudXFlSHRX+aY2qczHP/Dfw/wbE=
+=s2iJ
+-----END PGP MESSAGE-----
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/joelverhagen
+
+==================================================================
+
