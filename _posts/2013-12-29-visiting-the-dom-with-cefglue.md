@@ -15,7 +15,7 @@ Take a look at [the whole example project]({% attachment CefGlueDomVisitor.zip %
 
 **This post is a follow-up on [a previous post](/blog/2013/12/headless-chromium-in-c-with-cefglue/).** If you are not familiar with CefGlue, then you should probably go read that post first!
 
-[A commenter](http://joelverhagen.com/blog/2013/12/headless-chromium-in-c-with-cefglue/#comment-1175654010) on my previous CefGlue post mentioned that the example I linked to about visiting the WebKit DOM (i.e. the actual in-memory tree) was not very helpful. Well, maybe there's something I can do about it! I whipped together a fun little demo which dumps the top 30 [Hacker News](https://news.ycombinator.com) titles to a text file.
+[A commenter](/blog/2013/12/headless-chromium-in-c-with-cefglue/#comment-1175654010) on my previous CefGlue post mentioned that the example I linked to about visiting the WebKit DOM (i.e. the actual in-memory tree) was not very helpful. Well, maybe there's something I can do about it! I whipped together a fun little demo which dumps the top 30 [Hacker News](https://news.ycombinator.com) titles to a text file.
 
 The main difficulty when accessing a rendered page's DOM is that you can only do so in the same process as the associated renderer for that page. Remember, Chromium (and by extension, CEF and CefGlue) use multiple processes to run the browser. Therefore, the basic flow that you will have to follow is:
 

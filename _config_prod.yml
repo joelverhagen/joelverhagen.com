@@ -1,7 +1,7 @@
 highlighter: pygments
 permalink: /blog/:year/:month/:title/
 baseurl: /
-url: http://joelverhagen.com
+url: https://www.joelverhagen.com
 destination: _prod
 attachmentdir: attachments
 comments: true
