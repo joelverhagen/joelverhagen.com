@@ -1,0 +1,23 @@
+name: Deploy prod
+
+on:
+  push:
+    branches: [ release-prod ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build the site in the jekyll/builder container
+      run: |
+        docker run \
+        -v ${{ github.workspace }}:/srv/jekyll -v ${{ github.workspace }}/_prod:/srv/jekyll/_prod \
+        jekyll/builder:latest /bin/bash -c "chmod -R 777 /srv/jekyll && jekyll build --trace --config /srv/jekyll/_config_prod.yml"
+    - uses: bacongobbler/azure-blob-storage-upload@v1.0.0
+      with:
+        source_dir: ${{ github.workspace }}/_prod
+        container_name: $web
+        connection_string: ${{ secrets.AzureStorageConnectionStringProd }}
