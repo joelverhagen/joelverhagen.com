@@ -22,5 +22,5 @@ jobs:
       with:
         source_dir: ${{ github.workspace }}/_stage
         container_name: $web
-        connection_string: ${{ secrets.AzureStorageConnectionString }}
+        connection_string: ${{ secrets.AzureStorageConnectionStringStage }}
         extra_args: '--content-cache-control no-cache'
