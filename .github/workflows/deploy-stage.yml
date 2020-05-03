@@ -1,4 +1,4 @@
-name: Jekyll site CI
+name: Deploy stage
 
 on:
   push:
@@ -16,5 +16,11 @@ jobs:
     - name: Build the site in the jekyll/builder container
       run: |
         docker run \
-        -v ${{ github.workspace }}:/srv/jekyll -v ${{ github.workspace }}/_site:/srv/jekyll/_site \
-        jekyll/builder:latest /bin/bash -c "chmod 777 /srv/jekyll && jekyll build --future"
+        -v ${{ github.workspace }}:/srv/jekyll -v ${{ github.workspace }}/_stage:/srv/jekyll/_stage \
+        jekyll/builder:latest /bin/bash -c "chmod 777 /srv/jekyll && jekyll build --trace --config /srv/jekyll/_config_stage.yml"
+    - uses: bacongobbler/azure-blob-storage-upload@v1.1.1
+      with:
+        source_dir: ${{ github.workspace }}/_stage
+        container_name: $web
+        connection_string: ${{ secrets.AzureStorageConnectionString }}
+        extra_args: '--content-cache-control no-cache'
