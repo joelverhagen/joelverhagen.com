@@ -9,7 +9,7 @@ tags:
 title: The fastest way to dynamically activate objects in .NET
 ---
 
-... at least according to my brief investiation.
+... at least according to my brief investigation.
 
 For one of my side projects, [ExplorePackages](https://github.com/joelverhagen/ExplorePackages), I wanted to know the
 fastest way to activate an arbitrary type in .NET. In other words, given a type parameter `T` or variable of type
@@ -70,7 +70,7 @@ roughly 4000 times or more per process (assuming you cache the IL emit at the pr
 
 ### "Close" approaches
 
-Here is the activation time of my `PackageAsset` POCO. This char excludes the uncached IL emit approach since it made
+Here is the activation time of my `PackageAsset` POCO. This chart excludes the uncached IL emit approach since it made
 the picture unreadable since the measurements for that approach so high in comparison.
 This averages the results of all three frameworks.
 
