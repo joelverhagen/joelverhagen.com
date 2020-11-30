@@ -64,7 +64,7 @@ But really, if you can call explicitly activate the type in a calling method and
 the fastest.
 
 The next fastest way is to **use IL emit to generate a method that simply calls the constructor**. However it should be
-notes that the upfront cost of using IL emit is *staggering* and should only be considered if the constructor is called
+noted that the upfront cost of using IL emit is *staggering* and should only be considered if the constructor is called
 roughly 4000 times or more per process (assuming you cache the IL emit at the process level, e.g. `static`).
 
 ### "Close" approaches
