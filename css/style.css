@@ -339,7 +339,7 @@ code
   width: 151px;
 }
 
-table td, table th
+.playfair-table td, .playfair-table th
 {
   padding: 0;
   border-width: 0;
