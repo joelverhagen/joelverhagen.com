@@ -9,25 +9,27 @@ tags:
 title: The fastest way to dynamically activate objects in .NET
 ---
 
-For one of my side projects, [ExplorePackages](https://github.com/joelverhagen/ExplorePackages), I wanted to know the
-fastest way to activate an arbitrary type in .NET. In other words, given a type `T`, what's the fastest way to call the
-parameterless constructor for that type. This is a pretty common scenario for deserializer libraries. Imagine you are
-given encoded data in some byte stream and you know the format (JSON, CSV, etc) and you want the object model that
-represents those bytes. Well, you need to activate a class (or call `new Foo()`) at some point so that you can fill
-the live instance with data from the bytes.
+... at least according to my brief investiation.
 
-In my experience, the most common approaches to this problem is to use the
+For one of my side projects, [ExplorePackages](https://github.com/joelverhagen/ExplorePackages), I wanted to know the
+fastest way to activate an arbitrary type in .NET. In other words, given a type parameter `T` or variable of type
+`Type`, what's the fastest way to call the parameterless constructor for that type. This is a pretty common scenario
+for deserializer libraries. Imagine you are given encoded data in some byte stream and you know the format (JSON, CSV,
+etc) and you want the object model that represents those bytes. Well, you need to activate a class (or call
+`new Foo()`) at some point so that you can fill the live instance with data from the bytes.
+
+In my experience, the most common approaches to this problem are to use the
 [`Activator.CreateInstance`](https://docs.microsoft.com/en-us/dotnet/api/system.activator.createinstance) method or to
 use reflection to get the parameterless constructor of the `Type`. It turns out these are not always the best!
 
-I figured it might be useful to try a bunch of different approaches with [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet)
-and post the results. Also, it's been forever since I've blogged and I needed to make sure I still knew how to publish
-to this dang thing.
+I figured it might be useful to try a bunch of different approaches with
+[BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet) and post the results. Also, it's been forever since
+I've blogged, and I needed to make sure I still knew how to publish to this dang thing.
 
 ## Approaches
 
 I tried the following approaches for three types: `object`, `StringBuilder`, and a big
-[POCO](https://stackoverflow.com/questions/250001/poco-definition) I had laying around. I turned out that the different
+[POCO](https://stackoverflow.com/questions/250001/poco-definition) I had laying around. It turned out that the difference
 between the three types in terms of performance was not interesting so I just mentioned the POCO performance below since
 I thought it best matched the used case of "dynamic activation of a class during deserialization".
 
@@ -57,9 +59,12 @@ The POCO I used is referred to as `PackageAsset` and has 25 properties -- a mixt
 
 ## Results
 
-The fastest way to create an object in .NET is by called `new` directly on that type 😂... but that's not suprising.
+The fastest way to create an object in .NET is by calling `new` directly on that type 😂... but that's not surprising.
+But really, if you can call explicitly activate the type in a calling method and pass down the instance, this will be
+the fastest.
+
 The next fastest way is to **use IL emit to generate a method that simply calls the constructor**. However it should be
-notes that the up front cost of using IL emit is *staggering* and should only be considered if the constructor is called
+notes that the upfront cost of using IL emit is *staggering* and should only be considered if the constructor is called
 roughly 4000 times or more per process (assuming you cache the IL emit at the process level, e.g. `static`).
 
 ### "Close" approaches
@@ -78,7 +83,6 @@ As you can see the next runner up are the `Type` method and generic variants of 
 
 As an example, you could use code like this to IL emit a delegate which produces an object of an arbitrary type. For
 this approach to be performant, you must cache the delegate instead of regenerating it every time.
-
 
 ```csharp
 using System.Reflection.Emit;
@@ -156,3 +160,9 @@ Type                  | .NET Framework 4.8 | .NET Core 3.1 | .NET 5.0
 
 Perhaps this is "margin of error" stuff? Maybe I need to reproduce this on another machine? Maybe this is an
 investigation for another time...
+
+### Code and raw data
+
+The code for this is stored on GitHub: [joelverhagen/ActivatePerf](https://github.com/joelverhagen/ActivatePerf)
+
+The BenchmarkDotNet and Excel data (for the charts and tables above) are here: [ActivatePerf-data.zip]({% attachment ActivatePerf-data.zip %})
