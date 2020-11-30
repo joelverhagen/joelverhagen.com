@@ -60,8 +60,9 @@ The POCO I used is referred to as `PackageAsset` and has 25 properties -- a mixt
 ## Results
 
 The fastest way to create an object in .NET is by calling `new` directly on that type 😂... but that's not surprising.
-But really, if you can call explicitly activate the type in a calling method and pass down the instance, this will be
-the fastest.
+But really, if you can explicitly activate the type in a calling method and pass down the instance, this will be
+the fastest. Depending on your usecase, you may even be able to get away with a single instance of the classe --
+perhaps you're directly serializing again and can reuse the instance.
 
 The next fastest way is to **use IL emit to generate a method that simply calls the constructor**. However it should be
 noted that the upfront cost of using IL emit is *staggering* and should only be considered if the constructor is called
@@ -133,7 +134,7 @@ Approach                        | .NET Framework 4.8 | .NET Core 3.1 | .NET 5.0
 &nbsp;&nbsp;reflection          | 189.54             | 140.15        | 129.22
 &nbsp;&nbsp;emit                | 50,060.25          | 53,353.06     | 48,703.52
 
-### Conclusions
+## Conclusions
 
 When you use IL emit for this purpose (or probably any other purpose) you should carefully consider the upfront cost of
 the emit amortized over the execution of that IL during your process lifetime.
@@ -143,11 +144,11 @@ thousand objects of any given type.
 
 In general, .NET 5.0 is faster than .NET Core 3.1. In general, .NET Core 3.1 is faster than .NET Framework 4.8.
 
-There is a small overhead (2 to 10 nanoseconds) for using generics over `Type` method parameter. This makes sense since
+There is a small overhead (2 to 10 nanoseconds) for using generics over a `Type` method parameter. This makes sense since
 many of the approaches need to call `typeof(T)` on the generic type parameter `T` to get a `Type` in the method body
 anyway. This holds true over all frameworks tested.
 
-### Surprises
+## Surprises
 
 Calling `new` directly on my POCO and on `object` is faster on .NET Framework but slower for `StringBuilder`. This is a
 surprising result. Results are here, in nanoseconds.
@@ -161,7 +162,7 @@ Type                  | .NET Framework 4.8 | .NET Core 3.1 | .NET 5.0
 Perhaps this is "margin of error" stuff? Maybe I need to reproduce this on another machine? Maybe this is an
 investigation for another time...
 
-### Code and raw data
+## Code and raw data
 
 The code for this is stored on GitHub: [joelverhagen/ActivatePerf](https://github.com/joelverhagen/ActivatePerf)
 
