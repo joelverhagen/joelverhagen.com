@@ -334,19 +334,30 @@ code
   margin-top: 5px;
 }
 
+.playfair-table
+{
+  width: 151px;
+}
+
+table td, table th
+{
+  padding: 0;
+  border-width: 0;
+}
+
 .playfair-table td
 {
   width: 25px;
 }
 
-.data-table
+table
 {
   width: 100%;
   border-spacing: 0;
   border-collapse: collapse;
 }
 
-.data-table td, .data-table th
+table td, table th
 {
   padding: 2px;
   border: 1px solid #CCCCCC;
