@@ -6,6 +6,7 @@ tags:
 - reflection
 - .NET
 - emit
+- performance
 title: The fastest way to dynamically activate objects in .NET
 ---
 
