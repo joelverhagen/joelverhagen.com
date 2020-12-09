@@ -36,31 +36,31 @@ most battle-tested and has the best examples and Q&A online.
 
 I tested the following CSV libraries.
 
-- [**Csv**](https://www.nuget.org/packages/Csv) | [Source code](https://github.com/stevehansen/csv)
+- [**Csv**](https://www.nuget.org/packages/Csv) / [Source code](https://github.com/stevehansen/csv)
   - ![Downloads](https://img.shields.io/nuget/dt/Csv)
   - Tested version: 1.0.58
-- [**CsvHelper**](https://www.nuget.org/packages/CsvHelper) | [Project site](https://joshclose.github.io/CsvHelper/) | [Source code](https://github.com/JoshClose/CsvHelper)
+- [**CsvHelper**](https://www.nuget.org/packages/CsvHelper) / [Project site](https://joshclose.github.io/CsvHelper/) / [Source code](https://github.com/JoshClose/CsvHelper)
   - ![Downloads](https://img.shields.io/nuget/dt/CsvHelper)
   - Tested version: 18.0.0
-- [**CsvTextFieldParser**](https://www.nuget.org/packages/CsvTextFieldParser) | [Source code](https://github.com/22222/CsvTextFieldParser)
+- [**CsvTextFieldParser**](https://www.nuget.org/packages/CsvTextFieldParser) / [Source code](https://github.com/22222/CsvTextFieldParser)
   - ![Downloads](https://img.shields.io/nuget/dt/CsvTextFieldParser)
   - Tested version: 1.2.1
-- [**FastCsvParser**](https://www.nuget.org/packages/FastCsvParser) | [Source code](https://github.com/bopohaa/CsvParser)
+- [**FastCsvParser**](https://www.nuget.org/packages/FastCsvParser) / [Source code](https://github.com/bopohaa/CsvParser)
   - ![Downloads](https://img.shields.io/nuget/dt/FastCsvParser)
   - Tested version: 1.1.1
-- [**LumenWorksCsvReader**](https://www.nuget.org/packages/LumenWorksCsvReader) | [Source code](https://github.com/phatcher/CsvReader)
+- [**LumenWorksCsvReader**](https://www.nuget.org/packages/LumenWorksCsvReader) / [Source code](https://github.com/phatcher/CsvReader)
   - ![Downloads](https://img.shields.io/nuget/dt/LumenWorksCsvReader)
   - Tested version: 4.0.0
-- [**mgholam.fastCSV**](https://www.nuget.org/packages/mgholam.fastCSV) | [Project site](https://www.codeproject.com/Articles/5255318/fastCSV-A-Tiny-Fast-Standard-Compliant-CSV-Reader) | [Source code](https://github.com/mgholam/fastCSV)
+- [**mgholam.fastCSV**](https://www.nuget.org/packages/mgholam.fastCSV) / [Project site](https://www.codeproject.com/Articles/5255318/fastCSV-A-Tiny-Fast-Standard-Compliant-CSV-Reader) / [Source code](https://github.com/mgholam/fastCSV)
   - ![Downloads](https://img.shields.io/nuget/dt/mgholam.fastCSV)
   - Tested version: 2.0.8
-- [**NReco.Csv**](https://www.nuget.org/packages/NReco.Csv) | [Source code](https://github.com/nreco/csv)
+- [**NReco.Csv**](https://www.nuget.org/packages/NReco.Csv) / [Source code](https://github.com/nreco/csv)
   - ![Downloads](https://img.shields.io/nuget/dt/NReco.Csv)
   - Tested version: 1.0.0
-- [**ServiceStack.Text**](https://www.nuget.org/packages/ServiceStack.Text) | [Project site](https://servicestack.net/text) | [Source code](https://github.com/ServiceStack/ServiceStack.Text)
+- [**ServiceStack.Text**](https://www.nuget.org/packages/ServiceStack.Text) / [Project site](https://servicestack.net/text) / [Source code](https://github.com/ServiceStack/ServiceStack.Text)
   - ![Downloads](https://img.shields.io/nuget/dt/ServiceStack.Text)
   - Tested version: 5.10.2
-- [**TinyCsvParser**](https://www.nuget.org/packages/TinyCsvParser) | [Source code](https://github.com/bytefish/TinyCsvParser)
+- [**TinyCsvParser**](https://www.nuget.org/packages/TinyCsvParser) / [Source code](https://github.com/bytefish/TinyCsvParser)
   - ![Downloads](https://img.shields.io/nuget/dt/TinyCsvParser)
   - Tested version: 2.6.0
 
