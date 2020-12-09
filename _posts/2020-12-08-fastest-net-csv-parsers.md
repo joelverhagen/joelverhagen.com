@@ -65,11 +65,12 @@ These are the parse times for a CSV file with 1,000,000 lines. The units are in 
 
 <img class="center" src="{% attachment diagram-1.png %}" width="700" height="576" />
 
-As you can see the fast implementation is the broken `string.Split`. Not _too surprising_ since it doesn't even try to
-handle CSV character escaping or fields surrounded by quotes. Said another way, it's not a real implementation unless
-you know your data will never have quoted fields or escaped characters... or multiline fields... wanna take that bet?
+As you can see the fastest implementation is the broken `string.Split`. This result is not surprising since it doesn't
+even try to handle CSV character escaping or fields surrounded by quotes. Said another way, it's not a real
+implementation unless you know your data will never have quoted fields or escaped characters... or multiline fields...
+wanna take that bet? I could make it even faster by immediately returning an empty list 🙄.
 
-The fastest CSV parser I tested is a dark horse, the [**mgholam.fastCSV**](https://www.nuget.org/packages/mgholam.fastCSV) library!
+The fastest CSV parser I tested is a dark horse, the **mgholam.fastCSV** library!
 
 Shockingly, the most popular **CsvHelper** came in 9th place, parsing more than twice as slowly as the fastest solution.
 
