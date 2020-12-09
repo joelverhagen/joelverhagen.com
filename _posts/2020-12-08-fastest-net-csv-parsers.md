@@ -36,44 +36,32 @@ most battle-tested and has the best examples and Q&A online.
 
 I tested the following CSV libraries.
 
-- [Csv](https://www.nuget.org/packages/Csv) - "Really simple csv library"
+- [**Csv**](https://www.nuget.org/packages/Csv) | [Source code](https://github.com/stevehansen/csv)
   - ![Downloads](https://img.shields.io/nuget/dt/Csv)
-  - Source code: https://github.com/stevehansen/csv
   - Tested version: 1.0.58
-- [CsvHelper](https://www.nuget.org/packages/CsvHelper) - "A library for reading and writing CSV files."
+- [**CsvHelper**](https://www.nuget.org/packages/CsvHelper) | [Project site](https://joshclose.github.io/CsvHelper/) | [Source code](https://github.com/JoshClose/CsvHelper)
   - ![Downloads](https://img.shields.io/nuget/dt/CsvHelper)
-  - Project URL: https://joshclose.github.io/CsvHelper/
-  - Source code: https://github.com/JoshClose/CsvHelper
   - Tested version: 18.0.0
-- [CsvTextFieldParser](https://www.nuget.org/packages/CsvTextFieldParser) - "A simple CSV parser based on Microsoft.VisualBasic.FileIO.TextFieldParser."
+- [**CsvTextFieldParser**](https://www.nuget.org/packages/CsvTextFieldParser) | [Source code](https://github.com/22222/CsvTextFieldParser)
   - ![Downloads](https://img.shields.io/nuget/dt/CsvTextFieldParser)
-  - Source code: https://github.com/22222/CsvTextFieldParser
   - Tested version: 1.2.1
-- [FastCsvParser](https://www.nuget.org/packages/FastCsvParser) - "A library for fast read data with CSV format according to RFC4180 with small extensions."
+- [**FastCsvParser**](https://www.nuget.org/packages/FastCsvParser) | [Source code](https://github.com/bopohaa/CsvParser)
   - ![Downloads](https://img.shields.io/nuget/dt/FastCsvParser)
-  - Source code: https://github.com/bopohaa/CsvParser
   - Tested version: 1.1.1
-- [LumenWorksCsvReader](https://www.nuget.org/packages/LumenWorksCsvReader) - "An extended version of LumenWorks.Frameworks.IO"
+- [**LumenWorksCsvReader**](https://www.nuget.org/packages/LumenWorksCsvReader) | [Source code](https://github.com/phatcher/CsvReader)
   - ![Downloads](https://img.shields.io/nuget/dt/LumenWorksCsvReader)
-  - Source code: https://github.com/phatcher/CsvReader
   - Tested version: 4.0.0
-- [mgholam.fastCSV](https://www.nuget.org/packages/mgholam.fastCSV) - "Tiny, fast, standard compliant CSV reader writer"
+- [**mgholam.fastCSV**](https://www.nuget.org/packages/mgholam.fastCSV) | [Project site](https://www.codeproject.com/Articles/5255318/fastCSV-A-Tiny-Fast-Standard-Compliant-CSV-Reader) | [Source code](https://github.com/mgholam/fastCSV)
   - ![Downloads](https://img.shields.io/nuget/dt/mgholam.fastCSV)
-  - Project URL: https://www.codeproject.com/Articles/5255318/fastCSV-A-Tiny-Fast-Standard-Compliant-CSV-Reader
-  - Source code: https://github.com/mgholam/fastCSV
   - Tested version: 2.0.8
-- [NReco.Csv](https://www.nuget.org/packages/NReco.Csv) - "Tiny, fast, standard compliant CSV reader writer"
+- [**NReco.Csv**](https://www.nuget.org/packages/NReco.Csv) | [Source code](https://github.com/nreco/csv)
   - ![Downloads](https://img.shields.io/nuget/dt/NReco.Csv)
-  - Source code: https://github.com/nreco/csv
   - Tested version: 1.0.0
-- [ServiceStack.Text](https://www.nuget.org/packages/ServiceStack.Text) - ".NET's fastest JSON, JSV and CSV Text Serializers. Fast, Light, Resilient."
+- [**ServiceStack.Text**](https://www.nuget.org/packages/ServiceStack.Text) | [Project site](https://servicestack.net/text) | [Source code](https://github.com/ServiceStack/ServiceStack.Text)
   - ![Downloads](https://img.shields.io/nuget/dt/ServiceStack.Text)
-  - Project site: https://servicestack.net/text
-  - Source code: https://github.com/ServiceStack/ServiceStack.Text
   - Tested version: 5.10.2
-- [TinyCsvParser](https://www.nuget.org/packages/TinyCsvParser) - "An easy to use and high-performance library for CSV parsing."
+- [**TinyCsvParser**](https://www.nuget.org/packages/TinyCsvParser) | [Source code](https://github.com/bytefish/TinyCsvParser)
   - ![Downloads](https://img.shields.io/nuget/dt/TinyCsvParser)
-  - Source code: https://github.com/bytefish/TinyCsvParser
   - Tested version: 2.6.0
 
 And... I threw in two other implementations of my own:
@@ -138,7 +126,7 @@ Each library-specific implementation is [available on GitHub](https://github.com
 All of the implementations look something like this:
 
 ```csharp
-public List<T> GetRecords<T>(MemoryStream stream) where T : ICsvReadable, new()
+public List<T> GetRecords<T>(MemoryStream stream) where T : ICsvReadable
 {
     var activate = ActivatorFactory.Create<T>();
     var allRecords = new List<T>();
