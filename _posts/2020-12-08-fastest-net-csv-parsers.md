@@ -10,17 +10,7 @@ tags:
 title: The fastest CSV parser in .NET
 ---
 
-... at least according to my brief investigation.
-
-For one of my side projects, I was using CSV files as an intermediate data format. Essentially I have an Azure Function
-writing results to Azure Table Storage and another Function collecting the results into giant CSV files. These CSV files
-get gobbled up by Azure Data Explorer allowing easy slice and dice with Kusto query language. Kusto is awesome by the
-way.
-
-To save money on the Azure Function compute time, I wanted to optimize all of the steps I could, including the CSV
-reading and writing. Therefore, I naturally installed a bunch of CSV parsing libraries and tested their performance 😁.
-
-## Specific needs
+## Specific purpose tested
 
 My goal was to find the fastest _low-level_ CSV parser. Essentially, all I wanted was a library that gave me a `string[]`
 for each line where each field in the line was an element in the array. This is about as simple as you can get with a
@@ -69,35 +59,19 @@ And... I threw in two other implementations of my own:
 - An implementation I called "HomeGrown" which is my first attempt at a CSV parser, without any optimization. 🤞
 - An implementation simply using `string.Split`. This is broken for CSV files containing escaped comma characters, but I figured it could be a baseline.
 
-## Methodology
-
-I used BenchmarkDotNet to parse a CSV file I had laying around containing NuGet package asset information generated from
-NuGet.org. It has a Good Mixture™ of data types, empty fields, and string lengths. I ran several benchmarks for varying
-file sizes -- anywhere from an empty file to one million lines.
-
-I put each library in an implementation of some `ICsvReader` interface I made up that takes a `TextReader` and returns a
-list of my [POCO](https://stackoverflow.com/a/910260) instances.
-
-I used IL Emit for activating ("newing up"/"constructing") partly because this is [the fastest way to dynamically activate
-objects](https://www.joelverhagen.com/blog/2020/11/dynamically-activate-objects-net) (given enough executions, via
-initialization cost amortization). Also one of the libraries I tested hard codes this method for activation so I wanted
-all of the libraries to have the same characteristics in this regard.
-
-I tested execution time, not memory allocation. Maybe I'll update this post later to talk about memory.
-
 ## Results
 
 These are the parse times for a CSV file with 1,000,000 lines. The units are in seconds.
 
-<img class="center" src="{% attachment diagram-1.png %}" title="" width="700" height="576" />
+<img class="center" src="{% attachment diagram-1.png %}" width="700" height="576" />
 
 As you can see the fast implementation is the broken `string.Split`. Not _too surprising_ since it doesn't even try to
 handle CSV character escaping or fields surrounded by quotes. Said another way, it's not a real implementation unless
 you know your data will never have quoted fields or escaped characters... or multiline fields... wanna take that bet?
 
-The next fastest is the dark horse, the [**mgholam.fastCSV**](https://www.nuget.org/packages/mgholam.fastCSV) library!
+The fastest CSV parser I tested is a dark horse, the [**mgholam.fastCSV**](https://www.nuget.org/packages/mgholam.fastCSV) library!
 
-Shockingly, the most popular **CsvHelper** came in 9th place parsing more than twice as slowly as the fastest solution.
+Shockingly, the most popular **CsvHelper** came in 9th place, parsing more than twice as slowly as the fastest solution.
 
 Also, it should be noted that **mgholam.fastCSV** performed _better_ than `string.Split` some file sizes. This may be
 between the margin of error, but clearly that library is doing something right!
@@ -118,6 +92,32 @@ implementations to squeeze out more performance or be more truthful to the inten
 know or [open a PR](https://github.com/joelverhagen/NCsvPerf/pulls) against my test repository.
 
 Feel free to reach out to me however you can figure out. (can't make it too easy for the spammers)
+
+## My motivation
+
+For one of my side projects, I was using CSV files as an intermediate data format. Essentially I have an Azure Function
+writing results to Azure Table Storage and another Function collecting the results into giant CSV files. These CSV files
+get gobbled up by Azure Data Explorer allowing easy slice and dice with Kusto query language. Kusto is awesome by the
+way.
+
+To save money on the Azure Function compute time, I wanted to optimize all of the steps I could, including the CSV
+reading and writing. Therefore, I naturally installed a bunch of CSV parsing libraries and tested their performance 😁.
+
+## Methodology
+
+I used BenchmarkDotNet to parse a CSV file I had laying around containing NuGet package asset information generated from
+NuGet.org. It has a Good Mixture™ of data types, empty fields, and string lengths. I ran several benchmarks for varying
+file sizes -- anywhere from an empty file to one million lines.
+
+I put each library in an implementation of some `ICsvReader` interface I made up that takes a `TextReader` and returns a
+list of my [POCO](https://stackoverflow.com/a/910260) instances.
+
+I used IL Emit for activating ("newing up"/"constructing") partly because this is [the fastest way to dynamically activate
+objects](https://www.joelverhagen.com/blog/2020/11/dynamically-activate-objects-net) (given enough executions, via
+initialization cost amortization). Also one of the libraries I tested hard codes this method for activation so I wanted
+all of the libraries to have the same characteristics in this regard.
+
+I tested execution time, not memory allocation. Maybe I'll update this post later to talk about memory.
 
 ## Library-specific adapters
 
@@ -151,6 +151,6 @@ public List<T> GetRecords<T>(MemoryStream stream) where T : ICsvReadable
 
 The code for this is stored on GitHub: [joelverhagen/NCsvPerf](https://github.com/joelverhagen/NCsvPerf)
 
-The BenchmarkDotNet and Excel data (for the charts and tables above) are here: [BenchmarkDotNet.Artifacts.zip]({% attachment BenchmarkDotNet.Artifacts.zip %})
+The BenchmarkDotNet and Excel workbook (for the charts and tables above) are here: [BenchmarkDotNet.Artifacts.zip]({% attachment BenchmarkDotNet.Artifacts.zip %})
 
 The test was run on my home desktop PC which is Windows 10, .NET Core 3.1.9, and an AMD Ryzen 9 3950X CPU.
