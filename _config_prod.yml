@@ -9,3 +9,5 @@ exclude:
 - categories.yml
 relative_permalinks: false
 markdown: kramdown
+include:
+ - .well-known
