@@ -135,7 +135,7 @@ for the step #4 above.
 
 Visually, the query execution looks something like this:
 
-<img class="center" src="{% attachment diagram-1.svg %}" width="700" height="347" />
+<img class="center" src="{% attachment diagram-1.svg %}" width="750" height="474" />
 
 The blue nodes are prefix queries. The beige nodes are partition key queries. The green nodes are result sets.
 
