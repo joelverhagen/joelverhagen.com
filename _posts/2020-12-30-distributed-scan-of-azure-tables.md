@@ -7,13 +7,19 @@ tags:
 - Table
 - Storage
 - Functions
-title: How to run a distributed scan of Azure Tables
+title: How to run a distributed scan of Azure Table Storage
 ---
 
 Suppose you have a massive table in Azure Table Storage and you need to perform some task on every single row. This can
-be done in many ways. The simplest approach would be to used the [segmented query API](https://docs.microsoft.com/en-us/rest/api/storageservices/query-entities)
+be done in many ways. The simplest approach would be to use the
+[segmented query API](https://docs.microsoft.com/en-us/rest/api/storageservices/query-entities)
 and [pagination](https://docs.microsoft.com/en-us/rest/api/storageservices/query-timeout-and-pagination) to get blocks
-of 1000 entities at a time, in a serial fashion, and perform whatever action you need on those segments.
+of 1000 entities at a time, in a serial fashion, and perform whatever action you need on those segments. The C# code
+could look something like this:
+
+## The "serial" approach
+
+This sequentially fetches all records in an a single Azure Table.
 
 ```csharp
 CloudTable table = GetTable("mystoragetable");
@@ -51,18 +57,20 @@ timeout.
 
 So what are the options? Well, I could improve the serial approach and record the continuation token after
 each segment. This way, upon timeout, I could resume at the latest continuation token point (i.e. that is
-`x-ms-continuation-NextPartitionKey` and `x-ms-continuation-NextRowKey` values). Also, I could enqueue a message
-(e.g. Storage Queue, Service Bus, etc) for each segment or entity so that the "paging" code is doing as little work as
-possible and some other code is processing the entities.
+`x-ms-continuation-NextPartitionKey` and `x-ms-continuation-NextRowKey` values).
 
-Another option would be to only query for a single segment at a time. After a segment is completed, I could enqueue
+Also, I could enqueue a message (e.g. Storage Queue, Service Bus, etc) for each segment or entity so that the "paging"
+code is doing as little work as possible and some other code running in parallel is processing the entities. This is
+a producer-consumer approach.
+
+Another option would be to only query for a single segment at a time. After a segment is fetched, I could enqueue
 a follow-up message containing the next continuation token. This would make break the paging operation up into a lot of
 little Azure Function executions, thus avoiding the maximum execution time.
 
 But these are still *serial* (sequential) approaches. The duration of the paging operation is linearly related to the number
 of rows in the table.
 
-**How could we parallelize the scan of the Azure Table? Ideally, we can throw a bunch of Azure Function nodes at the work:
+**How could we parallelize this scan of the Azure Table? Ideally, we can throw a bunch of Azure Function nodes at the work:
 both querying for rows and processing said rows.** At face value, the Azure Table Storage APIs only allow the discovery
 and enumeration of partition keys and row keys using this serial API. But we can be clever!
 
@@ -195,3 +203,80 @@ a breadth-first search (roughly... since ordering is not guaranteed in Azure Que
 - Queue message handler: [**`TableCopyMessageProcessor.cs`**](https://github.com/joelverhagen/ExplorePackages/blob/084ffee36c022b7417a507fdc9303962bc9b74a3/src/ExplorePackages.Worker.Logic/MessageProcessors/TableCopy/TableCopyMessageProcessor.cs#L47-L107)
 - Enqueueing logic: [**`EnqueuePrefixScanStepsAsync`**](https://github.com/joelverhagen/ExplorePackages/blob/084ffee36c022b7417a507fdc9303962bc9b74a3/src/ExplorePackages.Worker.Logic/MessageProcessors/TableCopy/TableCopyEnqueuer.cs#L47-L96)
 - The work done, per row: [**`TableRowCopyMessageProcessor.cs`**](https://github.com/joelverhagen/ExplorePackages/blob/084ffee36c022b7417a507fdc9303962bc9b74a3/src/ExplorePackages.Worker.Logic/MessageProcessors/TableCopy/TableRowCopyMessageProcessor.cs)
+
+## Performance
+
+I tested the perfomrance of the baseline serial approach and the parallelize approach using my prefix scanner. So that
+the comparison was as fair as possible, I tried to make the two variants as similar as possible.
+
+### Parameters
+
+For a test, I ran a "table copy" routine. Each table row is copied from a source table to a destination table. 20 rows
+are copied at a time. These batches of 20 are processed in a isolated Function execution, i.e. not the same Function
+execution as the code that's enumerating the rows.
+
+Here are some other common settings between the serial approach and the prefix scan approach:
+
+- Used Azure Functions Consumption plan
+- Executed in West US 2
+- The Consumption plan and Storage account were doing nothing else during the test
+- The same source table was used
+- The destination table is empty
+
+The core of the baseline, serial implementation is here: [**`ProcessSerialAsync.cs`**](https://github.com/joelverhagen/ExplorePackages/blob/084ffee36c022b7417a507fdc9303962bc9b74a3/src/ExplorePackages.Worker.Logic/MessageProcessors/TableCopy/TableCopyMessageProcessor.cs#L117-L152)
+
+### Results - 3.5 million records
+
+In this test, 3,558,594 rows were copied from a source table to a destination table.
+
+<img class="center" src="{% attachment performance-1.png %}" width="700" height="423" />
+
+The Y-axis is the number of function executions and the X access is the number of seconds since the process started.
+
+Variant     | Duration  | Max executions / 30 seconds | Max execution duration
+----------- | --------- | --------------------------- | ---------------------------
+Serial      | 6 minutes | 39,816                      | 5 minutes, 21 seconds
+Prefix Scan | 5 minutes | 58,471                      | 7.8 seconds
+
+As you can see, the serial approach is a bit slower at this table size. The real kicker is the 5 minute, 21 second
+execution time for the serial approach. This is the single "paging" Azure Function that enqueued the rest of the work.
+
+The serial implementation comfortably finishes within the 10 minute limit. But what if the data doubles?
+
+### Results - 7 million records
+
+<img class="center" src="{% attachment performance-2.png %}" width="700" height="423" />
+
+Variant     | Duration            | Max executions / 30 seconds | Max execution duration
+----------- | ------------------- | --------------------------- | ---------------------------
+Serial      | **Never completed** | 47,374                      | >10 minutes (timeout)
+Prefix Scan | 6 minutes           | 94,134 🔥                   | 11.5 seconds
+
+In this test, the serial approach never completed. After 20 minutes, I halted the process since I could see several
+Azure Function timeout exceptions. I could also see that the "paging" Function execution had started over from the
+beginning. 
+
+I could add some "checkpoint" code which saves the continuation token in the serial approach allowing it to complete,
+but as you can see the throughput of this approach hits some maximum, likely based on the network speed between Azure
+Functions and Azure Table Storage or the latency of the Azure Table Storage REST APIs.
+
+### Results - 35 million records
+
+For fun I wanted to see how hot this prefix scan approach could get.
+
+<img class="center" src="{% attachment performance-10.png %}" width="700" height="423" />
+
+Variant     | Duration            | Max executions / 30 seconds | Max execution duration
+----------- | ------------------- | --------------------------- | ---------------------------
+Prefix Scan | 28 minutes          | 110,857                     | 2 minutes, 57 seconds
+
+It seems there is another bottleneck I am running into. I'm not sure what. I noticed the queue size was quite large
+for the most of the test, which suggests more hardware could help the problem. Maybe Azure Functions said
+"no more nodes!". Not sure.
+
+## Conclusion
+
+I can confidently say the prefix scan approach is over 2 times faster than the serial approach with a decent chance
+for even better performance if dedicated compute (non-Consumption plan) is used.
+
+Feel free to use the code! It's under the MIT license.
