@@ -7,6 +7,8 @@ tags:
 - Table
 - Storage
 - Functions
+- Trie
+- Prefix
 title: How to run a distributed scan of Azure Table Storage
 ---
 
@@ -19,7 +21,7 @@ could look something like this:
 
 ## The "serial" approach
 
-This sequentially fetches all records in an a single Azure Table.
+This sequentially fetches all records in a single Azure Table.
 
 ```csharp
 CloudTable table = GetTable("mystoragetable");
@@ -43,10 +45,10 @@ while (continuationToken != null);
 
 ## Problem
 
-This probably works in many scenarios but it starts to fall over if the table is really big. Suppose you have a table
-with many millions of rows and many hundreds of thousands of partition keys. Depending on your execution environment,
-you may not be able to perform that sequential pagination of the entire table within some time limit. For example,
-Azure Function's consumption plan has a
+This serial probably works in many scenarios but it starts to fall over if the table is really big. Suppose you have a
+table with many millions of rows and many hundreds of thousands of partition keys. Depending on your execution
+environment, you may not be able to perform that sequential pagination of the entire table within some time limit. For
+example, Azure Function's consumption plan has a
 [maximum execution duration of 10 minutes](https://docs.microsoft.com/en-us/azure/azure-functions/functions-scale#timeout).
 
 From some of my testing, I found that it takes about 8 minutes to serially page through 3.5 million records in Azure
@@ -67,8 +69,8 @@ Another option would be to only query for a single segment at a time. After a se
 a follow-up message containing the next continuation token. This would make break the paging operation up into a lot of
 little Azure Function executions, thus avoiding the maximum execution time.
 
-But these are still *serial* (sequential) approaches. The duration of the paging operation is linearly related to the number
-of rows in the table.
+But these are still single-threaded, *serial* approaches. The duration of the paging operation is linearly related to
+the number of rows in the table.
 
 **How could we parallelize this scan of the Azure Table? Ideally, we can throw a bunch of Azure Function nodes at the work:
 both querying for rows and processing said rows.** At face value, the Azure Table Storage APIs only allow the discovery
@@ -108,6 +110,8 @@ every single row. Visually, the query execution would something like this:
 
 The blue nodes are prefix queries. The beige nodes are partition key queries. The green nodes are result sets. `PK` is
 short for `PartitionKey` and `RK` is short for `RowKey`.
+
+We've essentially constructed a trie from an unknown data set, right?
 
 In English, consider the following flow of logic:
 
@@ -180,7 +184,7 @@ Storage Explorer.
 I wrote a class called TablePrefixScanner which implements the logic above. It's available in my GitHub project
 ExplorePackages:
 
-**Implementation: [`TablePrefixScanner.cs`](https://github.com/joelverhagen/ExplorePackages/blob/084ffee36c022b7417a507fdc9303962bc9b74a3/src/ExplorePackages.Logic/Storage/TablePrefix/TablePrefixScanner.cs)**
+**Implementation: [`TablePrefixScanner.cs`](https://github.com/joelverhagen/ExplorePackages/blob/084ffee36c022b7417a507fdc9303962bc9b74a3/src/ExplorePackages.Logic/Storage/TablePrefix/TablePrefixScanner.cs#L153-L237)**
 
 It has some supporting classes but the core of the logic is here.
 
@@ -188,7 +192,7 @@ To demonstrate the recursion simply, I have implemented a `ListAsync` method tha
 order of the table (ordered first by PartitionKey then by RowKey). It uses a stack data structure and is therefore
 a depth-first search.
 
-**Simple usage: [`ListAsync`](https://github.com/joelverhagen/ExplorePackages/blob/084ffee36c022b7417a507fdc9303962bc9b74a3/src/ExplorePackages.Logic/Storage/TablePrefix/TablePrefixScanner.cs#L32-L84)**
+**Simple usage: [`ListAsync`](https://github.com/joelverhagen/ExplorePackages/blob/ece06a1595339296ee377310044feab34ae9f4f0/src/ExplorePackages.Logic/Storage/TablePrefix/TablePrefixScanner.cs#L32-L84)**
 
 This is no better than the serial approach first mentioned above, but it's useful for showing how to deal
 with the various "steps" of the algorithm as well as comparing the results to the baseline approach for verifying
@@ -200,20 +204,20 @@ easily distributed (each row can be copied without affected other rows). It uses
 a breadth-first search (roughly... since ordering is not guaranteed in Azure Queue Storage).
 
 **Distributed usage:**
-- Queue message handler: [**`TableCopyMessageProcessor.cs`**](https://github.com/joelverhagen/ExplorePackages/blob/084ffee36c022b7417a507fdc9303962bc9b74a3/src/ExplorePackages.Worker.Logic/MessageProcessors/TableCopy/TableCopyMessageProcessor.cs#L47-L107)
-- Enqueueing logic: [**`EnqueuePrefixScanStepsAsync`**](https://github.com/joelverhagen/ExplorePackages/blob/084ffee36c022b7417a507fdc9303962bc9b74a3/src/ExplorePackages.Worker.Logic/MessageProcessors/TableCopy/TableCopyEnqueuer.cs#L47-L96)
-- The work done, per row: [**`TableRowCopyMessageProcessor.cs`**](https://github.com/joelverhagen/ExplorePackages/blob/084ffee36c022b7417a507fdc9303962bc9b74a3/src/ExplorePackages.Worker.Logic/MessageProcessors/TableCopy/TableRowCopyMessageProcessor.cs)
+- Queue message handler: [`TableCopyMessageProcessor.cs`](https://github.com/joelverhagen/ExplorePackages/blob/ece06a1595339296ee377310044feab34ae9f4f0/src/ExplorePackages.Worker.Logic/MessageProcessors/TableCopy/TableCopyMessageProcessor.cs#L47-L107)
+- Enqueueing logic: [`EnqueuePrefixScanStepsAsync`](https://github.com/joelverhagen/ExplorePackages/blob/ece06a1595339296ee377310044feab34ae9f4f0/src/ExplorePackages.Worker.Logic/MessageProcessors/TableCopy/TableCopyEnqueuer.cs#L51-L140)
+- The work done, per partition key group: [`TableRowCopyMessageProcessor.cs`](https://github.com/joelverhagen/ExplorePackages/blob/ece06a1595339296ee377310044feab34ae9f4f0/src/ExplorePackages.Worker.Logic/MessageProcessors/TableCopy/TableRowCopyMessageProcessor.cs#L21-L85)
 
 ## Performance
 
-I tested the perfomrance of the baseline serial approach and the parallelize approach using my prefix scanner. So that
+I tested the performance of the baseline serial approach and the parallelize approach using my prefix scanner. So that
 the comparison was as fair as possible, I tried to make the two variants as similar as possible.
 
 ### Parameters
 
-For a test, I ran a "table copy" routine. Each table row is copied from a source table to a destination table. 20 rows
-are copied at a time. These batches of 20 are processed in a isolated Function execution, i.e. not the same Function
-execution as the code that's enumerating the rows.
+For a test, I ran a "table copy" routine. Each table row is copied from a source table to a destination table. Rows
+found by the paging routing are grouped by partition key and enqueued. These partition key batches are processed in a
+separate Function execution, i.e. not the same Function execution as the code that's enumerating the rows.
 
 Here are some other common settings between the serial approach and the prefix scan approach:
 
@@ -223,7 +227,7 @@ Here are some other common settings between the serial approach and the prefix s
 - The same source table was used
 - The destination table is empty
 
-The core of the baseline, serial implementation is here: [**`ProcessSerialAsync.cs`**](https://github.com/joelverhagen/ExplorePackages/blob/084ffee36c022b7417a507fdc9303962bc9b74a3/src/ExplorePackages.Worker.Logic/MessageProcessors/TableCopy/TableCopyMessageProcessor.cs#L117-L152)
+The core of the baseline, serial implementation is here: [**`ProcessSerialAsync.cs`**](https://github.com/joelverhagen/ExplorePackages/blob/ece06a1595339296ee377310044feab34ae9f4f0/src/ExplorePackages.Worker.Logic/MessageProcessors/TableCopy/TableCopyMessageProcessor.cs#L117-L143)
 
 ### Results - 3.5 million records
 
@@ -241,7 +245,7 @@ Prefix Scan | 5 minutes | 58,471                      | 7.8 seconds
 As you can see, the serial approach is a bit slower at this table size. The real kicker is the 5 minute, 21 second
 execution time for the serial approach. This is the single "paging" Azure Function that enqueued the rest of the work.
 
-The serial implementation comfortably finishes within the 10 minute limit. But what if the data doubles?
+The serial implementation comfortably finishes within the 10-minute limit. But what if the data doubles?
 
 ### Results - 7 million records
 
@@ -262,7 +266,7 @@ Functions and Azure Table Storage or the latency of the Azure Table Storage REST
 
 ### Results - 35 million records
 
-For fun I wanted to see how hot this prefix scan approach could get.
+For fun, I wanted to see how hot this prefix scan approach could get.
 
 <img class="center" src="{% attachment performance-10.png %}" width="700" height="423" />
 
@@ -271,7 +275,7 @@ Variant     | Duration            | Max executions / 30 seconds | Max execution 
 Prefix Scan | 28 minutes          | 110,857                     | 2 minutes, 57 seconds
 
 It seems there is another bottleneck I am running into. I'm not sure what. I noticed the queue size was quite large
-for the most of the test, which suggests more hardware could help the problem. Maybe Azure Functions said
+for most of the test duration, which suggests more hardware could help the problem. Maybe Azure Functions said
 "no more nodes!". Not sure.
 
 ## Conclusion
@@ -279,4 +283,14 @@ for the most of the test, which suggests more hardware could help the problem. M
 I can confidently say the prefix scan approach is over 2 times faster than the serial approach with a decent chance
 for even better performance if dedicated compute (non-Consumption plan) is used.
 
-Feel free to use the code! It's under the MIT license.
+Also, it should be noted that this general approach can work anywhere an API allows fast "greater than" query
+capabilities on a string ID field.
+
+Feel free to use copy to code out for your own projects! It's under the MIT license.
+
+**Code: [`src/ExplorePackages.Logic/Storage/TablePrefix`](https://github.com/joelverhagen/ExplorePackages/tree/ece06a1595339296ee377310044feab34ae9f4f0/src/ExplorePackages.Logic/Storage/TablePrefix)**
+
+**Tests: [`test/ExplorePackages.Logic.Test/Storage/TablePrefix/TablePrefixScannerTest.cs`](https://github.com/joelverhagen/ExplorePackages/blob/ece06a1595339296ee377310044feab34ae9f4f0/test/ExplorePackages.Logic.Test/Storage/TablePrefix/TablePrefixScannerTest.cs)**
+
+If there's some interest, I can package it up in a NuGet package for easier consumption. Right now, I'm feeling that
+this top is a bit esoteric 😅.
