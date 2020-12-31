@@ -12,8 +12,15 @@ tags:
 title: How to run a distributed scan of Azure Table Storage
 ---
 
-Suppose you have a massive table in Azure Table Storage and you need to perform some task on every single row. This can
-be done in many ways. The simplest approach would be to use the
+Suppose you have a massive table in Azure Table Storage and you need to perform some task on every single row. In my
+case, I am using Azure Table Storage to record the latest
+[NuGet V3 catalog leaf](https://docs.microsoft.com/en-us/nuget/api/catalog-resource#catalog-leaf) for each package ID
+and version. After this table is created, I want to enqueue an Azure Queue Storage message for each package ID and
+version (each row in the table). In other words, I'm using Azure Table Storage to deduplicate work items via row-level
+concurrency controls (etags) before enqueueing the work item for each row. In my case, the NuGet V3 catalog often has
+multiple catalog leaves for package ID and version, and I only want to process the latest leaf.
+
+Getting every single row in an Azure Table can be done in many ways. The simplest approach would be to use the
 [segmented query API](https://docs.microsoft.com/en-us/rest/api/storageservices/query-entities)
 and [pagination](https://docs.microsoft.com/en-us/rest/api/storageservices/query-timeout-and-pagination) to get blocks
 of 1000 entities at a time, in a serial fashion, and perform whatever action you need on those segments. The C# code
@@ -76,7 +83,7 @@ the number of rows in the table.
 both querying for rows and processing said rows.** At face value, the Azure Table Storage APIs only allow the discovery
 and enumeration of partition keys and row keys using this serial API. But we can be clever!
 
-## The idea: recursively discover partition key prefixes
+## Idea: recursively discover partition key prefixes
 
 One capability that the Azure Table Storage has is that you can query for partition keys greater than X. With carefully
 crafted parameters, this can be leveraged to enumerate the prefixes of all partition keys. This logic can be executed
@@ -278,13 +285,29 @@ It seems there is another bottleneck I am running into. I'm not sure what. I not
 for most of the test duration, which suggests more hardware could help the problem. Maybe Azure Functions said
 "no more nodes!". Not sure.
 
+## Other ideas
+
+The way I have the code written right now is that it enumerates all partition keys **and row keys**. Perhaps you only
+care about individual partition keys? Well, the code could be modified easily to skip the specific "partition
+key" query and only do prefix queries. This would improve the performance but delegate and row-level discovery
+downstream.
+
+Also, this general approach can work anywhere an API allows fast "greater than" query capabilities on a string ID field.
+
+Although Azure Blob Storage doesn't provide a "greater than" operator, I think it may be possible to utilize the [`prefix`
+and arbitrary `delimiter` parameters](https://docs.microsoft.com/en-us/rest/api/storageservices/list-blobs#uri-parameters)
+for a similar effect.
+
+Finally, this is probably an overly complex solution for some scenarios. Since Azure Table Storage doesn't support
+indexes and only a very limited number of query patterns are supported, it's often best to duplicate data. So if you
+want to scan the entire table, it could be easier to just store a list of all partition keys separately from the data
+itself, akin to Stack Overflow question
+["Is there a way to get distinct PartionKeys from a Table"](https://stackoverflow.com/questions/12862520/is-there-a-way-to-get-distinct-partionkeys-from-a-table).
+
 ## Conclusion
 
 I can confidently say the prefix scan approach is over 2 times faster than the serial approach with a decent chance
 for even better performance if dedicated compute (non-Consumption plan) is used.
-
-Also, it should be noted that this general approach can work anywhere an API allows fast "greater than" query
-capabilities on a string ID field.
 
 Feel free to use copy to code out for your own projects! It's under the MIT license.
 
@@ -293,4 +316,4 @@ Feel free to use copy to code out for your own projects! It's under the MIT lice
 **Tests: [`TablePrefixScannerTest.cs`](https://github.com/joelverhagen/ExplorePackages/blob/ece06a1595339296ee377310044feab34ae9f4f0/test/ExplorePackages.Logic.Test/Storage/TablePrefix/TablePrefixScannerTest.cs)**
 
 If there's some interest, I can package it up in a NuGet package for easier consumption. Right now, I'm feeling that
-this top is a bit esoteric 😅.
+this topic is a bit esoteric 😅.
