@@ -251,10 +251,10 @@ The serial implementation comfortably finishes within the 10-minute limit. But w
 
 <img class="center" src="{% attachment performance-2.png %}" width="700" height="423" />
 
-Variant     | Duration            | Max executions / 30 seconds | Max execution duration
------------ | ------------------- | --------------------------- | ---------------------------
-Serial      | **Never completed** | 47,374                      | >10 minutes (timeout)
-Prefix Scan | 6 minutes           | 94,134 🔥                   | 11.5 seconds
+Variant     | Duration     | Max executions / 30 seconds | Max execution duration
+----------- | ------------ | --------------------------- | ---------------------------
+Serial      | **forever!** | 47,374                      | >10 minutes (timeout)
+Prefix Scan | 6 minutes    | 94,134 🔥                   | 11.5 seconds
 
 In this test, the serial approach never completed. After 20 minutes, I halted the process since I could see several
 Azure Function timeout exceptions. I could also see that the "paging" Function execution had started over from the
@@ -270,9 +270,9 @@ For fun, I wanted to see how hot this prefix scan approach could get.
 
 <img class="center" src="{% attachment performance-10.png %}" width="700" height="423" />
 
-Variant     | Duration            | Max executions / 30 seconds | Max execution duration
------------ | ------------------- | --------------------------- | ---------------------------
-Prefix Scan | 28 minutes          | 110,857                     | 2 minutes, 57 seconds
+Variant     | Duration   | Max executions / 30 seconds | Max execution duration
+----------- | ---------- | --------------------------- | ---------------------------
+Prefix Scan | 28 minutes | 110,857                     | 2 minutes, 57 seconds
 
 It seems there is another bottleneck I am running into. I'm not sure what. I noticed the queue size was quite large
 for most of the test duration, which suggests more hardware could help the problem. Maybe Azure Functions said
@@ -290,7 +290,7 @@ Feel free to use copy to code out for your own projects! It's under the MIT lice
 
 **Code: [`src/ExplorePackages.Logic/Storage/TablePrefix`](https://github.com/joelverhagen/ExplorePackages/tree/ece06a1595339296ee377310044feab34ae9f4f0/src/ExplorePackages.Logic/Storage/TablePrefix)**
 
-**Tests: [`test/ExplorePackages.Logic.Test/Storage/TablePrefix/TablePrefixScannerTest.cs`](https://github.com/joelverhagen/ExplorePackages/blob/ece06a1595339296ee377310044feab34ae9f4f0/test/ExplorePackages.Logic.Test/Storage/TablePrefix/TablePrefixScannerTest.cs)**
+**Tests: [`TablePrefixScannerTest.cs`](https://github.com/joelverhagen/ExplorePackages/blob/ece06a1595339296ee377310044feab34ae9f4f0/test/ExplorePackages.Logic.Test/Storage/TablePrefix/TablePrefixScannerTest.cs)**
 
 If there's some interest, I can package it up in a NuGet package for easier consumption. Right now, I'm feeling that
 this top is a bit esoteric 😅.
