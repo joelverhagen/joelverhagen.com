@@ -10,12 +10,7 @@ tags:
 title: The fastest CSV parser in .NET
 ---
 
-**Update 2012-01-06:**
-- Added **FluentCSV** [by request](https://twitter.com/AurelienBoudoux/status/1341420464036524033).
-- Added **Sylvan.Data.Csv** via [a PR](https://github.com/joelverhagen/NCsvPerf/pull/4) from [@MarkPflug](https://github.com/MarkPflug). Thanks Mark!
-- Updated **Csv** from 1.0.58 to 2.0.62
-- Updated **CsvHelper** from 18.0.0 to 19.0.0
-- Updated **mgholam.fastCSV** from 2.0.8 to 2.0.9
+**Latest update:** 2012-01-06, with new versions and libraries. Also, new winner!
 
 ## Specific purpose tested
 
@@ -165,3 +160,12 @@ The BenchmarkDotNet and Excel workbook (for the charts and tables above) are her
 The previous .NET Core 3.1 results are available here: [BenchmarkDotNet.Artifacts.zip]({% attachment BenchmarkDotNet.Artifacts.zip %})
 
 The test was run on my home desktop PC which is Windows 10, .NET 5.0.1, and an AMD Ryzen 9 3950X CPU.
+
+## Update log
+
+**Update 2012-01-06:**
+- Added **FluentCSV** [by request](https://twitter.com/AurelienBoudoux/status/1341420464036524033).
+- Added **Sylvan.Data.Csv** via [a PR](https://github.com/joelverhagen/NCsvPerf/pull/4) from [@MarkPflug](https://github.com/MarkPflug). Thanks Mark!
+- Updated **Csv** from 1.0.58 to 2.0.62
+- Updated **CsvHelper** from 18.0.0 to 19.0.0
+- Updated **mgholam.fastCSV** from 2.0.8 to 2.0.9
