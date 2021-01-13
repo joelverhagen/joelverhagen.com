@@ -10,7 +10,7 @@ tags:
 title: The fastest CSV parser in .NET
 ---
 
-**Latest update:** 2012-01-06, with new versions and libraries. Also, new winner!
+**Latest update:** 2021-01-06, with new versions and libraries. Also, new winner!
 
 ## Specific purpose tested
 
@@ -163,7 +163,7 @@ The test was run on my home desktop PC which is Windows 10, .NET 5.0.1, and an A
 
 ## Update log
 
-**Update 2012-01-06:**
+**Update 2021-01-06:**
 - Added **FluentCSV** [by request](https://twitter.com/AurelienBoudoux/status/1341420464036524033).
 - Added **Sylvan.Data.Csv** via [a PR](https://github.com/joelverhagen/NCsvPerf/pull/4) from [@MarkPflug](https://github.com/MarkPflug). Thanks Mark!
 - Updated **Csv** from 1.0.58 to 2.0.62
