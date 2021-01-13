@@ -11,6 +11,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Report client IP address
+      run: curl https://api.ipify.org/
     - name: Build the site in the jekyll/builder container
       run: |
         docker run \
