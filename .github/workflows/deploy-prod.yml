@@ -13,6 +13,7 @@ jobs:
     - name: Wait for access
       run: |
         curl https://api.ipify.org/
+        echo ""
         until $(curl --output /dev/null --silent --head --fail ${{ secrets.PRODTESTURL }}); do
           echo "Please update firewall rules. Waiting for access..."
           sleep 5
