@@ -10,7 +10,7 @@ tags:
 title: The fastest CSV parser in .NET
 ---
 
-**Latest update:** 2021-01-06, with new versions and libraries. Also, new winner!
+**Latest update:** 2021-01-18, with new versions and libraries. Also, a new winner!
 
 ## Specific purpose tested
 
@@ -33,13 +33,20 @@ I tested the following CSV libraries.
   - Tested version: 2.0.62
 - [**CsvHelper**](https://www.nuget.org/packages/CsvHelper) / [Project site](https://joshclose.github.io/CsvHelper/) / [Source code](https://github.com/JoshClose/CsvHelper)
   - ![Downloads](https://img.shields.io/nuget/dt/CsvHelper)
-  - Tested version: 19.0.0
+  - Tested version: 20.0.0
 - [**CsvTextFieldParser**](https://www.nuget.org/packages/CsvTextFieldParser) / [Source code](https://github.com/22222/CsvTextFieldParser)
   - ![Downloads](https://img.shields.io/nuget/dt/CsvTextFieldParser)
   - Tested version: 1.2.1
+- [**Ctl.Data**](https://www.nuget.org/packages/Ctl.Data) / [Project site](http://ctl-global.github.io/data.html) / [Source code](https://github.com/ctl-global/ctl-data/)
+  - ![Downloads](https://img.shields.io/nuget/dt/Ctl.Data)
+  - Tested version: 2.0.0.2
+- [**Cursively**](https://www.nuget.org/packages/Cursively) / [Project site](https://airbreather.github.io/Cursively/index.html) / [Source code](https://github.com/airbreather/Cursively)
+  - ![Downloads](https://img.shields.io/nuget/dt/Cursively)
+  - Tested version: 1.2.0
 - [**FastCsvParser**](https://www.nuget.org/packages/FastCsvParser) / [Source code](https://github.com/bopohaa/CsvParser)
   - ![Downloads](https://img.shields.io/nuget/dt/FastCsvParser)
   - Tested version: 1.1.1
+  - **Note**: I had to fork this package into [Knapcode.FastCsvParser](https://www.nuget.org/packages/Knapcode.FastCsvParser/1.1.0) to avoid a colliding assembly name.
 - [**FluentCSV**](https://www.nuget.org/packages/FluentCSV/) / [Source code](https://github.com/aboudoux/FluentCSV/)
   - ![Downloads](https://img.shields.io/nuget/dt/FluentCSV)
   - Tested version: 2.0.0
@@ -54,37 +61,48 @@ I tested the following CSV libraries.
   - Tested version: 1.0.0
 - [**ServiceStack.Text**](https://www.nuget.org/packages/ServiceStack.Text) / [Project site](https://servicestack.net/text) / [Source code](https://github.com/ServiceStack/ServiceStack.Text)
   - ![Downloads](https://img.shields.io/nuget/dt/ServiceStack.Text)
-  - Tested version: 5.10.2
+  - Tested version: 5.10.4
+- [**SoftCircuits.CsvParser**](https://www.nuget.org/packages/SoftCircuits.CsvParser) / [Source code](https://github.com/SoftCircuits/CsvParser)
+  - ![Downloads](https://img.shields.io/nuget/dt/SoftCircuits.CsvParser)
+  - Tested version: 2.4.3
 - [**Sylvan.Data.Csv**](https://www.nuget.org/packages/Sylvan.Data.Csv) / [Source code](https://github.com/MarkPflug/Sylvan)
   - ![Downloads](https://img.shields.io/nuget/dt/Sylvan.Data.Csv)
-  - Tested version: 0.8.2 (with 0.2.0 `StringPool`)
+  - Tested version: 0.9.0 (with 0.2.0 `StringPool`)
 - [**TinyCsvParser**](https://www.nuget.org/packages/TinyCsvParser) / [Source code](https://github.com/bytefish/TinyCsvParser)
   - ![Downloads](https://img.shields.io/nuget/dt/TinyCsvParser)
   - Tested version: 2.6.0
 
-And... I threw in two other implementations of my own:
+And... I threw in two other implementations that don't come from packages:
 
 - An implementation I called "HomeGrown" which is my first attempt at a CSV parser, without any optimization. 🤞
 - An implementation simply using `string.Split`. This is broken for CSV files containing escaped comma characters, but I figured it could be a baseline.
+- **Microsoft.VisualBasic.FileIO.TextFieldParser**, which is a built-in CSV parser.
 
 ## Results
 
 These are the parse times for a CSV file with 1,000,000 lines. The units are in seconds.
 
-<img class="center" src="{% attachment diagram-1.png %}" width="700" height="502" />
+<img class="center" src="{% attachment diagram-2.png %}" width="700" height="502" />
 
-Shockingly, the over-simplistic `string.Split` approach is slower than Mark's **Sylvan.Data.Csv**. Let that sink it.
-Handling escaping and proper CSV parsing can be done faster than the simple `string.Split`. So cool!
+🏆 Congratulations **Cursively**! It's taken the first place by parsing a 1 million line file in 1.75 seconds.
 
-In my previous version of this blog post, the **mgholam.fastCSV** library was the fastest "real" CSV parser but now you
-can see we have a new contender. Also, the previous version was using .NET Core 3.1. It looks like .NET 5 gives a 
-measurable improvement on all implementations, averaging about **a 10% reduction in runtime** on average. Nice work .NET
-team!
+Note that the three implementations performing better than the simplistic, broken **string.Split** method all implement
+string deduping, which reduces allocations when there are redundant strings in the CSV file. This performance win is
+certainly dependent on the CSV files you're working with. In my side projects, I have a lot of duplicated fields
+because I'm using CSVs sort of like denormalized tables in SQL (image the result of a SQL `JOIN`). So YMMV!
 
-Shockingly, the most popular **CsvHelper** came in 10th place, parsing more than four times as as slowly as the fastest
-solution.
+In my previous versions of this blog post, the **mgholam.fastCSV** and **Sylvan.Data.Csv** libraries were the fastest
+CSV parsers but now you can see we have a new contender.
 
-Most shockingly, my **HomeGrown** implementation is not the worst. And the [code is beautiful](https://github.com/joelverhagen/NCsvPerf/blob/586f6020781925b20d4f071d4ecfa01e1572d5b6/NCsvPerf/HomeGrown/CsvUtility.cs#L39) 😭 (as a father says to his ugly kid). In fact, it looks to be a very average implementation. So proud.
+Since I originally posted, [Josh Close](https://github.com/JoshClose) (author of the most popular **CsvHelper**) has
+put a lot of work into performance and has brought his implementation from 10th place to a close 3rd place. HUGE
+improvement. I haven't tested "higher level" data mapping scenarios (which are likely the most common CsvHelper usages)
+but it's really exciting to see such a big performance improvement in the most popular CSV parsing library.
+
+Also, a previous version was using .NET Core 3.1. It looks like .NET 5 gives a measurable improvement on all
+implementations, averaging about **a 10% reduction in runtime** on average. Nice work .NET team!
+
+Most shockingly, my **HomeGrown** implementation is not the worst. And the [code is beautiful](https://github.com/joelverhagen/NCsvPerf/blob/8005d5e6e49d9d79d6519516bd9d8b1f4d2c5af0/NCsvPerf/HomeGrown/CsvUtility.cs#L39) 😭 (as a father says to his ugly kid). In fact, it looks to be a very average implementation. So proud.
 
 ## I'm talking smack?
 
@@ -125,7 +143,7 @@ I tested execution time, not memory allocation. Maybe I'll update this post late
 
 ## Library-specific adapters
 
-Each library-specific implementation is [available on GitHub](https://github.com/joelverhagen/NCsvPerf/tree/586f6020781925b20d4f071d4ecfa01e1572d5b6/NCsvPerf/CsvReadable/Implementations).
+Each library-specific implementation is [available on GitHub](https://github.com/joelverhagen/NCsvPerf/tree/8005d5e6e49d9d79d6519516bd9d8b1f4d2c5af0/NCsvPerf/CsvReadable/Implementations).
 
 All of the implementations look something like this:
 
@@ -155,17 +173,41 @@ public List<T> GetRecords<T>(MemoryStream stream) where T : ICsvReadable
 
 The code for this is stored on GitHub: [joelverhagen/NCsvPerf](https://github.com/joelverhagen/NCsvPerf)
 
-The BenchmarkDotNet and Excel workbook (for the charts and tables above) are here: [BenchmarkDotNet.Artifacts-5.0.zip]({% attachment BenchmarkDotNet.Artifacts-5.0.zip %})
-
-The previous .NET Core 3.1 results are available here: [BenchmarkDotNet.Artifacts.zip]({% attachment BenchmarkDotNet.Artifacts.zip %})
+The BenchmarkDotNet and Excel workbook (for the charts and tables above) are here: [BenchmarkDotNet.Artifacts-5.0-2.zip]({% attachment BenchmarkDotNet.Artifacts-5.0-2.zip %})
 
 The test was run on my home desktop PC which is Windows 10, .NET 5.0.1, and an AMD Ryzen 9 3950X CPU.
 
 ## Update log
 
-**Update 2021-01-06:**
+### Update 2021-01-18
+
+- Added **Ctl.Data** [by request](https://old.reddit.com/r/dotnet/comments/k9no77/the_fastest_csv_parser_in_net/gf6njwn/).
+- Added **Cursively** via [a PR](https://github.com/joelverhagen/NCsvPerf/pull/7) from [@airbreather](https://github.com/airbreather). Thanks, Joe!
+- Added **Microsoft.VisualBasic.FileIO.TextFieldParser** [by request](https://github.com/joelverhagen/NCsvPerf/issues/6).
+- Added **SoftCircuits.CsvParser** [by request](https://github.com/joelverhagen/NCsvPerf/pull/8#issuecomment-761891561).
+- Updated **CsvHelper** from 19.0.0 to 20.0.0 via [a PR](https://github.com/joelverhagen/NCsvPerf/pull/8) from [@JoshClose](https://github.com/JoshClose). Thanks, Josh!
+- Updated **ServiceStack.Text** from 5.10.2 to 5.10.4
+- Updated **Sylvan.Data.Csv** from 0.8.2 to 0.9.0
+- Switched to a fork of **FastCsvParser** to avoid duplicate DLL name.
+
+**Results** - [BenchmarkDotNet.Artifacts-5.0-2.zip]({% attachment BenchmarkDotNet.Artifacts-5.0-2.zip %})
+
+### Update 2021-01-06
+
+- Moved to .NET 5.0.1
 - Added **FluentCSV** [by request](https://twitter.com/AurelienBoudoux/status/1341420464036524033).
-- Added **Sylvan.Data.Csv** via [a PR](https://github.com/joelverhagen/NCsvPerf/pull/4) from [@MarkPflug](https://github.com/MarkPflug). Thanks Mark!
+- Added **Sylvan.Data.Csv** via [a PR](https://github.com/joelverhagen/NCsvPerf/pull/4) from [@MarkPflug](https://github.com/MarkPflug). Thanks, Mark!
 - Updated **Csv** from 1.0.58 to 2.0.62
 - Updated **CsvHelper** from 18.0.0 to 19.0.0
 - Updated **mgholam.fastCSV** from 2.0.8 to 2.0.9
+
+<img class="center" src="{% attachment diagram-1.png %}" width="700" height="502" />
+
+**Results** - [BenchmarkDotNet.Artifacts-5.0.zip]({% attachment BenchmarkDotNet.Artifacts-5.0.zip %})
+
+### Initial release 2020-12-08
+
+<img class="center" src="{% attachment diagram-0.png %}" width="700" height="576" />
+
+**Results** - [BenchmarkDotNet.Artifacts.zip]({% attachment BenchmarkDotNet.Artifacts.zip %})
+
