@@ -89,7 +89,7 @@ These are the parse times for a CSV file with 1,000,000 lines. The units are in 
 Note that the three implementations performing better than the simplistic, broken **string.Split** method all implement
 string deduping, which reduces allocations when there are redundant strings in the CSV file. This performance win is
 certainly dependent on the CSV files you're working with. In my side projects, I have a lot of duplicated fields
-because I'm using CSVs sort of like denormalized tables in SQL (image the result of a SQL `JOIN`). So YMMV!
+because I'm using CSVs sort of like denormalized tables in SQL (imaging the result of a SQL `JOIN`). So YMMV!
 
 In my previous versions of this blog post, the **mgholam.fastCSV** and **Sylvan.Data.Csv** libraries were the fastest
 CSV parsers but now you can see we have a new contender.
@@ -190,7 +190,9 @@ The test was run on my home desktop PC which is Windows 10, .NET 5.0.1, and an A
 - Updated **Sylvan.Data.Csv** from 0.8.2 to 0.9.0
 - Switched to a fork of **FastCsvParser** to avoid duplicate DLL name.
 
-**Results** - [BenchmarkDotNet.Artifacts-5.0-2.zip]({% attachment BenchmarkDotNet.Artifacts-5.0-2.zip %})
+<img class="center" src="{% attachment diagram-2.png %}" width="350" height="251" />
+
+Results - [BenchmarkDotNet.Artifacts-5.0-2.zip]({% attachment BenchmarkDotNet.Artifacts-5.0-2.zip %})
 
 ### Update 2021-01-06
 
@@ -201,13 +203,13 @@ The test was run on my home desktop PC which is Windows 10, .NET 5.0.1, and an A
 - Updated **CsvHelper** from 18.0.0 to 19.0.0
 - Updated **mgholam.fastCSV** from 2.0.8 to 2.0.9
 
-<img class="center" src="{% attachment diagram-1.png %}" width="700" height="502" />
+<img class="center" src="{% attachment diagram-1.png %}" width="350" height="251" />
 
-**Results** - [BenchmarkDotNet.Artifacts-5.0.zip]({% attachment BenchmarkDotNet.Artifacts-5.0.zip %})
+Results - [BenchmarkDotNet.Artifacts-5.0.zip]({% attachment BenchmarkDotNet.Artifacts-5.0.zip %})
 
 ### Initial release 2020-12-08
 
-<img class="center" src="{% attachment diagram-0.png %}" width="700" height="576" />
+<img class="center" src="{% attachment diagram-0.png %}" width="350" height="288" />
 
-**Results** - [BenchmarkDotNet.Artifacts.zip]({% attachment BenchmarkDotNet.Artifacts.zip %})
+Results - [BenchmarkDotNet.Artifacts.zip]({% attachment BenchmarkDotNet.Artifacts.zip %})
 
