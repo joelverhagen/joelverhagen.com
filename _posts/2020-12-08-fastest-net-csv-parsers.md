@@ -89,7 +89,7 @@ These are the parse times for a CSV file with 1,000,000 lines. The units are in 
 Note that the three implementations performing better than the simplistic, broken **string.Split** method all implement
 string deduping, which reduces allocations when there are redundant strings in the CSV file. This performance win is
 certainly dependent on the CSV files you're working with. In my side projects, I have a lot of duplicated fields
-because I'm using CSVs sort of like denormalized tables in SQL (imaging the result of a SQL `JOIN`). So YMMV!
+because I'm using CSVs sort of like denormalized tables in SQL (imagine the result of a SQL `JOIN`). So YMMV!
 
 In my previous versions of this blog post, the **mgholam.fastCSV** and **Sylvan.Data.Csv** libraries were the fastest
 CSV parsers but now you can see we have a new contender.
