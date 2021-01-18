@@ -10,9 +10,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Wait for access
+      run: |
+        curl https://api.ipify.org/
+        until $(curl --output /dev/null --silent --head --fail ${{ secrets.STAGETESTURL }}); do
+          echo "Please update firewall rules. Waiting for access..."
+          sleep 5
+        done
     - uses: actions/checkout@v2
-    - name: Report client IP address
-      run: curl https://api.ipify.org/
     - name: Build the site in the jekyll/builder container
       run: |
         docker run \
@@ -24,3 +29,9 @@ jobs:
         source_dir: ${{ github.workspace }}/_stage
         container_name: $web
         connection_string: ${{ secrets.AzureStorageConnectionStringStage }}
+    - name: Wait to be blocked
+      run: |
+        while $(curl --output /dev/null --silent --head --fail ${{ secrets.STAGETESTURL }}); do
+          echo "Please update firewall rules. Waiting to be blocked..."
+          sleep 5
+        done
