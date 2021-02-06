@@ -34,7 +34,7 @@ Quick overview of PD for those that are unaquainted: the basic interface with PD
 5. There seems to be some performance issues when moving 15 or more objects at the same time. It gets really laggy.
 6. It seems like some objects that I use store state and others do not. This needs to be made very, very clear. My initial inclination was that all objects acted like pure functions and number boxes would store state, but this is not the case (I'm looking at you <code class="inline">pow</code>).
 
-The majority of the qualms I have up there are no doubt related to my own ignorance about Pure Data. If I'm saying something totally silly, set me straight in the comments below!
+The majority of the qualms I have up there are no doubt related to my own ignorance about Pure Data.
 
 ## Fruits of my Labor
 I made a thing. This was for an assignment for my Jammin' with Laptops class, but that assignment simply required that I make a patch with five different objects. Easy peasy! I went a bit overboard. Here's a picture of what the "code" looks like. Sadly, I think the code is more interesting to look at than the actually output.
