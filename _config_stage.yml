@@ -4,7 +4,6 @@ baseurl: /
 url: https://s.joelverhagen.com
 destination: _stage
 attachmentdir: attachments
-comments: true
 exclude: 
 - categories.yml
 relative_permalinks: false

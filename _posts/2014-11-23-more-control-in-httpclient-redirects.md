@@ -43,7 +43,7 @@ Imagine taking it a step forward and splitting out even more tricky logic curren
 
 Well, I focused on the problem at hand and implemented a delegating handler that overrides the built-in redirects, allowing you to put redirection anywhere you want in your client pipeline.
 
-For now the code is in [a GitHub Gist](https://gist.github.com/joelverhagen/3be85bc0d5733756befa). If I find myself needing it in a lot of different projects or some of my readers would like it in a more accessible form, I could consider wrapping it up in a NuGet package. Let me know in the comments below.
+For now the code is in [a GitHub Gist](https://gist.github.com/joelverhagen/3be85bc0d5733756befa). If I find myself needing it in a lot of different projects or some of my readers would like it in a more accessible form, I could consider wrapping it up in a NuGet package.
 
 Oh, and by default <code class="inline">RedirectingHandler</code> disables redirection in your inner <code class="inline">HttpClientHandler</code>. There are some other options on the handler that are worth looking at. Also, mad props to Kenneth Reitz's Python [<code class="inline">requests</code>](https://github.com/kennethreitz/requests) library, which I ported for the redirect rules.
 
