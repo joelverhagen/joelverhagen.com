@@ -12,6 +12,13 @@ tags:
 title: Disk write performance on Azure Functions
 ---
 
+## Series
+
+This post is part of my Advanced Azure Functions series (thanks for the idea, [Loïc](https://twitter.com/sharmaloic)!)
+
+1. [How to run a distributed scan of Azure Table Storage](../../2020/12/distributed-scan-of-azure-tables) - handling the 10 minute limit and reading Table Storage
+1. Disk write performance on Azure Functions - this post
+
 ## Introduction
 
 For one of my side projects, I've used the disk available on Azure Functions for temporary storage. Some code that
@@ -20,7 +27,7 @@ the response body by an HTTP request, the stream will not be seekable so you nee
 
 If the stream is small enough, it can fit in memory, such as in a `MemoryStream`. But what if you're in an environment
 that has rather limited memory or what if the data is just too large to fit in memory? Well, in such a case using a
-`FileStream` or some of the stream based on a persistent store is required.
+`FileStream` or some other stream based on a persistent store is required.
 
 In my case, I am unzipping ZIP files
 ([requires a seekable stream](https://github.com/dotnet/runtime/blob/56d0eb94ec83473d99c1050072a224da327bc02a/src/libraries/System.IO.Compression/src/System/IO/Compression/ZipArchive.cs#L141-L147))
@@ -35,7 +42,7 @@ handling multiple function invocations.
 The disk space on Azure Functions Consumption plan for Windows is a bit strange. The disk that is local to the node
 running your function (not shared with other nodes) seems to have roughly 500 MiB of disk space from my experiments.
 The easiest way to write to this local storage is by looking at the `TEMP` environment variable or by using
-`Path.GetTempPath` and writing files there. In my experiments, this resolved to `C:\local\Temp`.
+`Path.GetTempPath`. In my experiments, this resolved to `C:\local\Temp`.
 
 However, when you provision a Consumption plan Function App, you also get an Azure File Share which allows all of your
 function invocations to share a disk as well. I think the primary purpose for this share is to hold your app code, but
@@ -62,7 +69,7 @@ I've made the following discoveries!
 ### Use `TEMP` if you can, fall back to `HOME`
 
 As mentioned above, try to use the `TEMP` directory which is on the Azure Function's limited, local disk when
-possible. There's not much space there but it is measurably faster. Also, you don't get shared for Azure File Share
+possible. There's not much space there but it is measurably faster. Also, you don't get charged for Azure File Share
 data transfer and write transaction prices
 ([pricing for the default "transaction optimized" tier](https://azure.microsoft.com/en-us/pricing/details/storage/files/)).
 
@@ -72,19 +79,20 @@ speeds when using a simple `CopyToAsync` where the source is a non-seekable stre
 
 <img class="center" src="{% attachment disk-vs-share.png %}" width="700" height="459" />
 
-Note that I made my test code use a non-seekable stream since writing copying a vanilla `MemoryStream` to a `FileStream`
+Note that I made my test code use a non-seekable stream since copying from a vanilla `MemoryStream` to a `FileStream`
 uses a clever trick to set the length of the destination
 ([source](https://github.com/dotnet/runtime/blob/39afd1f46f8f03582b0414591ff7a1e2f1809979/src/libraries/System.Private.CoreLib/src/System/IO/FileStream.Windows.cs#L1068-L1079))
-which, as you'll see below, provides its own performance win. As mentioned above, I was interested in testing
-non-seekable source streams.
+which, as you'll see below, provides its own performance win but not be done for unseekable source streams.
+As mentioned above, I was interested in testing non-seekable source streams.
 
 ### Avoid using `Stream.CopyToAsync` for big files
 
 Let's talk a bit about the base `Stream.CopyToAsync` implementation. The default buffer size for .NET Framework is a
-static 80 KiB. On .NET Core, the copy buffer is fetched from the `ArrayPool<byte>.Shared` pool so the 80 KiB is
-rounded up to the next power of 2, which is 128 KiB ([proof](https://dotnetfiddle.net/BAL8b6)).
-This is a pretty small buffer considering a network operation may need to be performed every time data is written to a
-Azure File Share.
+static 80 KiB. On .NET Core, the copy buffer is fetched from the `ArrayPool<byte>.Shared` pool so the 80 KiB
+([source](https://github.com/dotnet/runtime/blob/0026a202ab4087d237f6be8824dff322d3a7d6be/src/libraries/System.Private.CoreLib/src/System/IO/Stream.cs#L122))
+is rounded up to the next power of 2, which is 128 KiB ([source](https://dotnetfiddle.net/BAL8b6)).
+This is a pretty small buffer considering a network operation may need to be performed every time a chunk of bytes is
+written to the Azure File Share.
 
 Consider an alternative where you perform the `ReadAsync` then `WriteAsync` yourself. This allows you to use any buffer
 size you want and even perform additional tasks on the buffered bytes, such as hash/checksum calculation.
@@ -155,16 +163,24 @@ Here are the allocations when the `WriteAsync` buffer is larger than `FileStream
 
 <img class="center" src="{% attachment filestream-buffer-more.png %}" width="700" height="317" />
 
-Note the ~100 MiB difference in allocation, caused by the internal buffer in `FileStream`.
+Note the rougly 10 MiB difference in allocation, caused by the internal buffer in `FileStream`.
 
 ## Closing notes
 
+With all of these tricks combined, you can get up to 10x write performance gain when writing to an Azure File Share.
+Specifically, for a 256 MiB file, my custom implementation took 6.1 seconds but `CopyToAsync` with a non-seekable
+source stream takes 73.1 seconds. Note that the `SetLength` trick was applied to the "custom" function but it could
+be used for `CopyToAsync` to have a big win. I'm just trying to compare the most naive implementation with the most
+advanced one 😃. The buffer size I used for the "custom" function was 4 MiB.
+
+<img class="center" src="{% attachment summary.png %}" width="700" height="424" />
+
 I did not test read performance because I have found that it is very much dependent on the code that is doing the read.
-Many read implementations have their own buffering strategy so it's hard to make any useful, broad statements. For write
-performance, however, I can test the useful "copy the whole thing to disk" pattern which will likely be used any time some
-byte stream does not fit in memory. Subsequent reads on those downloaded/copied bytes will vary in performance based on
-the scenario.
+Many read implementations have their own buffering strategy or only read specific parts of the stream so it's hard to
+make any useful, broad statements. For write performance, however, I can test the useful "copy the whole thing to disk"
+pattern which will likely be used any time some byte stream does not fit in memory. Subsequent reads on those
+downloaded/copied bytes will vary in performance based on the scenario.
 
 Feel free to try the performance tests yourself with your own data sizes. I have the code for both the test Azure
-Function and the test runner console app on GitHub:
+Function and the test runner console app as well as the data files (Excel) on GitHub:
 [joelverhagen/AzureFunctionDiskPerf](https://github.com/joelverhagen/AzureFunctionDiskPerf).
