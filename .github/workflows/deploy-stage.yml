@@ -12,10 +12,9 @@ jobs:
     steps:
     - name: Wait for access
       run: |
-        curl https://api.ipify.org/
-        echo ""
         until $(curl --output /dev/null --silent --head --fail ${{ secrets.STAGETESTURL }}); do
-          echo "Please update firewall rules. Waiting for access..."
+          curl https://api.ipify.org/
+          echo " is the agent IP address. Please update firewall rules. Waiting for access..."
           sleep 5
         done
     - uses: actions/checkout@v2
