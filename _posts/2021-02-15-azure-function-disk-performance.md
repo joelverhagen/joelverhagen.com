@@ -16,8 +16,8 @@ title: Disk write performance on Azure Functions
 
 This post is part of my Advanced Azure Functions series (thanks for the idea, [Loïc](https://twitter.com/sharmaloic)!)
 
-1. [How to run a distributed scan of Azure Table Storage](../../2020/12/distributed-scan-of-azure-tables) - handling the 10 minute limit and reading Table Storage
-1. Disk write performance on Azure Functions - this post
+1. [How to run a distributed scan of Table Storage](../../2020/12/distributed-scan-of-azure-tables) - 10 minute limit and Table Storage
+1. **Disk write performance on Azure Functions** - this post
 
 ## Introduction
 

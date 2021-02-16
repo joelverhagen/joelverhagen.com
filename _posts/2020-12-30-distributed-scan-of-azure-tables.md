@@ -16,7 +16,7 @@ title: How to run a distributed scan of Azure Table Storage
 
 This post is part of my Advanced Azure Functions series (thanks for the idea, [Loïc](https://twitter.com/sharmaloic)!)
 
-1. How to run a distributed scan of Azure Table Storage - this post
+1. **How to run a distributed scan of Azure Table Storage** - this post
 1. [Disk write performance on Azure Functions](../../2021/02/azure-function-disk-performance) - use the Azure File Share efficiently
 
 ## Introduction
