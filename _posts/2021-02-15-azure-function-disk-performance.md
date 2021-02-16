@@ -62,6 +62,27 @@ In this chart, you can see that a 1 MiB buffer improves the write performance by
 
 ### Bigger buffers are better, but don't go crazy
 
+So we see that using a buffer size larger than the default 80 KiB/128 KiB can be beneficial. How bigger of a buffer
+should we use when writing to Azure File Share?
+
+I tests all combinations of data sizes and buffer sizes for 1 MiB, 2 MiB, 4 MiB, ... up to 256 MiB. Yes, I tested
+using a 256 MiB buffer on a 1 MiB payload because... science!
+
+In this chart you can see that a 16 MiB buffer performs the best for a 256 MiB file, beating the 1 MiB buffer by
+a factor of 5x and the 256 MiB buffer by 4x. A similar pattern is seen for 32, 64, and 128 MiB data sizes.
+
+<img class="center" src="{% attachment sane-buffer-sizes-big.png %}" width="700" height="505" />
+
+From this I would conclude that using a buffer size that the same size as your data is probably not a good idea.
+
+For my code, I will probably be using a 4 MiB buffer sinze it's pretty close to the 16 MiB buffer but is a bit
+easier on the memory pool in a constraint environment like Azure Functions Consumption plan.
+
+For smaller data sizes, having the mega buffers didn't seem to make things too much worse, probably because
+many of these data points all fall in the category of "buffer is larger than data".
+
+<img class="center" src="{% attachment sane-buffer-sizes-small.png %}" width="700" height="505" />
+
 ### Call `SetLength` on the destination steam
 
 ### Use `%TEMP%` if you can, fall back to `%HOME%`
@@ -83,6 +104,6 @@ pool your write buffer with something like [`ArrayPool<byte>.Shared`](https://do
 
 #### `WriteAsync` buffer is larger than `FileStream` buffer
 
-<img class="center" src="{% attachment filestream-buffer-less.png %}" width="700" height="317" />
+<img class="center" src="{% attachment filestream-buffer-more.png %}" width="700" height="317" />
 
 Note the ~100 MiB difference the allocation, causes by the internal buffer in `FileStream`.
