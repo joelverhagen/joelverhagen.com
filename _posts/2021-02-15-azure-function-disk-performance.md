@@ -196,7 +196,7 @@ Function and the test runner console app as well as the data files (Excel) on Gi
 
 This is the write performance comparison between the two:
 
-<img class="center" src="{% attachment summary.png %}" width="700" height="517" />
+<img class="center" src="{% attachment app-service-plan.png %}" width="700" height="517" />
 
 Give the capacity being many GiB in both cases and the performance being similar, I will probably use `%TEMP%` since
 it's more likely to be safe to clean up every so often.
