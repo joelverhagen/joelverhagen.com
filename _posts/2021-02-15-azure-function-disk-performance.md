@@ -12,6 +12,8 @@ tags:
 title: Disk write performance on Azure Functions
 ---
 
+**Latest update:** 2021-04-26, added App Service plan performance. See the bottom of the post.
+
 ## Series
 
 This post is part of my Advanced Azure Functions series (thanks for the idea, [Loïc](https://twitter.com/sharmaloic)!)
@@ -184,3 +186,17 @@ downloaded/copied bytes will vary in performance based on the scenario.
 Feel free to try the performance tests yourself with your own data sizes. I have the code for both the test Azure
 Function and the test runner console app as well as the data files (Excel) on GitHub:
 [joelverhagen/AzureFunctionDiskPerf](https://github.com/joelverhagen/AzureFunctionDiskPerf).
+
+## Update: App Service plan measurements
+
+**Update 2021-04-26:** I ran a similar test on the App Service plan for Azure Functions and have the following findings:
+
+- `%HOME%` - 50 GiB capacity
+- `%TEMP%` - 11 GiB capacity
+
+This is the write performance comparison between the two:
+
+<img class="center" src="{% attachment summary.png %}" width="700" height="517" />
+
+Give the capacity being many GiB in both cases and the performance being similar, I will probably use `%TEMP%` since
+it's more likely to be safe to clean up every so often.
