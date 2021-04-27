@@ -191,12 +191,12 @@ Function and the test runner console app as well as the data files (Excel) on Gi
 
 **Update 2021-04-26:** I ran a similar test on the App Service plan for Azure Functions and have the following findings:
 
-- `%HOME%` - 50 GiB capacity
-- `%TEMP%` - 11 GiB capacity
+- `HOME` - 50 GiB capacity
+- `TEMP` - 11 GiB capacity
 
 This is the write performance comparison between the two:
 
 <img class="center" src="{% attachment app-service-plan.png %}" width="700" height="517" />
 
-Give the capacity being many GiB in both cases and the performance being similar, I will probably use `%TEMP%` since
+Give the capacity being many GiB in both cases and the performance being similar, I will probably use `TEMP` since
 it's more likely to be safe to clean up every so often.
