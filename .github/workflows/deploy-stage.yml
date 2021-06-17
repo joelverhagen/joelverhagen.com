@@ -24,7 +24,7 @@ jobs:
         -v ${{ github.workspace }}:/srv/jekyll -v ${{ github.workspace }}/_stage:/srv/jekyll/_stage \
         jekyll/builder:latest /bin/bash -c "chmod -R 777 /srv/jekyll && jekyll build --trace --config /srv/jekyll/_config_stage.yml"
         cp -rf ${{ github.workspace }}/_stage_extra/* ${{ github.workspace }}/_stage/
-    - uses: bacongobbler/azure-blob-storage-upload@v1.0.0
+    - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
       with:
         source_dir: ${{ github.workspace }}/_stage
         container_name: $web

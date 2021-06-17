@@ -23,7 +23,7 @@ jobs:
         docker run \
         -v ${{ github.workspace }}:/srv/jekyll -v ${{ github.workspace }}/_prod:/srv/jekyll/_prod \
         jekyll/builder:latest /bin/bash -c "chmod -R 777 /srv/jekyll && jekyll build --trace --config /srv/jekyll/_config_prod.yml"
-    - uses: bacongobbler/azure-blob-storage-upload@v1.0.0
+    - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
       with:
         source_dir: ${{ github.workspace }}/_prod
         container_name: $web
