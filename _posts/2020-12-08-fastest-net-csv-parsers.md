@@ -65,7 +65,7 @@ These are the parse times for a CSV file with 1,000,000 lines. The units are in 
 <img class="center" src="{% attachment diagram-3.png %}" width="700" height="406" />
 
 🏆 Congratulations **Cursively**! It's taken the first place by parsing a 1 million line file in 1.71 seconds. The **Sylvan.Data.Csv**
-library seems to effectively equivalent performance and from one run to the next (fast in 1 of 3 attempts) so I think
+library seems to effectively have equivalent performance with Cursively (faster in 1 of 3 attempts) so I think
 it's safe to say both are top of their class! Perhaps pick the one that had an API that feels better for your scenario.
 
 Since I originally posted, [Josh Close](https://github.com/JoshClose) (author of the most popular **CsvHelper**) has
@@ -77,9 +77,9 @@ I also want to mention some incredible work by [Aurélien Boudoux](https://githu
 **FluentCSV** to improve the performance. I have to say this is the most impressive performance improvement I've seen in
 this project. In the last round, his 2.0.0 version clocked in at 57 seconds for 1 million lines (last place). With
 version 3.0.0, he brought the time down to 3.2 seconds (fifth place)! [Read more](https://github.com/aboudoux/FluentCSV/blob/master/Benchmark/README.MD)
-about his own performance analysis. Awesome work, Aurélien!
+about his own performance analysis. Awesome work, Aurélien! Great to see such a nice API with excellent performance.
 
-Also, a previous version was using .NET Core 3.1. It looks like .NET 5 gives a measurable improvement on all
+Also, a previous version of this post was using .NET Core 3.1. It looks like .NET 5 gives a measurable improvement on all
 implementations, averaging about **a 10% reduction in runtime** on average. Nice work .NET team!
 
 Most shockingly, my **HomeGrown** implementation is not the worst. And the [code is beautiful](https://github.com/joelverhagen/NCsvPerf/blob/514a0370b2f361c03e6d27bebe9399b4d9d52051/NCsvPerf/HomeGrown/CsvUtility.cs#L39) 😭 (as a father says to his ugly kid). In fact, it looks to be a very average implementation. So proud.
