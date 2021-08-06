@@ -85,7 +85,7 @@ about his own performance analysis. Awesome work, Aurélien! Great to see such a
 the performance is excellent and the
 [adapter code](https://github.com/joelverhagen/NCsvPerf/blob/a26df9cc2c14ccd34d754f32b98f7d4e7b93958e/NCsvPerf/CsvReadable/Implementations/RecordParser.cs)
 is extensive and leverages several OSS libraries (Ben.StringIntern and System.IO.Pipelines) so it maybe be useful to
-look through and learning tricks for your own performance adventures.
+look through to learn tricks for your own performance adventures.
 
 Also, a previous version of this post was using .NET Core 3.1. It looks like .NET 5 gives a measurable improvement on all
 implementations, averaging about **a 10% reduction in runtime** on average. Nice work .NET team!
