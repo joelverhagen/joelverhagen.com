@@ -175,7 +175,7 @@ The test was run on my home desktop PC which is Windows 10, .NET 5.0.1, and an A
 - Updated **TinyCsvParser** from 2.6.0 to 2.6.1.
 - Added **TxtCsvHelper** via [a PR](https://github.com/joelverhagen/NCsvPerf/pull/32). Thanks Cameron!
 
-<a href="{% attachment diagram-4.png %}"><img class="center" src="{% attachment diagram-4.png %}" width="700" height="368" /></a>
+<a href="{% attachment diagram-4.png %}"><img class="center" src="{% attachment diagram-4.png %}" width="350" height="184" /></a>
 
 Results - [BenchmarkDotNet.Artifacts-5.0-5.zip]({% attachment BenchmarkDotNet.Artifacts-5.0-5.zip %})
 
@@ -194,7 +194,7 @@ Results - [BenchmarkDotNet.Artifacts-5.0-5.zip]({% attachment BenchmarkDotNet.Ar
 - Added **Sky.Data.Csv** via [a PR](https://github.com/joelverhagen/NCsvPerf/pull/22). Thanks, Josh!
 - Updated **Sylvan.Data.Csv** from 0.9.0 to 1.0.3 via [a PR](https://github.com/joelverhagen/NCsvPerf/pull/12) and a subsequent change by me. Thanks, Mark!
 
-<a href="{% attachment diagram-3.png %}"><img class="center" src="{% attachment diagram-3.png %}" width="700" height="406" /></a>
+<a href="{% attachment diagram-3.png %}"><img class="center" src="{% attachment diagram-3.png %}" width="350" height="203" /></a>
 
 Results - [BenchmarkDotNet.Artifacts-5.0-3.zip]({% attachment BenchmarkDotNet.Artifacts-5.0-3.zip %})
 
