@@ -72,7 +72,7 @@ And... I threw in two other implementations that don't come from packages:
 
 These are the parse times for a CSV file with 1,000,000 lines. The units are in seconds.
 
-<a href="{% attachment diagram-4.png %}"><img class="center" src="{% attachment diagram-4.png %}" width="700" height="368" /></a>
+<a href="{% attachment diagram-5.png %}"><img class="center" src="{% attachment diagram-5.png %}" width="700" height="391" /></a>
 
 🏆 Congratulations **Cursively**! It's taken the first place by parsing a 1 million line file in 1.70 seconds. The **Sylvan.Data.Csv**
 library seems to effectively have equivalent performance with Cursively (faster in many past iterations) so I think
