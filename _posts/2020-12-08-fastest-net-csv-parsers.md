@@ -10,7 +10,7 @@ tags:
 title: The fastest CSV parser in .NET
 ---
 
-**Latest update:** 2021-08-09, with new versions and libraries (commit [`8fa7626`](https://github.com/joelverhagen/NCsvPerf/tree/8fa762676711dc065a2d0401683828e1b087e095)).
+**Latest update:** 2021-08-09, with new versions. **Sylvan.Data.Csv** takes the lead with SIMD!
 
 ## Specific purpose tested
 
@@ -53,12 +53,12 @@ I tested the following CSV libraries.
 - [**Microsoft.Data.Analysis**](https://www.nuget.org/packages/Microsoft.Data.Analysis) 0.18.0 / [Project site](https://dot.net/ml) / [Source code](https://github.com/dotnet/MachineLearning)
 - [**Microsoft.ML**](https://www.nuget.org/packages/Microsoft.ML) 1.6.0 / [Project site](https://dot.net/ml) / [Source code](https://github.com/dotnet/MachineLearning) 
 - [**NReco.Csv**](https://www.nuget.org/packages/NReco.Csv) 1.0.0 / [Source code](https://github.com/nreco/csv) 
-- [**Open.Text.CSV**](https://www.nuget.org/packages/Open.Text.CSV) 2.3.3 / [Source code](https://github.com/Open-NET-Libraries/Open.Text.CSV/) 
+- [**Open.Text.CSV**](https://www.nuget.org/packages/Open.Text.CSV) 2.4.0 / [Source code](https://github.com/Open-NET-Libraries/Open.Text.CSV/) 
 - [**RecordParser**](https://www.nuget.org/packages/RecordParser) 1.2.0 (with 0.1.8 `Ben.StringIntern`, 5.0.1 `System.IO.Pipelines`) / [Source code](https://github.com/leandromoh/RecordParser) 
 - [**ServiceStack.Text**](https://www.nuget.org/packages/ServiceStack.Text) 5.11.0 / [Project site](https://servicestack.net/text) / [Source code](https://github.com/ServiceStack/ServiceStack.Text) 
 - [**Sky.Data.Csv**](https://www.nuget.org/packages/Sky.Data.Csv) 2.5.0 / [Source code](https://github.com/fengzhenqiong/Sky.Data.Csv) 
 - [**SoftCircuits.CsvParser**](https://www.nuget.org/packages/SoftCircuits.CsvParser) 3.0.0 / [Source code](https://github.com/SoftCircuits/CsvParser) 
-- [**Sylvan.Data.Csv**](https://www.nuget.org/packages/Sylvan.Data.Csv) 1.0.3 (with 0.2.1 `Sylvan.Common`) / [Source code](https://github.com/MarkPflug/Sylvan) 
+- [**Sylvan.Data.Csv**](https://www.nuget.org/packages/Sylvan.Data.Csv) 1.1.6 (with 0.2.1 `Sylvan.Common`) / [Source code](https://github.com/MarkPflug/Sylvan) 
 - [**TinyCsvParser**](https://www.nuget.org/packages/TinyCsvParser) 2.6.1 / [Source code](https://github.com/bytefish/TinyCsvParser)
 - [**TxtCsvHelper**](https://www.nuget.org/packages/TxtCsvHelper) 1.3.1 / [Source code](https://github.com/camdrudge/TxtCsvHelper)
 
@@ -72,11 +72,12 @@ And... I threw in two other implementations that don't come from packages:
 
 These are the parse times for a CSV file with 1,000,000 lines. The units are in seconds.
 
-<a href="{% attachment diagram-5.png %}"><img class="center" src="{% attachment diagram-5.png %}" width="700" height="391" /></a>
+<a href="{% attachment diagram-6.png %}"><img class="center" src="{% attachment diagram-6.png %}" width="700" height="391" /></a>
 
-🏆 Congratulations **Cursively**! It's taken the first place by parsing a 1 million line file in 1.70 seconds. The **Sylvan.Data.Csv**
-library seems to effectively have equivalent performance with Cursively (faster in many past iterations) so I think
-it's safe to say both are top of their class! Perhaps pick the one that had an API that feels better for your scenario.
+🏆 Congratulations **Sylvan.Data.Csv**! This library has taken the first place by parsing a 1 million line file in 1.39 seconds. Mark
+employed a new strategy to pull ahead of the pack by using SIMD. His first attempt worked great on newer Intel processors
+but my older AMD Zen 2 processor used for the benchmarks wasn't working as well. He was kind enough to enhance his
+implementation to work well even on my older hardware ([more context on his PR](https://github.com/joelverhagen/NCsvPerf/pull/38#issuecomment-895494037)).
 
 Since I originally posted, [Josh Close](https://github.com/JoshClose) (author of the most popular **CsvHelper**) has
 put a lot of work into performance and has brought his implementation from 10th place to a close 4th place. HUGE
@@ -91,7 +92,7 @@ about his own performance analysis. Awesome work, Aurélien! Great to see such a
 
 **RecordParser**, a newly tested library, took third place from **CsvHelper**. I hadn't heard of this library before, but
 the performance is excellent and the
-[adapter code](https://github.com/joelverhagen/NCsvPerf/blob/8fa762676711dc065a2d0401683828e1b087e095/NCsvPerf/CsvReadable/Implementations/RecordParser.cs)
+[adapter code](https://github.com/joelverhagen/NCsvPerf/blob/main/NCsvPerf/CsvReadable/Implementations/RecordParser.cs)
 is extensive and leverages several OSS libraries (Ben.StringIntern and System.IO.Pipelines) so it maybe be useful to
 look through to learn tricks for your own performance adventures.
 
@@ -103,10 +104,11 @@ intrinsic parsing performance. But I chose to still include them for completenes
 and **FileHelpers** ([reference](https://github.com/joelverhagen/NCsvPerf/pull/38#issue-705928485)). Thanks Mark Pflug
 for this investigation.
 
-Also, a previous version of this post was using .NET Core 3.1. It looks like .NET 5 gives a measurable improvement on all
-implementations, averaging about **a 10% reduction in runtime** on average. Nice work .NET team!
+Also, a previous version of this post was using .NET Core 3.1. .NET 5 gave a measurable improvement on all implementations,
+averaging about **a 10% reduction in runtime**. Then, when we moved the benchmarks from .NET 5 to .NET 6 preview, we got
+another **4% reduction in runtime** on average. Nice work .NET team!
 
-Most shockingly, my **HomeGrown** implementation is not the worst. And the [code is beautiful](https://github.com/joelverhagen/NCsvPerf/blob/8fa762676711dc065a2d0401683828e1b087e095/NCsvPerf/HomeGrown/CsvUtility.cs#L39) 😭 (as a father says to his ugly kid). In fact, it looks to be a very average implementation. So proud.
+Most shockingly, my **HomeGrown** implementation is not the worst. And the [code is beautiful](https://github.com/joelverhagen/NCsvPerf/blob/main/NCsvPerf/HomeGrown/CsvUtility.cs#L39) 😭 (as a father says to his ugly kid). In fact, it looks to be a very average implementation. So proud.
 
 ## I'm talking smack?
 
@@ -147,7 +149,7 @@ I tested execution time, not memory allocation. Maybe I'll update this post late
 
 ## Library-specific adapters
 
-Each library-specific implementation is [available on GitHub](https://github.com/joelverhagen/NCsvPerf/tree/8fa762676711dc065a2d0401683828e1b087e095/NCsvPerf/CsvReadable/Implementations).
+Each library-specific implementation is [available on GitHub](https://github.com/joelverhagen/NCsvPerf/tree/main/NCsvPerf/CsvReadable/Implementations).
 
 All of the implementations look something like this:
 
@@ -182,6 +184,20 @@ The BenchmarkDotNet and Excel workbook (for the charts and tables above) are her
 The test was run on my home desktop PC which is Windows 10, .NET 5.0.1, and an AMD Ryzen 9 3950X CPU.
 
 ## Update log
+
+### Update 2021-08-13 (commit [`39dd976`](https://github.com/joelverhagen/NCsvPerf/tree/39dd97605fce38c9729e0e7fa8719d34b758b8b4))
+
+- Switched from .NET 5 to .NET 6 (6.0.100-preview.7.21379.14)
+- Updated **Angara.Statistics** from 0.1.0 to 0.1.4
+- Updated **BenchmarkDotNet** from 0.13.0 to 0.13.1
+- Updated **Open.Text.CSV** from 2.3.3 to 2.4.0
+- Updated **Sylvan.Data.Csv** from 1.1.5 to 1.1.6
+
+This entire update was done by [Mark](https://github.com/MarkPflug) via [a PR]((https://github.com/joelverhagen/NCsvPerf/pull/41)). Thanks!
+
+<a href="{% attachment diagram-6.png %}"><img class="center" src="{% attachment diagram-6.png %}" width="350" height="195" /></a>
+
+Results - [BenchmarkDotNet.Artifacts-6.0-7.zip]({% attachment BenchmarkDotNet.Artifacts-6.0-7.zip %})
 
 ### Update 2021-08-09 (commit [`8fa7626`](https://github.com/joelverhagen/NCsvPerf/tree/8fa762676711dc065a2d0401683828e1b087e095))
 
