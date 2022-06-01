@@ -20,6 +20,7 @@ This post is part of my Advanced Azure Functions series (thanks for the idea, [L
 
 1. [How to run a distributed scan of Table Storage](../../2020/12/distributed-scan-of-azure-tables) - 10 minute limit and Table Storage
 1. **Disk write performance on Azure Functions** - this post
+1. [Run Azure Functions on Virtual Machine Scale Sets](../../2022/05/azure-functions-on-vmss) - save money on cheap Functions compute
 
 ## Introduction
 

@@ -18,6 +18,7 @@ This post is part of my Advanced Azure Functions series (thanks for the idea, [L
 
 1. **How to run a distributed scan of Azure Table Storage** - this post
 1. [Disk write performance on Azure Functions](../../2021/02/azure-function-disk-performance) - use the Azure File Share efficiently
+1. [Run Azure Functions on Virtual Machine Scale Sets](../../2022/05/azure-functions-on-vmss) - save money on cheap Functions compute
 
 ## Introduction
 
@@ -103,18 +104,18 @@ other words, each query will be discovered only once
 Let me explain. Suppose you have a small table like this, where the partition key is a fake person's last name and the
 row key is the first name:
 
-PartitionKey | RowKey
------------- | ------
-Dashner      | Cleopatra
-Davis        | Gemma
-Davis        | Loralee
-Dodge        | Lowell
-Hartlage     | Marketta
-Nuckles      | Timmy
-Rundle       | Coleen
-Splawn       | Lise
-Wedell       | Annabelle
-Wongus       | Rosenda
+| PartitionKey | RowKey    |
+| ------------ | --------- |
+| Dashner      | Cleopatra |
+| Davis        | Gemma     |
+| Davis        | Loralee   |
+| Dodge        | Lowell    |
+| Hartlage     | Marketta  |
+| Nuckles      | Timmy     |
+| Rundle       | Coleen    |
+| Splawn       | Lise      |
+| Wedell       | Annabelle |
+| Wongus       | Rosenda   |
 
 The maximum take count (segment size) in Azure Table Storage is 1000, but let's use a smaller number of 2 to
 demonstrate the concepts. 
@@ -253,10 +254,10 @@ In this test, 3,558,594 rows were copied from a source table to a destination ta
 
 The Y-axis is the number of function executions and the X access is the number of seconds since the process started.
 
-Variant     | Duration  | Max executions / 30 seconds | Max execution duration
------------ | --------- | --------------------------- | ---------------------------
-Serial      | 6 minutes | 39,816                      | 5 minutes, 21 seconds
-Prefix Scan | 5 minutes | 58,471                      | 7.8 seconds
+| Variant     | Duration  | Max executions / 30 seconds | Max execution duration |
+| ----------- | --------- | --------------------------- | ---------------------- |
+| Serial      | 6 minutes | 39,816                      | 5 minutes, 21 seconds  |
+| Prefix Scan | 5 minutes | 58,471                      | 7.8 seconds            |
 
 As you can see, the serial approach is a bit slower at this table size. The real kicker is the 5 minute, 21 second
 execution time for the serial approach. This is the single "paging" Azure Function that enqueued the rest of the work.
@@ -267,10 +268,10 @@ The serial implementation comfortably finishes within the 10-minute limit. But w
 
 <img class="center" src="{% attachment performance-2.png %}" width="700" height="423" />
 
-Variant     | Duration     | Max executions / 30 seconds | Max execution duration
------------ | ------------ | --------------------------- | ---------------------------
-Serial      | **forever!** | 47,374                      | >10 minutes (timeout)
-Prefix Scan | 6 minutes    | 94,134 🔥                   | 11.5 seconds
+| Variant     | Duration     | Max executions / 30 seconds | Max execution duration |
+| ----------- | ------------ | --------------------------- | ---------------------- |
+| Serial      | **forever!** | 47,374                      | >10 minutes (timeout)  |
+| Prefix Scan | 6 minutes    | 94,134 🔥                    | 11.5 seconds           |
 
 In this test, the serial approach never completed. After 20 minutes, I halted the process since I could see several
 Azure Function timeout exceptions. I could also see that the "paging" Function execution had started over from the
@@ -286,9 +287,9 @@ For fun, I wanted to see how hot this prefix scan approach could get.
 
 <img class="center" src="{% attachment performance-10.png %}" width="700" height="423" />
 
-Variant     | Duration   | Max executions / 30 seconds | Max execution duration
------------ | ---------- | --------------------------- | ---------------------------
-Prefix Scan | 28 minutes | 110,857                     | 2 minutes, 57 seconds
+| Variant     | Duration   | Max executions / 30 seconds | Max execution duration |
+| ----------- | ---------- | --------------------------- | ---------------------- |
+| Prefix Scan | 28 minutes | 110,857                     | 2 minutes, 57 seconds  |
 
 It seems there is another bottleneck I am running into. I'm not sure what. I noticed the queue size was quite large
 for most of the test duration, which suggests more hardware could help the problem. Maybe Azure Functions said
