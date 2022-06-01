@@ -78,6 +78,16 @@ With VMSS, you can choose a Microsoft or 3rd party provided VM images or you can
 
 An alternative approach would be to use [Azure Image Builder](https://docs.microsoft.com/en-us/azure/virtual-machines/image-builder-overview) to bundle up a VM image with the Azure Functions host, app, and even configuration baked in.
 
+### Deployment and installation
+
+Since we're using a base Windows Server VM image, .NET 5+ is not guaranteed to be installed so we'll use [`dotnet-install.ps1`](https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-install-script).
+
+To ensure the Azure Functions host runs as a singleton and restarts when the VM instance reboots, we'll add a [Scheduled Task](https://docs.microsoft.com/en-us/windows/win32/taskschd/task-scheduler-start-page) to launch the app.
+
+This installation logic will be executed by a PowerShell script invoked by the [`CustomScriptExtension`](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows). `CustomScriptExtension` will ensure all of the needed files are delivered 
+
+The scheduled task will invoke a PowerShell script that sets up the proper environment variables and launches `dotnet.exe`, pointing at the 
+
 ### VMSS auto-scaling
 
 One of the great value propositions of Azure Functions Consumption plan is that auto-scaling based on load is handled for you. With this VMSS-based solution, we'll need to do auto-scaling ourselves to settle on a fixed number of instances.
@@ -93,4 +103,7 @@ I didn't put too much thought into these rules but for my use case they worked g
 
 If you use an HTTP trigger then your app very likely needs to be accessible to the internet (or at least virtual network) so you have to think about routing incoming traffic to one of the VMSS nodes.
 
-The approach I used here was adding an Azure Load Balancer resource which is a layer 4 load balancer. You can integrate a Load Balancer (LB) with VMSS such that connections are distributed across all VMSS nodes. 
+The approach I used here was adding an Azure Load Balancer resource which is a layer 4 load balancer. You can integrate a Load Balancer (LB) with VMSS such that connections are distributed across all VMSS nodes.
+
+If you don't have any HTTP triggers and just process queue messages or run on a timer, you don't need a load balancer at all and no incoming traffic needs to be allowed to your nodes.
+
