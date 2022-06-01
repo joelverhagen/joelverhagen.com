@@ -70,6 +70,27 @@ All we have to do is get the host and the app running on VMSS nodes and we'll be
 
 ## Design
 
+We'll invoke the `WebJobs.Script.WebHost` project from [Azure/azure-functions-host](https://github.com/Azure/azure-functions-host) using the .NET runtime. We'll use environment variables to point the host to our Functions app as well as define custom configuration for our app.
+
 ### VM image
 
-With VMSS, you can choose a Microsoft or 3rd party provided VM images or you can build your own with all of your code pre-bundled. I found that it was 
+With VMSS, you can choose a Microsoft or 3rd party provided VM images or you can build your own with all of your code pre-bundled. I found that it was much easier to use a base image (e.g. `2022-datacenter-core-smalldisk`) and install everything needed for the app using [`CustomScriptExtension`](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows). 
+
+An alternative approach would be to use [Azure Image Builder](https://docs.microsoft.com/en-us/azure/virtual-machines/image-builder-overview) to bundle up a VM image with the Azure Functions host, app, and even configuration baked in.
+
+### VMSS auto-scaling
+
+One of the great value propositions of Azure Functions Consumption plan is that auto-scaling based on load is handled for you. With this VMSS-based solution, we'll need to do auto-scaling ourselves to settle on a fixed number of instances.
+
+I opted to create a basic auto-scaling rule based on CPU counters:
+
+- Scale out (add) by 5 instances when the average CPU exceeds 25%.
+- Scale in (remote) by 10 instances when the average CPU drops below 15%.
+
+I didn't put too much thought into these rules but for my use case they worked great. If I was running on AKS, I would probably try out something like [KEDA](https://keda.sh/).
+
+### HTTP triggers
+
+If you use an HTTP trigger then your app very likely needs to be accessible to the internet (or at least virtual network) so you have to think about routing incoming traffic to one of the VMSS nodes.
+
+The approach I used here was adding an Azure Load Balancer resource which is a layer 4 load balancer. You can integrate a Load Balancer (LB) with VMSS such that connections are distributed across all VMSS nodes. 
