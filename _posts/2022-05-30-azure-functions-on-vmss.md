@@ -134,7 +134,7 @@ core machine and a `Standard_D2ds_v4` is a two core machine and Spot VMs main cl
 
 Other peripheral costs for running my NuGet.Insights project include Azure Storage, an App Service Plan for an admin
 site, a single Azure Function instance for emitting metrics, and bandwidth (talking to NuGet.org public APIs). These
-numbers were pretty much the save (give or take $0.05) between the two variants.
+numbers were pretty much the same (give or take $0.05) between the two variants.
 
 ## Motivation
 
