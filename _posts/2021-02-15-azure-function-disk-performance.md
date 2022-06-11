@@ -12,17 +12,17 @@ tags:
 title: Disk write performance on Azure Functions
 ---
 
-**Latest update:** 2021-04-26, added App Service plan performance. See the bottom of the post.
-
 ## Series
 
 This post is part of my Advanced Azure Functions series (thanks for the idea, [Loïc](https://twitter.com/loicsharma)!)
 
 1. [How to run a distributed scan of Table Storage](../../2020/12/distributed-scan-of-azure-tables) - 10 minute limit and Table Storage
 1. **Disk write performance on Azure Functions** - this post
-1. [Run Azure Functions on Virtual Machine Scale Sets](../../2022/05/azure-functions-on-vmss) - save money on cheap Functions compute
+1. [Run Azure Functions on Virtual Machine Scale Sets](../../2022/05/azure-functions-on-vmss) - save $$$ on Functions
 
 ## Introduction
+
+**Latest update:** 2021-04-26, added App Service plan performance. See the bottom of the post.
 
 For one of my side projects, I've used the disk available on Azure Functions for temporary storage. Some code that
 processes .NET `Stream` objects requires a seekable stream. If you are downloading bytes from a remote endpoint, e.g.

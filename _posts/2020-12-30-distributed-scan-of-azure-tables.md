@@ -18,7 +18,7 @@ This post is part of my Advanced Azure Functions series (thanks for the idea, [L
 
 1. **How to run a distributed scan of Azure Table Storage** - this post
 1. [Disk write performance on Azure Functions](../../2021/02/azure-function-disk-performance) - use the Azure File Share efficiently
-1. [Run Azure Functions on Virtual Machine Scale Sets](../../2022/05/azure-functions-on-vmss) - save money on cheap Functions compute
+1. [Run Azure Functions on Virtual Machine Scale Sets](../../2022/05/azure-functions-on-vmss) - save $$$ on Functions
 
 ## Introduction
 
