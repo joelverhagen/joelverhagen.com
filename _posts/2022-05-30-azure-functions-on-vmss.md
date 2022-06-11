@@ -13,7 +13,7 @@ title: Run Azure Functions on Virtual Machine Scale Sets
 
 ## Series
 
-This post is part of my Advanced Azure Functions series (thanks for the idea, [Loïc](https://twitter.com/sharmaloic)!)
+This post is part of my Advanced Azure Functions series (thanks for the idea, [Loïc](https://twitter.com/loicsharma)!)
 
 1. [How to run a distributed scan of Table Storage](../../2020/12/distributed-scan-of-azure-tables) - 10 minute limit
    and Table Storage
