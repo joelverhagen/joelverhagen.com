@@ -10,6 +10,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - uses: actions/checkout@v2
+    - name: Build the site in the jekyll/builder container
+      run: |
+        docker run \
+        -v ${{ github.workspace }}:/srv/jekyll -v ${{ github.workspace }}/_prod:/srv/jekyll/_prod \
+        jekyll/builder:latest /bin/bash -c "chmod -R 777 /srv/jekyll && jekyll build --trace --config /srv/jekyll/_config_prod.yml"
     - name: Wait for access
       run: |
         until $(curl --output /dev/null --silent --head --fail ${{ secrets.PRODTESTURL }}); do
@@ -17,12 +23,6 @@ jobs:
           echo " is the agent IP address. Please update firewall rules. Waiting for access..."
           sleep 5
         done
-    - uses: actions/checkout@v2
-    - name: Build the site in the jekyll/builder container
-      run: |
-        docker run \
-        -v ${{ github.workspace }}:/srv/jekyll -v ${{ github.workspace }}/_prod:/srv/jekyll/_prod \
-        jekyll/builder:latest /bin/bash -c "chmod -R 777 /srv/jekyll && jekyll build --trace --config /srv/jekyll/_config_prod.yml"
     - uses: bacongobbler/azure-blob-storage-upload@v1.2.0
       with:
         source_dir: ${{ github.workspace }}/_prod

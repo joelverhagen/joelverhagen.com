@@ -10,7 +10,7 @@ tags:
 title: The fastest CSV parser in .NET
 ---
 
-**Latest update:** 2023-03-17, with new versions. **Sylvan.Data.Csv** retains the lead but **SoftCircuits.CsvParser** makes gains (it's now in the 5 compliant parsers).
+**Latest update:** 2023-03-17, with new versions. **Sylvan.Data.Csv** retains the lead, **SoftCircuits.CsvParser** makes gains (it's now in the top 5 compliant parsers).
 
 ## Specific purpose tested
 
@@ -23,6 +23,57 @@ So if you want a feature-rich library and don't care as much about 1 millisecond
 just use [CsvHelper](https://www.nuget.org/packages/CsvHelper/). It's the "winner" from a popularity stand-point and has
 good developer ergonomics in my experience. Using an established, popular library is probably the best idea since it's
 most battle-tested and has the best examples and Q&A online.
+
+## Results
+
+These are the parse times for a CSV file with 1,000,000 lines. The units are in seconds.
+
+<a href="{% attachment diagram-7.png %}"><img class="center" src="{% attachment diagram-7.png %}" width="700" height="400" /></a>
+
+Here are the results for each implementation (see the **CSV libraries tested** section below for links).
+
+| Rank | Implementation                                            | Parse time    |
+| ---- | --------------------------------------------------------- | ------------- |
+| 1    | `Sylvan.Data.Csv`                                         | 1.33 seconds  |
+| 2    | `Cursively`                                               | 1.75 seconds  |
+| 3    | `RecordParser`                                            | 1.81 seconds  |
+| 4    | `CsvHelper`                                               | 2.58 seconds  |
+| 5    | `string.Split` (broken for escaped commas)                | 2.92 seconds  |
+| 6    | `SoftCircuits.CsvParser`                                  | 2.99 seconds  |
+| 7    | `mgholam.fastCSV`                                         | 3.00 seconds  |
+| 8    | `TxtCsvHelper`                                            | 3.09 seconds  |
+| 9    | `FluentCSV`                                               | 3.14 seconds  |
+| 10   | `NReco.Csv`                                               | 3.37 seconds  |
+| 11   | `KBCsv`                                                   | 3.69 seconds  |
+| 12   | `Sky.Data.Csv`                                            | 3.71 seconds  |
+| 13   | `HomeGrown` (my own implementation)                       | 3.87 seconds  |
+| 14   | `ServiceStack.Text`                                       | 3.91 seconds  |
+| 15   | `Dsv`                                                     | 3.91 seconds  |
+| 16   | `Microsoft.ML`                                            | 3.93 seconds  |
+| 17   | `FastCsvParser`                                           | 4.24 seconds  |
+| 18   | `FileHelpers`                                             | 4.36 seconds  |
+| 19   | `Ctl.Data`                                                | 4.39 seconds  |
+| 20   | `CSVFile`                                                 | 4.49 seconds  |
+| 21   | `CsvTextFieldParser`                                      | 4.49 seconds  |
+| 22   | `LumenWorksCsvReader`                                     | 4.93 seconds  |
+| 23   | `Cesil`                                                   | 5.03 seconds  |
+| 24   | `LinqToCsv`                                               | 5.48 seconds  |
+| 25   | `Open.Text.CSV`                                           | 5.59 seconds  |
+| 26   | `CsvTools`                                                | 6.29 seconds  |
+| 27   | `TinyCsvReader`                                           | 6.44 seconds  |
+| 28   | `StackOverflowRegex` (a StackOverflow implementation)     | 7.26 seconds  |
+| 29   | `Csv`                                                     | 7.50 seconds  |
+| 30   | `FlatFiles`                                               | 8.45 seconds  |
+| 31   | `Angara.Table`                                            | 10.74 seconds |
+| 32   | `Microsoft.Data.Analysis`                                 | 13.39 seconds |
+| 33   | `Microsoft.VisualBasic.FileIO.TextFieldParser` (built-in) | 17.84 seconds |
+| 34   | `ChoETL`                                                  | 22.93 seconds |
+| 35   | `CommonLibrary.NET`                                       | 30.39 seconds |
+
+🏆 Congratulations **Sylvan.Data.Csv**! This library has taken the first place by parsing a 1 million line file in 1.3 seconds. Mark
+employed a new strategy to pull ahead of the pack by using SIMD. His first attempt worked great on newer Intel processors
+but my older AMD Zen 2 processor used for the benchmarks wasn't working as well. He was kind enough to enhance his
+implementation to work well even on my older hardware ([more context on his PR](https://github.com/joelverhagen/NCsvPerf/pull/38#issuecomment-895494037)).
 
 ## CSV libraries tested
 
@@ -69,48 +120,6 @@ And... I threw in two other implementations that don't come from packages:
 - **Microsoft.VisualBasic.FileIO.TextFieldParser**, which is a built-in CSV parser.
 - A [regex based CSV-parser from StackOverflow](https://stackoverflow.com/a/39939559), as suggested by [@diogenesdirkx](https://github.com/diogenesdirkx).
 
-## Results
-
-These are the parse times for a CSV file with 1,000,000 lines. The units are in seconds.
-
-<a href="{% attachment diagram-7.png %}"><img class="center" src="{% attachment diagram-7.png %}" width="700" height="400" /></a>
-
-🏆 Congratulations **Sylvan.Data.Csv**! This library has taken the first place by parsing a 1 million line file in 1.3 seconds. Mark
-employed a new strategy to pull ahead of the pack by using SIMD. His first attempt worked great on newer Intel processors
-but my older AMD Zen 2 processor used for the benchmarks wasn't working as well. He was kind enough to enhance his
-implementation to work well even on my older hardware ([more context on his PR](https://github.com/joelverhagen/NCsvPerf/pull/38#issuecomment-895494037)).
-
-Since I originally posted, [Josh Close](https://github.com/JoshClose) (author of the most popular **CsvHelper**) has
-put a lot of work into performance and has brought his implementation from 10th place to a close 4th place. HUGE
-improvement. I haven't tested "higher level" data mapping scenarios (which are likely the most common CsvHelper usages)
-but it's really exciting to see such a big performance improvement in the most popular CSV parsing library.
-
-I also want to mention some incredible work by [Aurélien Boudoux](https://github.com/aboudoux) who reworked his library
-**FluentCSV** to improve the performance. I have to say this is the most impressive performance improvement I've seen in
-this project. In the last round, his 2.0.0 version clocked in at 57 seconds for 1 million lines (last place). With
-version 3.0.0, he brought the time down to 3.2 seconds (fifth place)! [Read more](https://github.com/aboudoux/FluentCSV/blob/master/Benchmark/README.MD)
-about his own performance analysis. Awesome work, Aurélien! Great to see such a nice API with excellent performance.
-
-**RecordParser**, a newly tested library, took third place from **CsvHelper**. I hadn't heard of this library before, but
-the performance is excellent and the
-[adapter code](https://github.com/joelverhagen/NCsvPerf/blob/main/NCsvPerf/CsvReadable/Implementations/RecordParser.cs)
-is extensive and leverages several OSS libraries (Ben.StringIntern and System.IO.Pipelines) so it maybe be useful to
-look through to learn tricks for your own performance adventures.
-
-Finally, I wanted to mention that two of the libraries provide better performance via data mapping to a full POCO or
-only provide parsing via data mapping in their API, as opposed to most libraries which provide raw, low-level access
-to a string array per row. This means that the tests for these APIs are perhaps not as representative of their
-intrinsic parsing performance. But I chose to still include them for completeness. These libraries are
-**ChoETL** ([reference](https://github.com/joelverhagen/NCsvPerf/pull/38#issuecomment-895357417))
-and **FileHelpers** ([reference](https://github.com/joelverhagen/NCsvPerf/pull/38#issue-705928485)). Thanks Mark Pflug
-for this investigation.
-
-Also, a previous version of this post was using .NET Core 3.1. .NET 5 gave a measurable improvement on all implementations,
-averaging about **a 10% reduction in runtime**. Then, when we moved the benchmarks from .NET 5 to .NET 6 preview, we got
-another **4% reduction in runtime** on average. Nice work .NET team!
-
-Most shockingly, my **HomeGrown** implementation is not the worst. And the [code is beautiful](https://github.com/joelverhagen/NCsvPerf/blob/main/NCsvPerf/HomeGrown/CsvUtility.cs#L39) 😭 (as a father says to his ugly kid). In fact, it looks to be a very average implementation. So proud.
-
 ## I'm talking smack?
 
 Am I defaming your library? Point out what I missed! I make mistakes all the time 😅 and I'm happy to adjust the report
@@ -124,10 +133,10 @@ Feel free to reach out to me however you can figure out. (can't make it too easy
 
 ## My motivation
 
-For one of my side projects, I was using CSV files as an intermediate data format. Essentially I have an Azure Function
-writing results to Azure Table Storage and another Function collecting the results into giant CSV files. These CSV files
-get gobbled up by Azure Data Explorer allowing easy slice and dice with Kusto query language. Kusto is awesome by the
-way.
+For my side project [NuGet.Insights](https://github.com/NuGet/Insights), I was using CSV files as an intermediate data
+format. Essentially I have an Azure Function writing results to Azure Table Storage and another Function collecting the
+results into giant CSV files. These CSV files get gobbled up by Azure Data Explorer allowing easy slice and dice with
+Kusto query language. Kusto is awesome by the way.
 
 To save money on the Azure Function compute time, I wanted to optimize all of the steps I could, including the CSV
 reading and writing. Therefore, I naturally installed a bunch of CSV parsing libraries and tested their performance 😁.
