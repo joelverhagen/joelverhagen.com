@@ -10,7 +10,9 @@ tags:
 title: The fastest CSV parser in .NET
 ---
 
-**Latest update:** 2023-03-17, with new versions. **Sylvan.Data.Csv** retains the lead, **SoftCircuits.CsvParser** makes gains (it's now in the top 5 compliant parsers).
+**Latest update:** 2023-10-26, with new versions and new parsers **Sep** and **GenericParser**. **RecordParser** takes
+the lead with a parallel implementation and the newcomer **Sep** takes the lead for single threaded parsers. **Sylvan.Data.Csv**
+remains the fastest single-threaded, quote-unescaping parser.
 
 ## Specific purpose tested
 
@@ -26,66 +28,98 @@ most battle-tested and has the best examples and Q&A online.
 
 ## Results
 
-These are the parse times for a CSV file with 1,000,000 lines. The units are in seconds.
+These are the parse times for a CSV file with 1,000,000 lines. The units are in milliseconds. I've only shown the top 20 results
+because the chart was getting hard to read. You can see the other results on 2nd chart below in the update log.
 
-<a href="{% attachment diagram-7.png %}"><img class="center" src="{% attachment diagram-7.png %}" width="700" height="400" /></a>
+<a href="{% attachment diagram-8-lower.png %}"><img class="center" src="{% attachment diagram-lower.png %}" width="700" height="400" /></a>
 
 Here are the results for each implementation (see the **CSV libraries tested** section below for links).
 
-| Rank | Implementation                                            | Parse time    |
-| ---- | --------------------------------------------------------- | ------------- |
-| 1    | `Sylvan.Data.Csv`                                         | 1.33 seconds  |
-| 2    | `Cursively`                                               | 1.75 seconds  |
-| 3    | `RecordParser`                                            | 1.81 seconds  |
-| 4    | `CsvHelper`                                               | 2.58 seconds  |
-| 5    | `string.Split` (broken for escaped commas)                | 2.92 seconds  |
-| 6    | `SoftCircuits.CsvParser`                                  | 2.99 seconds  |
-| 7    | `mgholam.fastCSV`                                         | 3.00 seconds  |
-| 8    | `TxtCsvHelper`                                            | 3.09 seconds  |
-| 9    | `FluentCSV`                                               | 3.14 seconds  |
-| 10   | `NReco.Csv`                                               | 3.37 seconds  |
-| 11   | `KBCsv`                                                   | 3.69 seconds  |
-| 12   | `Sky.Data.Csv`                                            | 3.71 seconds  |
-| 13   | `HomeGrown` (my own implementation)                       | 3.87 seconds  |
-| 14   | `ServiceStack.Text`                                       | 3.91 seconds  |
-| 15   | `Dsv`                                                     | 3.91 seconds  |
-| 16   | `Microsoft.ML`                                            | 3.93 seconds  |
-| 17   | `FastCsvParser`                                           | 4.24 seconds  |
-| 18   | `FileHelpers`                                             | 4.36 seconds  |
-| 19   | `Ctl.Data`                                                | 4.39 seconds  |
-| 20   | `CSVFile`                                                 | 4.49 seconds  |
-| 21   | `CsvTextFieldParser`                                      | 4.49 seconds  |
-| 22   | `LumenWorksCsvReader`                                     | 4.93 seconds  |
-| 23   | `Cesil`                                                   | 5.03 seconds  |
-| 24   | `LinqToCsv`                                               | 5.48 seconds  |
-| 25   | `Open.Text.CSV`                                           | 5.59 seconds  |
-| 26   | `CsvTools`                                                | 6.29 seconds  |
-| 27   | `TinyCsvReader`                                           | 6.44 seconds  |
-| 28   | `StackOverflowRegex` (a StackOverflow implementation)     | 7.26 seconds  |
-| 29   | `Csv`                                                     | 7.50 seconds  |
-| 30   | `FlatFiles`                                               | 8.45 seconds  |
-| 31   | `Angara.Table`                                            | 10.74 seconds |
-| 32   | `Microsoft.Data.Analysis`                                 | 13.39 seconds |
-| 33   | `Microsoft.VisualBasic.FileIO.TextFieldParser` (built-in) | 17.84 seconds |
-| 34   | `ChoETL`                                                  | 22.93 seconds |
-| 35   | `CommonLibrary.NET`                                       | 30.39 seconds |
+| Rank | Implementation                                                                                   | Parse time |
+| ---- | ------------------------------------------------------------------------------------------------ | ---------- |
+| 1    | `RecordParser` (parallel)                                                                        | 826 ms     |
+| 2    | `Sep` (does not unescape fields, see [nietras/Sep#19](https://github.com/nietras/Sep/issues/19)) | 1046 ms    |
+| 3    | `Sylvan.Data.Csv`                                                                                | 1237 ms    |
+| 4    | `Cursively`                                                                                      | 1733 ms    |
+| 5    | `RecordParser`                                                                                   | 1761 ms    |
+| 6    | `HomeGrown2` (`HomeGrown` with string pooling)                                                   | 2255 ms    |
+| 7    | `CsvHelper`                                                                                      | 2484 ms    |
+| 8    | `SoftCircuits.CsvParser`                                                                         | 2953 ms    |
+| 9    | `string.Split` (broken for escaped commas)                                                       | 3095 ms    |
+| 10   | `mgholam.fastCSV`                                                                                | 3185 ms    |
+| 11   | `TxtCsvHelper`                                                                                   | 3250 ms    |
+| 12   | `FluentCSV`                                                                                      | 3304 ms    |
+| 13   | `NReco.Csv`                                                                                      | 3496 ms    |
+| 14   | `KBCsv`                                                                                          | 3942 ms    |
+| 15   | `Sky.Data.Csv`                                                                                   | 3951 ms    |
+| 16   | `HomeGrown` (my own implementation)                                                              | 3984 ms    |
+| 17   | `Microsoft.ML`                                                                                   | 3986 ms    |
+| 18   | `ServiceStack.Text`                                                                              | 4139 ms    |
+| 19   | `Dsv`                                                                                            | 4180 ms    |
+| 20   | `FastCsvParser`                                                                                  | 4321 ms    |
+| 21   | `Ctl.Data`                                                                                       | 4424 ms    |
+| 22   | `FileHelpers`                                                                                    | 4450 ms    |
+| 23   | `GenericParsing`                                                                                 | 4531 ms    |
+| 24   | `CsvTextFieldParser`                                                                             | 4651 ms    |
+| 25   | `CSVFile`                                                                                        | 4715 ms    |
+| 26   | `LumenWorksCsvReader`                                                                            | 5101 ms    |
+| 27   | `Cesil`                                                                                          | 5225 ms    |
+| 28   | `Open.Text.CSV`                                                                                  | 5730 ms    |
+| 29   | `LinqToCsv`                                                                                      | 5735 ms    |
+| 30   | `TinyCsvReader`                                                                                  | 6660 ms    |
+| 31   | `CsvTools`                                                                                       | 6985 ms    |
+| 32   | `StackOverflowRegex` (a StackOverflow implementation)                                            | 7259 ms    |
+| 33   | `Csv`                                                                                            | 7967 ms    |
+| 34   | `FlatFiles`                                                                                      | 8672 ms    |
+| 35   | `Angara.Table`                                                                                   | 10954 ms   |
+| 36   | `Microsoft.Data.Analysis`                                                                        | 13695 ms   |
+| 37   | `Microsoft.VisualBasic.FileIO.TextFieldParser` (built-in)                                        | 20137 ms   |
+| 38   | `ChoETL`                                                                                         | 24282 ms   |
+| 39   | `CommonLibrary.NET`                                                                              | 29514 ms   |
 
-🏆 Congratulations **Sylvan.Data.Csv**! This library has taken the first place by parsing a 1 million line file in 1.3 seconds. Mark
-employed a new strategy to pull ahead of the pack by using SIMD. His first attempt worked great on newer Intel processors
-but my older AMD Zen 2 processor used for the benchmarks wasn't working as well. He was kind enough to enhance his
-implementation to work well even on my older hardware ([more context on his PR](https://github.com/joelverhagen/NCsvPerf/pull/38#issuecomment-895494037)).
+🏆 Congratulations **RecordParser**! This library has taken the first place by parsing a 1 million line file in 826
+milliseconds. Do note that this library is the only one that is tested using parallelism in its implementation. I am not
+aware of any other CSV library that does this so kudos to [Leandro](https://github.com/leandromoh) for innovating this
+approach! If you prefer maximum performance on a single thread, consider using **Sep** which clocks in just over 1
+second to parse a million lines. If you have escaped fields (double quotes, commas, or new line characters in individual
+field values), you should use **Sylvan.Data.Csv** which unescapes the values as you might expect. **Sep** does not
+support this and returns the escaped field value and has no plans to change this, per
+[nietras/Sep#19](https://github.com/nietras/Sep/issues/19).
+
+## Caveats
+
+Note that this benchmark has several characteristics which may not match your production environment. If you're
+concerned about how these results will match up with your own application, I highly recommend running your own
+performance tests.
+
+The data in this test benchmark has:
+
+- No double quotes in any field value
+- No commas in any field value
+- No new line characters (`\r` a.k.a. `CR` a.k.a. carriage return or `\n` a.k.a. `LF` a.k.a. line feed) in any field
+  value
+- A lot of repeated field values
+
+This means that parsers that aren't particularly fast at handling escaping (e.g. a row like `hello,"my good",friend`)
+might do very well at this benchmark but not perform as well on your data. For a lot of repeated values, a parser can
+implement string pooling (sometimes called "interning") to reduce allocations. If your data has few or no repeated
+values, then a string pool will be unnecessary overhead.
+
+Finally, Mark Pflug (author of the **Sylvan.Data.Csv** library) did some great research on new line and quoted field
+handling in the various CSV parsers. See [joelverhagen/NCsvPerf#52](https://github.com/joelverhagen/NCsvPerf/pull/52)
+for more information. Perhaps in the future I'll capture this support in column in the new table above.
 
 ## CSV libraries tested
 
 I tested the following CSV libraries.
 
-- [**Angara.Table**](https://www.nuget.org/packages/Angara.Table) 0.3.3 (with 5.0.2 `FSharp.Core`, 5.0.0 `System.Collections.Immutable`) / [Source code](https://github.com/predictionmachines/Angara.Table)
+- [**Angara.Table**](https://www.nuget.org/packages/Angara.Table) 0.3.3 (with 7.0.401 `FSharp.Core`, 5.0.0 `System.Collections.Immutable`) / [Source code](https://github.com/predictionmachines/Angara.Table)
 - [**Cesil**](https://www.nuget.org/packages/Cesil) 0.9.0 / [Source code](https://github.com/kevin-montrose/cesil)
-- [**ChoETL**](https://www.nuget.org/packages/ChoETL) 1.2.1.50 / [Source code](https://github.com/Cinchoo/ChoETL)
+- [**ChoETL**](https://www.nuget.org/packages/ChoETL) 1.2.1.64 / [Source code](https://github.com/Cinchoo/ChoETL)
 - **CommonLibrary.NET** ~0.9.8.7 / [Source code](https://archive.codeplex.com/?p=commonlibrarynet)
   - **Note**: I had to fork this package into [Knapcode.CommonLibrary.NET](https://www.nuget.org/packages/Knapcode.CommonLibrary.NET) ([NuGet.org]((https://www.nuget.org/packages/Knapcode.CommonLibrary.NET))) for a NuGet.org distribution and for LF handling.
 - [**Csv**](https://www.nuget.org/packages/Csv) 2.0.93 / [Source code](https://github.com/stevehansen/csv)
-- [**CSVFile**](https://www.nuget.org/packages/CSVFile) 3.1.0 / [Source code](https://github.com/tspence/csharp-csv-reader) 
+- [**CSVFile**](https://www.nuget.org/packages/CSVFile) 3.1.1 / [Source code](https://github.com/tspence/csharp-csv-reader) 
 - [**CsvHelper**](https://www.nuget.org/packages/CsvHelper) 30.0.1 / [Project site](https://joshclose.github.io/CsvHelper/) / [Source code](https://github.com/JoshClose/CsvHelper) 
 - [**CsvTextFieldParser**](https://www.nuget.org/packages/CsvTextFieldParser) 1.2.2 / [Source code](https://github.com/22222/CsvTextFieldParser) 
 - [**CsvTools**](https://www.nuget.org/packages/CsvTools) 1.0.12 / [Source code](https://github.com/MikeStall/DataTable) 
@@ -97,25 +131,28 @@ I tested the following CSV libraries.
 - [**FileHelpers**](https://www.nuget.org/packages/FileHelpers) 3.5.2 / [Project site](https://www.filehelpers.net/) / [Source code](https://github.com/MarcosMeli/FileHelpers) 
 - [**FlatFiles**](https://www.nuget.org/packages/FlatFiles) 5.0.4 / [Source code](https://github.com/jehugaleahsa/FlatFiles) 
 - [**FluentCSV**](https://www.nuget.org/packages/FluentCSV/) 3.0.0 / [Source code](https://github.com/aboudoux/FluentCSV/) 
+- [**GenericParsing**](https://www.nuget.org/packages/GenericParsing/) 1.3.0 / [Source code](https://github.com/AndrewRissing/GenericParsing) 
 - [**KBCsv**](https://www.nuget.org/packages/KBCsv/) 6.0.0 / [Source code](https://github.com/kentcb/KBCsv) 
 - [**LinqToCsv**](https://www.nuget.org/packages/LinqToCsv/) 1.5.0 / [Source code](https://www.codeproject.com/Articles/25133/LINQ-to-CSV-library) 
 - [**LumenWorksCsvReader**](https://www.nuget.org/packages/LumenWorksCsvReader) 4.0.0 / [Source code](https://github.com/phatcher/CsvReader) 
 - [**mgholam.fastCSV**](https://www.nuget.org/packages/mgholam.fastCSV) 2.0.9 / [Project site](https://www.codeproject.com/Articles/5255318/fastCSV-A-Tiny-Fast-Standard-Compliant-CSV-Reader) / [Source code](https://github.com/mgholam/fastCSV) 
 - [**Microsoft.Data.Analysis**](https://www.nuget.org/packages/Microsoft.Data.Analysis) 0.20.1 / [Project site](https://dot.net/ml) / [Source code](https://github.com/dotnet/MachineLearning)
 - [**Microsoft.ML**](https://www.nuget.org/packages/Microsoft.ML) 2.0.1 / [Project site](https://dot.net/ml) / [Source code](https://github.com/dotnet/MachineLearning) 
-- [**NReco.Csv**](https://www.nuget.org/packages/NReco.Csv) 1.0.1 / [Source code](https://github.com/nreco/csv) 
-- [**Open.Text.CSV**](https://www.nuget.org/packages/Open.Text.CSV) 3.3.0 / [Source code](https://github.com/Open-NET-Libraries/Open.Text.CSV/) 
-- [**RecordParser**](https://www.nuget.org/packages/RecordParser) 1.3.0 (with 0.1.8 `Ben.StringIntern`, 7.0.0 `System.IO.Pipelines`) / [Source code](https://github.com/leandromoh/RecordParser) 
-- [**ServiceStack.Text**](https://www.nuget.org/packages/ServiceStack.Text) 6.7.0 / [Project site](https://servicestack.net/text) / [Source code](https://github.com/ServiceStack/ServiceStack.Text) 
+- [**NReco.Csv**](https://www.nuget.org/packages/NReco.Csv) 1.0.2 / [Source code](https://github.com/nreco/csv) 
+- [**Open.Text.CSV**](https://www.nuget.org/packages/Open.Text.CSV) 3.4.0 / [Source code](https://github.com/Open-NET-Libraries/Open.Text.CSV/) 
+- [**RecordParser**](https://www.nuget.org/packages/RecordParser) 2.1.0 (with 0.1.8 `Ben.StringIntern`, 7.0.0 `System.IO.Pipelines`) / [Source code](https://github.com/leandromoh/RecordParser) 
+- [**Sep**](https://www.nuget.org/packages/Sep) 0.2.7 / [Source code](https://github.com/nietras/Sep/) 
+- [**ServiceStack.Text**](https://www.nuget.org/packages/ServiceStack.Text) 6.11.0 / [Project site](https://servicestack.net/text) / [Source code](https://github.com/ServiceStack/ServiceStack.Text) 
 - [**Sky.Data.Csv**](https://www.nuget.org/packages/Sky.Data.Csv) 2.5.0 / [Source code](https://github.com/fengzhenqiong/Sky.Data.Csv) 
-- [**SoftCircuits.CsvParser**](https://www.nuget.org/packages/SoftCircuits.CsvParser) 4.0.0 / [Source code](https://github.com/SoftCircuits/CsvParser) 
-- [**Sylvan.Data.Csv**](https://www.nuget.org/packages/Sylvan.Data.Csv) 1.2.7 (with 0.4.1 `Sylvan.Common`) / [Source code](https://github.com/MarkPflug/Sylvan) 
+- [**SoftCircuits.CsvParser**](https://www.nuget.org/packages/SoftCircuits.CsvParser) 4.1.0 / [Source code](https://github.com/SoftCircuits/CsvParser) 
+- [**Sylvan.Data.Csv**](https://www.nuget.org/packages/Sylvan.Data.Csv) 1.3.3 (with 0.4.2 `Sylvan.Common`) / [Source code](https://github.com/MarkPflug/Sylvan) 
 - [**TinyCsvParser**](https://www.nuget.org/packages/TinyCsvParser) 2.7.0 / [Source code](https://github.com/bytefish/TinyCsvParser)
 - [**TxtCsvHelper**](https://www.nuget.org/packages/TxtCsvHelper) 1.3.3 / [Source code](https://github.com/camdrudge/TxtCsvHelper)
 
-And... I threw in two other implementations that don't come from packages:
+And... I threw in a few other implementations that don't come from packages:
 
 - An implementation I called "HomeGrown" which is my first attempt at a CSV parser, without any optimization. 🤞
+- "HomeGrown2" which is like "HomeGrown" but has string pooling. Thanks [@leandromoh](https://github.com/leandromoh)!
 - An implementation simply using `string.Split`. This is broken for CSV files containing escaped comma characters, but I figured it could be a baseline.
 - **Microsoft.VisualBasic.FileIO.TextFieldParser**, which is a built-in CSV parser.
 - A [regex based CSV-parser from StackOverflow](https://stackoverflow.com/a/39939559), as suggested by [@diogenesdirkx](https://github.com/diogenesdirkx).
@@ -133,7 +170,7 @@ Feel free to reach out to me however you can figure out. (can't make it too easy
 
 ## My motivation
 
-For my side project [NuGet.Insights](https://github.com/NuGet/Insights), I was using CSV files as an intermediate data
+For my side project [NuGet Insights](https://github.com/NuGet/Insights), I was using CSV files as an intermediate data
 format. Essentially I have an Azure Function writing results to Azure Table Storage and another Function collecting the
 results into giant CSV files. These CSV files get gobbled up by Azure Data Explorer allowing easy slice and dice with
 Kusto query language. Kusto is awesome by the way.
@@ -189,13 +226,36 @@ public List<T> GetRecords<T>(MemoryStream stream) where T : ICsvReadable
 
 The code for this is stored on GitHub: [joelverhagen/NCsvPerf](https://github.com/joelverhagen/NCsvPerf)
 
-The BenchmarkDotNet and Excel workbook (for the charts and tables above) are here: [BenchmarkDotNet.Artifacts-7.0-8.zip]({% attachment BenchmarkDotNet.Artifacts-7.0-8.zip %})
+The BenchmarkDotNet and Excel workbook (for the charts and tables above) are here: [BenchmarkDotNet.Artifacts-7.0-9.zip]({% attachment BenchmarkDotNet.Artifacts-7.0-9.zip %})
 
-The test was run on my home desktop PC which is Windows 11, .NET 7.0.4, and an AMD Ryzen 9 3950X CPU.
+The test was run on my home desktop PC which is Windows 11, .NET 7.0.12, and an AMD Ryzen 9 3950X CPU.
 
 ## Update log
 
-### Update 2021-08-13 (commit [`d201f24`](https://github.com/joelverhagen/NCsvPerf/tree/d201f24fc473fad283141523a50c3c3d82d74f6f))
+### Update 2023-10-26 (commit [`b8b7f1f`](https://github.com/joelverhagen/NCsvPerf/tree/b8b7f1ff80ca2238269332db13a68c2a9016845d))
+
+- Updated **BenchmarkDotNet** from 0.13.5 to 0.13.9
+- Updated **ChoETL** from 1.2.1.50 to 1.2.1.64
+- Updated **CSVFile** from 3.1.0 to 3.1.1
+- Updated **FSharp.Core** from 7.0.200 to 7.0.401
+- Added **GenericParsing** 1.3.0
+- Added **HomeGrown2**
+- Updated **NReco.Csv** from 1.0.1 to 1.0.2
+- Updated **Open.Text.CSV** from 3.3.3 to 3.4.0
+- Updated **RecordParser** from 1.3.0 to 2.1.0 and added a separate "parallel" benchmark
+- Added **Sep** 0.2.7
+- Updated **ServiceStack.Text** from 6.7.0 to 6.11.0
+- Updated **SoftCircuits.CsvParser** from 4.0.0 to 4.1.0 and switched to recommended API
+- Updated **Sylvan.Common** from 0.4.1 to 0.4.2
+- Updated **Sylvan.Data.Csv** from 1.2.7 to 1.3.3
+
+<a href="{% attachment diagram-8-lower.png %}"><img class="center" src="{% attachment diagram-8-lower.png %}" width="350" height="200" /></a>
+
+<a href="{% attachment diagram-8-upper.png %}"><img class="center" src="{% attachment diagram-8-upper.png %}" width="350" height="200" /></a>
+
+Results - [BenchmarkDotNet.Artifacts-7.0-9.zip]({% attachment BenchmarkDotNet.Artifacts-7.0-9.zip %})
+
+### Update 2023-03-17 (commit [`d201f24`](https://github.com/joelverhagen/NCsvPerf/tree/d201f24fc473fad283141523a50c3c3d82d74f6f))
 
 - Switched from .NET 6 to .NET 7 (7.0.4 runtime, 7.0.202 SDK)
 - Updated **BenchmarkDotNet** from 0.13.1 to 0.13.5
