@@ -31,7 +31,7 @@ most battle-tested and has the best examples and Q&A online.
 These are the parse times for a CSV file with 1,000,000 lines. The units are in milliseconds. I've only shown the top 20 results
 because the chart was getting hard to read. You can see the other results on 2nd chart below in the update log.
 
-<a href="{% attachment diagram-8-lower.png %}"><img class="center" src="{% attachment diagram-lower.png %}" width="700" height="400" /></a>
+<a href="{% attachment diagram-8-lower.png %}"><img class="center" src="{% attachment diagram-8-lower.png %}" width="700" height="400" /></a>
 
 Here are the results for each implementation (see the **CSV libraries tested** section below for links).
 
