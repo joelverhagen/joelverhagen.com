@@ -31,7 +31,7 @@ most battle-tested and has the best examples and Q&A online.
 These are the parse times for a CSV file with 1,000,000 lines. The units are in milliseconds. I've only shown the top 20 results
 because the chart was getting hard to read. You can see the other results on 2nd chart below in the update log.
 
-<a href="{% attachment diagram-8-lower.png %}"><img class="center" src="{% attachment diagram-8-lower.png %}" width="700" height="400" /></a>
+<a href="{% attachment diagram-8-lower.png %}"><img class="center" src="{% attachment diagram-8-lower.png %}" width="700" height="424" /></a>
 
 Here are the results for each implementation (see the **CSV libraries tested** section below for links).
 
@@ -249,9 +249,9 @@ The test was run on my home desktop PC which is Windows 11, .NET 7.0.12, and an 
 - Updated **Sylvan.Common** from 0.4.1 to 0.4.2
 - Updated **Sylvan.Data.Csv** from 1.2.7 to 1.3.3
 
-<a href="{% attachment diagram-8-lower.png %}"><img class="center" src="{% attachment diagram-8-lower.png %}" width="350" height="200" /></a>
+<a href="{% attachment diagram-8-lower.png %}"><img class="center" src="{% attachment diagram-8-lower.png %}" width="350" height="212" /></a>
 
-<a href="{% attachment diagram-8-upper.png %}"><img class="center" src="{% attachment diagram-8-upper.png %}" width="350" height="200" /></a>
+<a href="{% attachment diagram-8-upper.png %}"><img class="center" src="{% attachment diagram-8-upper.png %}" width="350" height="212" /></a>
 
 Results - [BenchmarkDotNet.Artifacts-7.0-9.zip]({% attachment BenchmarkDotNet.Artifacts-7.0-9.zip %})
 
