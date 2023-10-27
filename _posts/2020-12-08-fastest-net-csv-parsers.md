@@ -140,7 +140,7 @@ I tested the following CSV libraries.
 - [**Microsoft.ML**](https://www.nuget.org/packages/Microsoft.ML) 2.0.1 / [Project site](https://dot.net/ml) / [Source code](https://github.com/dotnet/MachineLearning) 
 - [**NReco.Csv**](https://www.nuget.org/packages/NReco.Csv) 1.0.2 / [Source code](https://github.com/nreco/csv) 
 - [**Open.Text.CSV**](https://www.nuget.org/packages/Open.Text.CSV) 3.4.0 / [Source code](https://github.com/Open-NET-Libraries/Open.Text.CSV/) 
-- [**RecordParser**](https://www.nuget.org/packages/RecordParser) 2.1.0 (with 0.1.8 `Ben.StringIntern`, 7.0.0 `System.IO.Pipelines`) / [Source code](https://github.com/leandromoh/RecordParser) 
+- [**RecordParser**](https://www.nuget.org/packages/RecordParser) 2.1.0 (with 0.1.8 `Ben.StringIntern`) / [Source code](https://github.com/leandromoh/RecordParser) 
 - [**Sep**](https://www.nuget.org/packages/Sep) 0.2.7 / [Source code](https://github.com/nietras/Sep/) 
 - [**ServiceStack.Text**](https://www.nuget.org/packages/ServiceStack.Text) 6.11.0 / [Project site](https://servicestack.net/text) / [Source code](https://github.com/ServiceStack/ServiceStack.Text) 
 - [**Sky.Data.Csv**](https://www.nuget.org/packages/Sky.Data.Csv) 2.5.0 / [Source code](https://github.com/fengzhenqiong/Sky.Data.Csv) 
