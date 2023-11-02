@@ -10,6 +10,11 @@ tags:
 title: The fastest way to dynamically activate objects in .NET
 ---
 
+**Update:** these results were for .NET 5 but in .NET 6 there were great improvements in this area. Consider the reading
+the [Reflection section](https://devblogs.microsoft.com/dotnet/performance-improvements-in-net-6/#reflection) of the
+[*Performance Improvements in .NET 6*](https://devblogs.microsoft.com/dotnet/performance-improvements-in-net-6/) blog
+post by Stephen Toub. Thanks for the [heads up](https://github.com/joelverhagen/joelverhagen.com/issues/1), Mark!
+
 ... at least according to my brief investigation.
 
 For one of my side projects, [ExplorePackages](https://github.com/joelverhagen/ExplorePackages), I wanted to know the
