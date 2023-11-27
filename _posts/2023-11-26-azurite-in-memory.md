@@ -154,7 +154,7 @@ or click one of the service names in the bottom status code.
 
 When running from the CLI, you'll know the option is working because the first line of output will be like this:
 
-` In-memory extent storage is enabled with a limit of 7990.73 MB (8378888192 bytes, 50% of total memory). `
+<code>In-memory extent storage is enabled with a limit of 7990.73 MB (8378888192 bytes, 50% of total memory).</code>
 
 In addition to the new in-memory persistence option, there is another option to limit the amount of bytes allowed for
 the in-memory extent store. Blobs, for example, can take up a lot of space and you may not want Azurite to eat up all of
