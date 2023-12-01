@@ -36,9 +36,9 @@ I have used both GitHub Actions and Azure Pipelines (Azure DevOps) for CI so I'l
 - **GitHub Actions**:
   [`.github/workflows/test.yml`](https://github.com/joelverhagen/azurite-sample/blob/7e755f2eeb6c58487cb5c04a503ae2a5ae03b6d7/.github/workflows/test.yml#L37-L46)
 
-But the general steps to use Azurite in your CI run should translate easily to any CI service. I tested these on Ubuntu,
+But the general steps to use Azurite in your CI run should translate easily to any CI service. I tested this on Ubuntu,
 macOS, and Windows but should work on any platform supporting Azurite. You probably just need to make sure Node.js is
-installed.
+installed on your CI build agent.
 
 ## Install Azurite
 
