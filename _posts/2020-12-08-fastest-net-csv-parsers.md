@@ -292,7 +292,7 @@ The test was run on my home desktop PC which is Windows 11, .NET 8.0.0, and an A
 - Updated **Sylvan.Common** from 0.4.2 to 0.4.3 (thanks Mark!)
 - Updated **Sylvan.Data.Csv** from 1.3.3 to 1.3.5
 - Updated **System.Collections.Immutable** from 7.0.0 to 8.0.0
-- 
+
 <a href="{% attachment diagram-9-lower.png %}"><img class="center" src="{% attachment diagram-9-lower.png %}"
 width="350" height="218" /></a>
 
