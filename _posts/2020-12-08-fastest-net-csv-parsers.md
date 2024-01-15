@@ -61,7 +61,7 @@ Here are the results for each implementation (see the **CSV libraries tested** s
 | 20   | `Dsv`                                                     | 3542 ms        | 1549 ms   |
 | 21   | `ServiceStack.Text`                                       | 3624 ms        | 1634 ms   |
 | 22   | `CSVFile`                                                 | 3800 ms        | 1819 ms   |
-| 23   | `Microsoft.ML`                                            | 3885 ms        | 823 ms    |
+| 23   | `Microsoft.ML` (parallel)                                 | 3885 ms        | 823 ms    |
 | 24   | `FileHelpers`                                             | 3953 ms        | 1855 ms   |
 | 25   | `FastCsvParser`                                           | 4152 ms        | 1715 ms   |
 | 26   | `CsvTextFieldParser`                                      | 4164 ms        | 2392 ms   |
@@ -81,11 +81,15 @@ Here are the results for each implementation (see the **CSV libraries tested** s
 | 40   | `ChoETL`                                                  | 18915 ms       | 16719 ms  |
 | 41   | `CommonLibrary.NET`                                       | 27247 ms       | 15460 ms  |
 
-🏆 Congratulations **Sep**! This library has taken the first place by parsing a 1 million line file in 479 milliseconds
-on workstation GC and a blistering 170 ms on server GC. Do note that this library is only one of the two that is tested
-using parallelism in its implementation (**RecordParser** being the other one). Kudos to
-[Leandro](https://github.com/leandromoh), author of RecordParser for innovating this approach. If you want to stick to a
-single threaded parsing library, you can also use **Sep** in a single threaded fashion and still get amazing performance.
+🏆 Congratulations **Sep**! This library has taken the first place by parsing a
+1 million line file in 479 milliseconds on workstation GC and a blistering 170
+ms on server GC. Do note that this library is only one of the three that is
+tested using parallelism in its implementation (**RecordParser** and
+**Microsoft.ML** being the others). ML.NET has had parallel `TextLoader` for
+some time, although poorly documented, this is on by default in
+[`TextLoader.Options.UseThreads`](https://github.com/dotnet/machinelearning/blob/ac6d13049155962a898846773ebf57926be361ef/src/Microsoft.ML.Data/DataLoadSave/Text/TextLoader.cs#L503-L507).
+If you want to stick to a single threaded parsing library, you can also use
+**Sep** in a single threaded fashion and still get amazing performance.
 
 One thing to consider with **Sep** (and others) is that escaped fields (double
 quotes) will not be unescaped automatically unless you set the `Unescape = true`
