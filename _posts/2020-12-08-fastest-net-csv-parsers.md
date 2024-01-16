@@ -61,7 +61,7 @@ Here are the results for each implementation (see the **CSV libraries tested** s
 | 20   | `Dsv`                                                     | 3542 ms        | 1549 ms   |
 | 21   | `ServiceStack.Text`                                       | 3624 ms        | 1634 ms   |
 | 22   | `CSVFile`                                                 | 3800 ms        | 1819 ms   |
-| 23   | `Microsoft.ML`                                            | 3885 ms        | 823 ms    |
+| 23   | `Microsoft.ML` (parallel)                                 | 3885 ms        | 823 ms    |
 | 24   | `FileHelpers`                                             | 3953 ms        | 1855 ms   |
 | 25   | `FastCsvParser`                                           | 4152 ms        | 1715 ms   |
 | 26   | `CsvTextFieldParser`                                      | 4164 ms        | 2392 ms   |
@@ -81,16 +81,25 @@ Here are the results for each implementation (see the **CSV libraries tested** s
 | 40   | `ChoETL`                                                  | 18915 ms       | 16719 ms  |
 | 41   | `CommonLibrary.NET`                                       | 27247 ms       | 15460 ms  |
 
-🏆 Congratulations **Sep**! This library has taken the first place by parsing a 1 million line file in 479 milliseconds
-on workstation GC and a blistering 170 ms on server GC. Do note that this library is only one of the two that is tested
-using parallelism in its implementation (**RecordParser** being the other one). Kudos to
-[Leandro](https://github.com/leandromoh), author of RecordParser for innovating this approach. If you want to stick to a
-single threaded parsing library, you can also use **Sep** in a single threaded fashion as still get amazing performance.
+🏆 Congratulations **Sep**! This library has taken the first place by parsing a
+1 million line file in 479 milliseconds on workstation GC and a blistering 170
+ms on server GC. Do note that this library is only one of the three that is
+tested using parallelism in its implementation (**RecordParser** and
+**Microsoft.ML** being the others). ML.NET has had parallel `TextLoader` for
+some time, although poorly documented, this is on by default in
+[`TextLoader.Options.UseThreads`](https://github.com/dotnet/machinelearning/blob/ac6d13049155962a898846773ebf57926be361ef/src/Microsoft.ML.Data/DataLoadSave/Text/TextLoader.cs#L503-L507).
+If you want to stick to a single threaded parsing library, you can also use
+**Sep** in a single threaded fashion and still get amazing performance.
 
-One thing to consider with **Sep** is that escaped fields (double quotes, commas, or new line characters in individual
-field values) will not be unescaped automatically unless you set the `Unescape = true` property on the
-`SepReaderOptions`. For more information, see [Sep's README on unescaping](https://github.com/nietras/Sep#unescaping).
-Most other libraries provide unescaped strings by default.
+One thing to consider with **Sep** (and others) is that escaped fields (double
+quotes) will not be unescaped automatically unless you set the `Unescape = true`
+property on the `SepReaderOptions`. For more information, see [Sep's README on
+unescaping](https://github.com/nietras/Sep#unescaping). Most other libraries
+provide unescaped strings by default, but not all, and some libraries also have
+unescaping and/or quotes handling disabled during the above benchmarks like
+**RecordParser**. The impact to performance with automatic unescaping for
+**Sep** is neglible in this benchmark, while **RecordParser (parallel)** works
+best without quote handling/unescaping.
 
 ## Caveats
 
@@ -100,12 +109,19 @@ performance tests.
 
 The data in this test benchmark has:
 
-- No double quotes in any field value (allowing the frontrunner **Sep** to not allocate extra for unescaping and get
-  even greater performance)
+- No double quotes in any field value
 - No commas in any field value
 - No new line characters (`\r` a.k.a. `CR` a.k.a. carriage return or `\n` a.k.a. `LF` a.k.a. line feed) in any field
   value
 - A lot of repeated field values
+
+No double quotes (and no commas and new lines inside such) allows some
+libraries, like RecordParser (parallel), to skip looking for quotes and only
+look for commas and new lines. Additionally, it allows skipping keeping track of
+such quotes and unescaping them, as is default for Sep, which still finds and
+handles quotes correctly no matter what though. Unlike e.g. RecordParser. For
+performance of automatic unescaping with Sep see [detailed benchmarks in Sep
+README](https://github.com/nietras/Sep).
 
 This means that parsers that aren't particularly fast at handling escaping (e.g. a row like `hello,"my good",friend`)
 might do very well at this benchmark but not perform as well on your data containing a lot of double quotes. For a lot
@@ -121,6 +137,14 @@ Finally, Mark Pflug (author of the **Sylvan.Data.Csv** library) did some great r
 handling in the various CSV parsers. See [joelverhagen/NCsvPerf#52](https://github.com/joelverhagen/NCsvPerf/pull/52)
 for more information. Perhaps in the future I'll capture this support in column in the new table above. The point here
 is that some CSV parsing libraries handle CSV edges better than other libraries.
+
+In general, given the specific characteristics of the data in this benchmark, it
+is entirely feasible to write a custom fast parallel parser that would beat all
+of the above since the problem becomes embarrassingly parallel with no quotes.
+Some libraries are already heavily customized for the data and have custom
+options that are specific to the benchmark. Please be aware of this and measure
+on your own data and consult documentation or READMEs for the different
+libraries.
 
 ## CSV libraries tested
 
